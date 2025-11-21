@@ -81,7 +81,7 @@ The main objective is to implement all basic requirements before winter brake so
     **Wouter**: Server, api, Recipe Controller.java  
     **Simon**: First UI  
 
-10. **Feedback round:** What went well and what can be improved next time? (2 min)  
+10. **Feedback round:** What went well and what can be improved next time? (2 min)  1
    The meeting could be a bit more organized. Due to brainstorming we branch through ideas and end up in other talking points.
 
 3. **Planned meeting duration vs actual duration:** Where/why did you misestimate? (1 min)
