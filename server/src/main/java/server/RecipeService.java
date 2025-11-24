@@ -62,6 +62,7 @@ public class RecipeService {
     /**
      * Deletes recipe by id.
      * @param id the id of the recipe to be deleted
+     * @throws NoSuchElementException when recipe not found
      */
     public void deleteRecipeById(Long id) {
         if (recipeRepository.existsById(id)) {
