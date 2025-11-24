@@ -22,10 +22,9 @@ public class RecipeService {
     /**
      * Creates a new recipe.
      * @param recipe recipe to be added to database
-     * @return the created recipe
      */
-    public Recipe createRecipe(Recipe recipe) {
-        return recipeRepository.save(recipe);
+    public void createRecipe(Recipe recipe) {
+        recipeRepository.save(recipe);
     }
 
     /**
@@ -48,6 +47,16 @@ public class RecipeService {
      */
     public List<Recipe> getAllRecipes() {
         return recipeRepository.findAll();
+    }
+
+    /**
+     * Updates a recipe.
+     * @param id the id of the recipe to be updated
+     * @param updatedRecipe the updated version of the recipe
+     */
+    public void updateRecipe(Long id, Recipe updatedRecipe) {
+        deleteRecipeById(id);
+        createRecipe(updatedRecipe);
     }
 
     /**
