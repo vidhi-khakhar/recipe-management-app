@@ -44,4 +44,16 @@ public class RecipeService {
     public List<Recipe> getAllRecipes() {
         return recipeRepository.findAll();
     }
+
+    /**
+     * Deletes recipe by id.
+     * @param id the id of the recipe to be deleted
+     */
+    public void deleteRecipeById(Long id) {
+        if (recipeRepository.existsById(id)) {
+            recipeRepository.deleteById(id);
+        } else {
+            throw new NoSuchElementException("Recipe with id " + id + " not found.");
+        }
+    }
 }
