@@ -9,6 +9,11 @@ import java.util.NoSuchElementException;
 public class RecipeService {
     private RecipeRepository recipeRepository;
 
+    /**
+     * Creates a new RecipeService
+     * with required RecipeRepository (constructor DI).
+     * @param recipeRepository the repository used to perform CRUD operations on recipes
+     */
     @Autowired
     public RecipeService(RecipeRepository recipeRepository) {
         this.recipeRepository = recipeRepository;
