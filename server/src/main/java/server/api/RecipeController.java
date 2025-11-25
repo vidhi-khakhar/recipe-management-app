@@ -39,7 +39,7 @@ public class RecipeController {
     @GetMapping("/{id}")
     public ResponseEntity<Recipe> getRecipe(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok(this.repo.findById(id).get());
+            return ResponseEntity.ok(this.repo.findById(id).orElseThrow());
         } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
         }
