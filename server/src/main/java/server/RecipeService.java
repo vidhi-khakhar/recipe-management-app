@@ -6,9 +6,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import commons.Recipe;
+
 @Service
 public class RecipeService {
-    private RecipeRepository recipeRepository;
+    private final RecipeRepository recipeRepository;
     
     /**
      * Creates a new RecipeService
@@ -38,7 +39,7 @@ public class RecipeService {
         try {
             return recipeRepository.findById(id).get();
         } catch (NoSuchElementException e) {
-            throw new RuntimeException("Recipe with id " + id + " not found.");
+            throw new NoSuchElementException("Recipe with id " + id + " not found.");
         }
     }
 
