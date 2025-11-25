@@ -1,6 +1,9 @@
 package server.api;
 
+import commons.Recipe;
 import java.util.HashMap;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,57 +14,55 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import server.RecipeRepository;
 
 @RestController
 @RequestMapping("/api/v1/recipes")
 public class RecipeController {
 
-    private final HashMap<UUID, String> repo;
+    private final RecipeRepository repo;
 
-    public RecipeController(HashMap<UUID, String> repo) {
+    public RecipeController(RecipeRepository repo) {
         this.repo = repo;
     }
 
     @PostMapping
-    public ResponseEntity<UUID> createRecipe(@RequestBody String recipe) {
-        System.out.println("Add recipe: " + recipe);
+    public ResponseEntity<Long> createRecipe(@RequestBody Recipe recipe) {
+        this.repo.save(recipe);
 
-        var uuid = UUID.randomUUID();
-
-        this.repo.put(uuid, recipe);
-
-        return ResponseEntity.ok(uuid);
+        return ResponseEntity.ok(recipe.getRecipeId());
     }
 
     @GetMapping
-    public ResponseEntity<HashMap<UUID, String>> getAllRecipes() {
-        return ResponseEntity.ok(this.repo);
+    public ResponseEntity<List<Recipe>> getAllRecipes() {
+        return ResponseEntity.ok(this.repo.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<String> getRecipe(@PathVariable UUID id) {
-        if (this.repo.containsKey(id)) {
-            return ResponseEntity.ok(this.repo.get(id));
+    public ResponseEntity<Recipe> getRecipe(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(this.repo.findById(id).get());
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.notFound().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UUID> replaceRecipe(
-        @PathVariable UUID id,
-        @RequestBody String recipe
+    public ResponseEntity<Long> replaceRecipe(
+        @PathVariable Long id,
+        @RequestBody Recipe recipe
     ) {
-        if (this.repo.containsKey(id)) {
-            this.repo.put(id, recipe);
+        if (this.repo.findById(id).isPresent()) {
+            this.repo.save(recipe);
             return ResponseEntity.ok(id);
         }
         return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<UUID> deleteRecipe(@PathVariable UUID id) {
-        if (this.repo.containsKey(id)) {
-            this.repo.remove(id);
+    public ResponseEntity<Long> deleteRecipe(@PathVariable Long id) {
+        if (this.repo.findById(id).isPresent()) {
+            this.repo.deleteById(id);
             return ResponseEntity.ok(id);
         }
         return ResponseEntity.notFound().build();
