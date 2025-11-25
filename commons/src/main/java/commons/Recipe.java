@@ -2,13 +2,15 @@ package commons;
 
 import jakarta.persistence.*;
 import java.util.*;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * Recipe Entity.
- * Database has 7 columns: recipeId(unmodifiable), title, ingredients, instructions, language, serving
- * For now language is default "EN", serving is default 1 since basic functionality doesnt require them
+ * Database has 6 columns: recipeId (unmodifiable), title, ingredients, instructions, language, serving
+ * For now language is default "en", serving is default 1 since basic functionality doesnt require them
  */
 
 @Entity // Marks this class as a JPA entity.
@@ -76,7 +78,16 @@ public class Recipe {
     /**
      * Default constructor is requested by JPA.
      */
-    public Recipe() { }
+    @SuppressWarnings("unused")
+    protected Recipe() { }
+
+    /**
+     * Constructor with only title, defaults language to "en".
+     * @param title title of the recipe
+     */
+    public Recipe(String title) {
+        this(title, "en");
+    }
 
     /**
      * Recommended constructor for the Recipe.
@@ -85,8 +96,17 @@ public class Recipe {
      * We don't store the ingredients and instructions because the user can add them later.
      * language and serving are defaulted
      */
-    public Recipe(String title) {
-        this.title = title;
+    public Recipe(String title, String language) {
+        this.title = Objects.requireNonNull(title, "Title cannot be null");
+        this.ingredients = new ArrayList<>();
+        this.instructions = new ArrayList<>();
+        this.servings = 1;
+
+        if (language == null || language.trim().length() != 2) {
+        this.language = "en";
+        } else {
+            this.language = language.trim().toLowerCase();
+        }
     }
 
 
@@ -95,15 +115,15 @@ public class Recipe {
      * Ingredients and instructions lists are copied to avoid mutating the original recipe.
      * @param newTitle title for the cloned recipe
      * @return cloned Recipe object
+     * A new recipe id is generated when the cloned recipe is saved to the database.
      */
     public Recipe cloneRecipe(String newTitle) {
-    Recipe clone = new Recipe(newTitle);
-    clone.setIngredients(new ArrayList<>(this.ingredients));
-    clone.setInstructions(new ArrayList<>(this.instructions));
-    clone.setLanguage(this.language);
-    clone.setServings(this.servings);
-    return clone;
-}
+        Recipe clone = new Recipe(newTitle, this.language);
+        clone.setIngredients(new ArrayList<>(this.ingredients));
+        clone.setInstructions(new ArrayList<>(this.instructions));
+        clone.setServings(this.servings);
+        return clone;
+    }
 
 
    
@@ -145,7 +165,11 @@ public class Recipe {
     }
 
     public void setLanguage(String language) {
-        this.language = language;
+        if (language == null || language.trim().length() != 2) {
+        this.language = "en";
+        } else {
+            this.language = language.trim().toLowerCase();
+        }
     }
 
     public int getServings() {
@@ -153,33 +177,45 @@ public class Recipe {
     }
 
     public void setServings(int servings) {
+        if (servings < 1) {
+            this.servings = 1;
+        } else
         this.servings = servings;
     }
 
     /**
      * @param anotherRecipe another recipe
      * @return whether two recipes are equal
+     * Note: Reflection means the library automatically looks at the object’s fields at runtime instead of you manually listing them.
+     * Uses reflection to compare all fields of this object with the other object.
      */
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Recipe)) return false;
-        Recipe other = (Recipe) o;
-        return recipeId != null && recipeId.equals(other.recipeId);
+    public boolean equals(Object anotherNote) {
+        return EqualsBuilder.reflectionEquals(this,anotherNote);
     }
-
 
     /**
      * @return hashcode
+     * Generates a hash code by reflecting over all fields of this object.
      */
     @Override
     public int hashCode() {
-        return Objects.hashCode(recipeId);
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 
     /**
      * @return String representation
+     * Creates a multi-line string representation by inspecting all fields via reflection.
+     * Example:
+     * commons.Recipe@5f184fc6[
+     *   recipeId=12
+     *  title=Pesto Panini
+     *  ingredients=[Bread, Pesto, Mozzarella]
+     *  instructions=[Spread pesto, Add cheese, Grill sandwich]
+     *  language=en
+     *   servings=1
+     *  ]
      */
     @Override
     public String toString() {
