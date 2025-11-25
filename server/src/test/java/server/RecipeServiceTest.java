@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -44,17 +45,34 @@ class RecipeServiceTest {
         // Simulate behaviour of findById in database
         when(recipeRepository.findById(id))
                 .thenReturn(Optional.of(recipe));
-        
+
         assertEquals("Sarmale",
                 recipeService.getRecipeById(id).getTitle());
     }
 
     @Test
     void getAllRecipes() {
+        Recipe recipe1 = new Recipe("Sarmale");
+        Recipe recipe2 = new Recipe("Ciorba Radauteana");
+
+        when(recipeRepository.findAll())
+                .thenReturn(Arrays.asList(recipe1, recipe2));
+
+        assertEquals(2, recipeService.getAllRecipes().size());
     }
 
     @Test
     void updateRecipe() {
+        Recipe recipeToUpdate  = new Recipe("Sarmale cu Vita-de-Vie");
+        Long id  = recipeToUpdate.getRecipeId();
+        when(recipeRepository.findById(id))
+                .thenReturn(Optional.of(recipeToUpdate));
+
+        Recipe updatedRecipe = new Recipe("Sarmale cu Varza");
+        recipeService.updateRecipe(id, updatedRecipe);
+
+        verify(recipeRepository, times(1)).save(updatedRecipe);
+        assertEquals("Sarmale cu Varza", recipeService.getRecipeById(id).getTitle());
     }
 
     @Test
