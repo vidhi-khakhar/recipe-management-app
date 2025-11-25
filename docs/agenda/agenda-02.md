@@ -28,7 +28,6 @@ Agenda Items:
    - **Ranking the tasks** (8 min)
      - First steps (next week)
      - Long versus short term
-     - Priority
    - **Division of tasks for next week** (6 min)
 9. **Summarize action points:** Who, what, when? (3 min) 
 
