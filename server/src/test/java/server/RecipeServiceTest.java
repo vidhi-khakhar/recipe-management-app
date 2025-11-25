@@ -18,11 +18,11 @@ import static org.mockito.Mockito.*;
 class RecipeServiceTest {
      // Mock is used to create a fake version of the database
     @Mock
-    private RecipeRepository recipeRepository;
+    private server.RecipeRepository recipeRepository;
 
     // Repository is injected here
     @InjectMocks
-    private RecipeService recipeService;
+    private server.RecipeService recipeService;
 
     @Test
     void createRecipe() {

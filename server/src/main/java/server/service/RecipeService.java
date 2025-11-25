@@ -5,6 +5,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
+
+import server.RecipeRepository;
 import commons.Recipe;
 
 @Service
@@ -15,6 +18,7 @@ public class RecipeService {
      * Creates a new RecipeService
      * with required RecipeRepository (constructor DI).
      * @param recipeRepository the repository used to perform CRUD operations on recipes
+     * @Autowired tells Spring to automatically inject dependency.
      */
     @Autowired
     public RecipeService(RecipeRepository recipeRepository) {
@@ -57,6 +61,8 @@ public class RecipeService {
      * @param updatedRecipe the updated version of the recipe
      */
     public void updateRecipe(Long id, Recipe updatedRecipe) {
+        Objects.requireNonNull(updatedRecipe, "Updated recipe cannot be null.");
+
         Recipe recipeToUpdate = getRecipeById(id);
 
         recipeToUpdate.setTitle(updatedRecipe.getTitle());
