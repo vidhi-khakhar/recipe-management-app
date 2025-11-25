@@ -7,7 +7,7 @@ import java.util.NoSuchElementException;
 @Service
 public class RecipeService {
     private RecipeRepository recipeRepository;
-
+    
     /**
      * Creates a new RecipeService
      * with required RecipeRepository (constructor DI).
