@@ -55,6 +55,15 @@ public class RecipeCollection {
     }
 
     /**
+     * Returns whether this collection is empty.
+     *
+     * @return {true} if there are no recipes, {false} otherwise
+     */
+    public boolean isEmpty() {
+        return recipes.isEmpty();
+    }
+
+    /**
      * Returns all recipes in this collection as a new {List}.
      * Modifying the returned list does not affect the internal state of the
      * {RecipeCollection}.
