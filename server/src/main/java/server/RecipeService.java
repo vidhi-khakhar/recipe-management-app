@@ -58,6 +58,7 @@ public class RecipeService {
     public void updateRecipe(Long id, Recipe updatedRecipe) {
         Recipe recipeToUpdate = getRecipeById(id);
 
+        recipeToUpdate.setTitle(updatedRecipe.getTitle());
         recipeToUpdate.setServings(updatedRecipe.getServings());
         recipeToUpdate.setLanguage(updatedRecipe.getLanguage());
         recipeToUpdate.setIngredients(updatedRecipe.getIngredients());
