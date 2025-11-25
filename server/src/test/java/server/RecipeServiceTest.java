@@ -77,5 +77,13 @@ class RecipeServiceTest {
 
     @Test
     void deleteRecipeById() {
+        Recipe recipe = new Recipe("Sarmale");
+        Long id = recipe.getRecipeId();
+
+        when(recipeRepository.existsById(id))
+                .thenReturn(true);
+        recipeService.deleteRecipeById(id);
+
+        verify(recipeRepository, times(1)).deleteById(id);
     }
 }
