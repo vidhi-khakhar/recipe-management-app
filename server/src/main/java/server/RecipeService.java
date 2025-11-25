@@ -56,8 +56,14 @@ public class RecipeService {
      * @param updatedRecipe the updated version of the recipe
      */
     public void updateRecipe(Long id, Recipe updatedRecipe) {
-        deleteRecipeById(id);
-        createRecipe(updatedRecipe);
+        Recipe recipeToUpdate = getRecipeById(id);
+
+        recipeToUpdate.setServings(updatedRecipe.getServings());
+        recipeToUpdate.setLanguage(updatedRecipe.getLanguage());
+        recipeToUpdate.setIngredients(updatedRecipe.getIngredients());
+        recipeToUpdate.setInstructions(updatedRecipe.getInstructions());
+
+        recipeRepository.save(recipeToUpdate);
     }
 
     /**
