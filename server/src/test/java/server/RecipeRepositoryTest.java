@@ -11,6 +11,11 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * @DataJpaTest is specifically designed for testing database-layer functionality.
+ * It wraps each test in a transaction and rolls it back,
+ * so that the tests do not interfere with each other.
+ */
 @DataJpaTest(showSql = true)
 class RecipeRepositoryTest {
     @Autowired
@@ -30,12 +35,14 @@ class RecipeRepositoryTest {
     @Test
     void testFindAll() {
         List<Recipe> recipes = recipeRepository.findAll();
+
         assertEquals(2, recipes.size());
     }
 
     @Test
     void testFindById() {
         Recipe found = recipeRepository.findById(testRecipe1.getRecipeId()).get();
+
         assertEquals(testRecipe1.getRecipeId(), found.getRecipeId());
     }
 
@@ -51,5 +58,20 @@ class RecipeRepositoryTest {
     void testExistsById() {
         boolean exists = recipeRepository.existsById(testRecipe1.getRecipeId());
         assertEquals(true, exists);
+    }
+
+    @Test
+    void testDeleteAll() {
+        recipeRepository.deleteAll();
+        List<Recipe> recipes = recipeRepository.findAll();
+
+        assertEquals(0, recipes.size());
+    }
+
+    @Test
+    void testSave() {
+        Recipe savedRecipe = recipeRepository.save(testRecipe1);
+
+        assertEquals(testRecipe1.getRecipeId(), savedRecipe.getRecipeId());
     }
 }
