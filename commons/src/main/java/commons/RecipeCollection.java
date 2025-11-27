@@ -5,15 +5,15 @@ import java.util.stream.Collectors;
 
 /**
  * Represents an in-memory collection of {Recipe} objects.
- * <p>
+ *
  * This class is not a JPA entity and is not persisted directly in the database.
  * Instead, it is a convenience wrapper around a {Map<Long, Recipe>} and
  * is intended to be used both on the server and on the client as:
- * <ul>
- *     <li>a collection containing all recipes,</li>
- *     <li>a filtered subset</li>
- *     <li>a subset such as "favourite recipes".</li>
- * </ul>
+ *
+ * a collection containing all recipes,
+ * a filtered subset
+ * a subset such as "favourite recipes".
+ *
  * The actual persistence of recipes is handled by the {Recipe} entity
  * and the database/repository layer on the server.
  */
@@ -22,7 +22,7 @@ public class RecipeCollection {
 
     /**
      * Internal storage of recipes, keyed by their database id.
-     * <p>
+     * 
      * Using a {LinkedHashMap} preserves insertion order, which is often
      * desirable when displaying recipe lists in the UI.
      */
@@ -157,4 +157,35 @@ public class RecipeCollection {
     }
 
 
+    /**
+     * Indicates whether some other object is "equal to" this {@code RecipeCollection}.
+     *
+     * Two {@code RecipeCollection} instances are considered equal if and only if the other object
+     * is non-null, is of the exact same runtime class (no subclass equality), and their
+     * {@code recipes} fields are equal as determined by {@link java.util.Objects#equals(Object, Object)}.
+     *
+     * @param o the reference object with which to compare
+     * @return {@code true} if this object is the same as {@code o}, or if {@code o} is a
+     *         {@code RecipeCollection} with an equal {@code recipes} field; {@code false} otherwise
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        RecipeCollection that = (RecipeCollection) o;
+        return Objects.equals(recipes, that.recipes);
+    }
+
+
+    /**
+     * Returns a hash code value for this {@code RecipeCollection}.
+     *
+     * The hash code is computed solely from the {@code recipes} field to be consistent with
+     * {@link #equals(Object)}. If {@code recipes} is {@code null}, this method returns {@code 0}.
+     *
+     * @return a hash code value for this object
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(recipes);
+    }
 }
