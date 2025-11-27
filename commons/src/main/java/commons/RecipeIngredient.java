@@ -15,7 +15,7 @@ public class RecipeIngredient {
     // Many lines belong to one recipe
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "recipe_id")
-    @JsonIgnore // prevents infinite JSON loops (Recipe -> RecipeIngredient -> Recipe -> ...)
+    @JsonIgnore
     private Recipe recipe;
 
     // One ingredient can be used in many recipes
