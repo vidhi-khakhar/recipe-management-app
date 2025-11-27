@@ -53,6 +53,18 @@ public class RecipeIngredient {
         this.ingredient = Objects.requireNonNull(ingredient);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        RecipeIngredient that = (RecipeIngredient) o;
+        return Objects.equals(id, that.id) && Objects.equals(recipe, that.recipe) && Objects.equals(ingredient, that.ingredient) && Objects.equals(amount, that.amount) && unit == that.unit && Objects.equals(informal, that.informal);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, recipe, ingredient, amount, unit, informal);
+    }
+
     // Getters/setters
 
     public Long getId() { return id; }
