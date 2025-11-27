@@ -180,5 +180,102 @@ class RecipeCollectionTest {
         RecipeCollection c = new RecipeCollection();
         assertThrows(NullPointerException.class, () -> c.filter(null));
     }
+
+    @Test
+    void equals_isReflexive() {
+        RecipeCollection a = new RecipeCollection();
+        a.add(recipeWithId(1, "Lasagna"));
+
+        assertEquals(a, a);
+    }
+
+    @Test
+    void equals_returnsFalseForNullAndDifferentClass() {
+        RecipeCollection a = new RecipeCollection();
+        assertNotEquals(a, null);
+        assertNotEquals(a, "not a RecipeCollection");
+    }
+
+    @Test
+    void equals_isSymmetricAndHashCodeMatches_forSameContents() {
+        RecipeCollection a = new RecipeCollection();
+        RecipeCollection b = new RecipeCollection();
+
+        a.add(recipeWithId(1, "Lasagna"));
+        b.add(recipeWithId(1, "Lasagna"));
+
+        // symmetric
+        assertEquals(a, b);
+        assertEquals(b, a);
+
+        // equals => same hashCode
+        assertEquals(a.hashCode(), b.hashCode());
+    }
+
+    @Test
+    void equals_isTransitive_forSameContents() {
+        RecipeCollection a = new RecipeCollection();
+        RecipeCollection b = new RecipeCollection();
+        RecipeCollection c = new RecipeCollection();
+
+        a.add(recipeWithId(1, "Lasagna"));
+        b.add(recipeWithId(1, "Lasagna"));
+        c.add(recipeWithId(1, "Lasagna"));
+
+        assertEquals(a, b);
+        assertEquals(b, c);
+        assertEquals(a, c);
+    }
+
+    @Test
+    void equals_returnsFalse_whenContentsDiffer() {
+        RecipeCollection a = new RecipeCollection();
+        RecipeCollection b = new RecipeCollection();
+
+        a.add(recipeWithId(1, "Lasagna"));
+        b.add(recipeWithId(2, "Pizza"));
+
+        assertNotEquals(a, b);
+    }
+
+    @Test
+    void equals_returnsFalse_whenOneHasExtraRecipe() {
+        RecipeCollection a = new RecipeCollection();
+        RecipeCollection b = new RecipeCollection();
+
+        a.add(recipeWithId(1, "Lasagna"));
+        b.add(recipeWithId(1, "Lasagna"));
+        b.add(recipeWithId(2, "Pizza"));
+
+        assertNotEquals(a, b);
+    }
+
+    @Test
+    void hashCode_isStable_ifObjectUnchanged() {
+        RecipeCollection a = new RecipeCollection();
+        a.add(recipeWithId(1, "Lasagna"));
+
+        int h1 = a.hashCode();
+        int h2 = a.hashCode();
+
+        assertEquals(h1, h2);
+    }
+
+    @Test
+    void hashCode_canChange_afterMutation() {
+        RecipeCollection a = new RecipeCollection();
+        a.add(recipeWithId(1, "Lasagna"));
+
+        int before = a.hashCode();
+
+        a.add(recipeWithId(2, "Pizza")); // mutates internal map
+
+        int after = a.hashCode();
+
+        // Not guaranteed by Java spec that hash changes,
+        // but for Objects.hashCode(map) it practically will in this case.
+        assertNotEquals(before, after);
+    }
 }
+
 

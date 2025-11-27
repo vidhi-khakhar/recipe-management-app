@@ -22,7 +22,7 @@ public class RecipeCollection {
 
     /**
      * Internal storage of recipes, keyed by their database id.
-     * 
+     *
      * Using a {LinkedHashMap} preserves insertion order, which is often
      * desirable when displaying recipe lists in the UI.
      */
