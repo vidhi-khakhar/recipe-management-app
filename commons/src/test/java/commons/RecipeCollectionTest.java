@@ -228,25 +228,21 @@ class RecipeCollectionTest {
     }
 
     @Test
-    void equals_returnsFalse_whenContentsDiffer() {
+    void equalsreturnsFalsewhenContentsDiffer() {
         RecipeCollection a = new RecipeCollection();
         RecipeCollection b = new RecipeCollection();
-
         a.add(recipeWithId(1, "Lasagna"));
         b.add(recipeWithId(2, "Pizza"));
-
         assertNotEquals(a, b);
     }
 
     @Test
-    void equals_returnsFalse_whenOneHasExtraRecipe() {
+    void equalsreturnsFalsewhenOneHasExtraRecipe() {
         RecipeCollection a = new RecipeCollection();
         RecipeCollection b = new RecipeCollection();
-
         a.add(recipeWithId(1, "Lasagna"));
         b.add(recipeWithId(1, "Lasagna"));
         b.add(recipeWithId(2, "Pizza"));
-
         assertNotEquals(a, b);
     }
 
@@ -254,10 +250,8 @@ class RecipeCollectionTest {
     void hashCode_isStable_ifObjectUnchanged() {
         RecipeCollection a = new RecipeCollection();
         a.add(recipeWithId(1, "Lasagna"));
-
         int h1 = a.hashCode();
-        int h2 = a.hashCode();
-
+        int h2 = a.hashCode()
         assertEquals(h1, h2);
     }
 
@@ -265,15 +259,9 @@ class RecipeCollectionTest {
     void hashCode_canChange_afterMutation() {
         RecipeCollection a = new RecipeCollection();
         a.add(recipeWithId(1, "Lasagna"));
-
         int before = a.hashCode();
-
         a.add(recipeWithId(2, "Pizza")); // mutates internal map
-
         int after = a.hashCode();
-
-        // Not guaranteed by Java spec that hash changes,
-        // but for Objects.hashCode(map) it practically will in this case.
         assertNotEquals(before, after);
     }
 }
