@@ -69,7 +69,7 @@ public class Ingredient {
      * Default constructor for JPA.
      */
     public Ingredient() {
-        // Default constructor for JPA
+
     }
 
     /**
