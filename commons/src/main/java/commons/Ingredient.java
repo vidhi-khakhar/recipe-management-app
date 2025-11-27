@@ -1,50 +1,92 @@
 package commons;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import jakarta.persistence.criteria.Order;
+
 import java.util.Objects;
 
 
+/**
+ * Ingredient Entity.
+ * Database has columns: id (unmodifiable), name, proteinPer100g, fatPer100g, carbsPer100g, kcalPer100g, language
+ */
 @Entity
 @Table(name = "ingredient")
 public class Ingredient {
 
-
+    /**
+     * id identifies the ingredient in the database.
+     * It is the primary key.
+     */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long ingredientID;
+    @GeneratedValue
+    private Long id;
 
+    /**
+     * Version field for optimistic locking.
+     */
+    @Version
+    private Long version;
 
+    /**
+     * name of the ingredient shouldn't be null.
+     */
     @Column(nullable = false)
     private String name;
 
-    @Column(name = "protein_per_100g")
-    private int protein_per_100g;
+    /**
+     * nutritional values per 100g of the ingredient
+     */
+    @Column(name = "proteinPer100g")
+    private double proteinPer100g;
 
-    @Column(name = "fat_per_100g")
-    private int fat_per_100g;
+    /**
+     * nutritional values per 100g of the ingredient
+     */
+    @Column(name = "fatPer100g")
+    private double fatPer100g;
 
-    @Column(name = "carbs_per_100g")
-    private int carbs_per_100g;
+    /**
+     * nutritional values per 100g of the ingredient
+     */
+    @Column(name = "carbsPer100g")
+    private double carbsPer100g;
 
-    @Column(name = "kcal_per_100g")
-    private int kcal_per_100g;
+    /**
+     * nutritional values per 100g of the ingredient
+     */
+    @Column(name = "kcalPer100g")
+    private double kcalPer100g;
 
+    /**
+     * language of the ingredient, default "en"
+     */
     @Column(nullable = false)
     private String language = "en";
 
+    /**
+     * Default constructor for JPA.
+     */
+    public Ingredient() {
+        // Default constructor for JPA
+    }
 
-    public Ingredient(String name, int protein_per_100g, int fat_per_100g, int carbs_per_100g, int kcal_per_100g, String language) {
+    /**
+     * Constructor with all fields except id and version.
+     * @param name Name of the ingredient.
+     * @param proteinPer100g Protein content per 100g.
+     * @param fatPer100g Fat content per 100g.
+     * @param carbsPer100g Carbohydrate content per 100g.
+     * @param kcalPer100g Caloric content per 100g.
+     * @param language Language code (e.g., "en", "nl", "de").
+     */
+    public Ingredient(String name, double proteinPer100g, double fatPer100g, double carbsPer100g, double kcalPer100g, String language) {
         this.name = Objects.requireNonNull(name, "Name of an ingredient cannot be null");
-        this.protein_per_100g = protein_per_100g;
-        this.fat_per_100g = fat_per_100g;
-        this.carbs_per_100g = carbs_per_100g;
-        this.kcal_per_100g = calculatingKcal(protein_per_100g, fat_per_100g, carbs_per_100g);
+        this.proteinPer100g = proteinPer100g;
+        this.fatPer100g = fatPer100g;
+        this.carbsPer100g = carbsPer100g;
+        this.kcalPer100g = calculatingKcal(proteinPer100g, fatPer100g, carbsPer100g);
 
         if (language == null || language.trim().length() != 2) {
             this.language = "en";
@@ -53,14 +95,16 @@ public class Ingredient {
         }
     }
 
-    public static int calculatingKcal(int protein, int fat, int carbs) {
-        int kcal_per_100g = 4 * (protein + carbs) + 9 * fat;
-        return kcal_per_100g;
-    }
-
-
-    public Long getIngredientID() {
-        return ingredientID;
+    /**
+     * Calculate kcal per 100g based on protein, fat, and carbs.
+     * @param protein Protein content per 100g.
+     * @param fat Fat content per 100g.
+     * @param carbs Carbohydrate content per 100g.
+     * @return Calculated kcal per 100g.
+     */
+    public static double calculatingKcal(double protein, double fat, double carbs) {
+        double kcalPer100g = 4 * (protein + carbs) + 9 * fat;
+        return kcalPer100g;
     }
 
 
@@ -73,38 +117,34 @@ public class Ingredient {
         this.name = name;
     }
 
-    public int getProtein_per_100g() {
-        return protein_per_100g;
+    public double getproteinPer100g() {
+        return proteinPer100g;
     }
 
-    public void setProtein_per_100g(int protein_per_100g) {
-        this.protein_per_100g = protein_per_100g;
+    public void setproteinPer100g(double proteinPer100g) {
+        this.proteinPer100g = proteinPer100g;
     }
 
-    public int getFat_per_100g() {
-        return fat_per_100g;
+    public double getfatPer100g() {
+        return fatPer100g;
     }
 
-    public void setFat_per_100g(int fat_per_100g) {
-        this.fat_per_100g = fat_per_100g;
+    public void setfatPer100g(double fatPer100g) {
+        this.fatPer100g = fatPer100g;
     }
 
-    public int getCarbs_per_100g() {
-        return carbs_per_100g;
+    public double getcarbsPer100g() {
+        return carbsPer100g;
     }
 
-    public void setCarbs_per_100g(int carbs_per_100g) {
-        this.carbs_per_100g = carbs_per_100g;
+    public void setcarbsPer100g(double carbsPer100g) {
+        this.carbsPer100g = carbsPer100g;
     }
 
-    public int getKcal_per_100g() {
-        return kcal_per_100g;
+    public double getkcalPer100g() {
+        return kcalPer100g;
     }
-
-    public void setKcal_per_100g(int kcal_per_100g) {
-        this.kcal_per_100g = kcal_per_100g;
-    }
-
+    
     public String getLanguage() {
         return language;
     }
