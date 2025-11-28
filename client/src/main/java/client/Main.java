@@ -26,6 +26,7 @@ import client.scenes.MainCtrl;
 import client.utils.ServerUtils;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -53,7 +54,11 @@ public class Main extends Application {
         String cssPath = getClass().getResource("/client/scenes/FoodPal.css").toExternalForm();
         mainUserInterfaceScene.getStylesheets().add(cssPath);
 
-        primaryStage.setTitle("HelloWorld");
+        primaryStage.setMinWidth(600);
+        primaryStage.setMinHeight(500);
+
+        Font.loadFont(getClass().getResourceAsStream("client/CascadiaCode-VariableFont_wght.ttf"), 12);
+        primaryStage.setTitle("FoodPal");
         primaryStage.setScene(mainUserInterfaceScene);
         primaryStage.show();
 
