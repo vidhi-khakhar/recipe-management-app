@@ -48,6 +48,7 @@ public class Main extends Application {
 			return;
 		}
 
+        System.out.println("Starting application...");
 	    var mainUserInterface = FXML.load(MainCtrl.class, "client", "scenes", "MainUserInterface.fxml");
         var mainUserInterfaceScene = new Scene(mainUserInterface.getValue());
 
@@ -64,6 +65,17 @@ public class Main extends Application {
 
 		var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
 		mainCtrl.initialize(primaryStage, mainUserInterfaceScene);
+
+        System.out.println("Window opened with width: " + primaryStage.getWidth() +
+                " and height: " + primaryStage.getHeight());
+
+        primaryStage.widthProperty().addListener((obs, oldWidth, newWidth) -> {
+            System.out.println("Window width changed from " + oldWidth + " to " + newWidth);
+        });
+
+        primaryStage.heightProperty().addListener((obs, oldHeight, newHeight) -> {
+            System.out.println("Window height changed from " + oldHeight + " to " + newHeight);
+        });
 
 	}
 }
