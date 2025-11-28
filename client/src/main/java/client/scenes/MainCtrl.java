@@ -45,6 +45,36 @@ public class MainCtrl {
     }
 
     @FXML
+    private void recipeAddButtonClicked() {
+        System.out.println("User wants to add a recipe.");
+    }
+
+    @FXML
+    private void recipeRemoveButtonClicked() {
+        System.out.println("User wants to remove a recipe.");
+    }
+
+    @FXML
+    private void ingredientAddButtonClicked() {
+        System.out.println("User wants to add an ingredient.");
+    }
+
+    @FXML
+    private void ingredientRemoveButtonClicked() {
+        System.out.println("User wants to remove an ingredient.");
+    }
+
+    @FXML
+    private void preparationAddButtonClicked() {
+        System.out.println("User wants to add a preparation.");
+    }
+
+    @FXML
+    private void preparationRemoveButtonClicked() {
+        System.out.println("User wants to remove a preparation.");
+    }
+
+    @FXML
     private Button addIngredientButton;
 
     @FXML
