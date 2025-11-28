@@ -1,3 +1,5 @@
+package server;
+
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.persistence.EntityManager;
