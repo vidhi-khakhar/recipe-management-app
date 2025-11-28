@@ -85,8 +85,6 @@ class RecipeControllerTest {
         Recipe recipe = new Recipe("Updated Recipe");
         var id = recipe.getRecipeId();
 
-        when(rService.getRecipeById(id)).thenReturn(recipe);
-
         ResponseEntity<Long> result = recipeController.replaceRecipe(
             id,
             recipe
@@ -94,7 +92,6 @@ class RecipeControllerTest {
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(id, result.getBody());
-        verify(rService, times(1)).getRecipeById(id);
         verify(rService, times(1)).updateRecipe(id, recipe);
     }
 
@@ -102,9 +99,9 @@ class RecipeControllerTest {
     void returns404WhenTryingToReplaceNonExistentRecipe() {
         Recipe recipe = new Recipe("Updated Recipe");
 
-        when(rService.getRecipeById(1L)).thenThrow(
-            new NoSuchElementException("")
-        );
+        doThrow(new NoSuchElementException("Recipe not found"))
+            .when(rService)
+            .updateRecipe(eq(1L), any(Recipe.class));
 
         ResponseEntity<Long> result = recipeController.replaceRecipe(
             1L,
@@ -113,8 +110,8 @@ class RecipeControllerTest {
 
         assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
         assertNull(result.getBody());
-        verify(rService, times(1)).getRecipeById(1L);
-        verify(rService, times(0)).updateRecipe(1L, recipe);
+
+        verify(rService, times(1)).updateRecipe(eq(1L), any(Recipe.class));
     }
 
     @Test
@@ -122,27 +119,24 @@ class RecipeControllerTest {
         Recipe recipe = new Recipe("Test Recipe");
         var id = recipe.getRecipeId();
 
-        when(rService.getRecipeById(id)).thenReturn(recipe);
-
         ResponseEntity<Long> result = recipeController.deleteRecipe(id);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(id, result.getBody());
-        verify(rService, times(1)).getRecipeById(id);
         verify(rService, times(1)).deleteRecipeById(id);
     }
 
     @Test
     void returns404WhenTryingToDeleteNonExistentRecipe() {
-        when(rService.getRecipeById(1L)).thenThrow(
-            new NoSuchElementException("")
-        );
+        doThrow(new NoSuchElementException("Recipe not found"))
+            .when(rService)
+            .deleteRecipeById(1L);
 
         ResponseEntity<Long> result = recipeController.deleteRecipe(1L);
 
         assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
         assertNull(result.getBody());
-        verify(rService, times(1)).getRecipeById(1L);
-        verify(rService, times(0)).deleteRecipeById(1L);
+
+        verify(rService, times(1)).deleteRecipeById(1L);
     }
 }
