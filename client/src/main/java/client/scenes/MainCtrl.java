@@ -44,35 +44,96 @@ public class MainCtrl {
         System.out.println(btn.getId() + " is clicked!");
     }
 
+    /**
+     * This is a placeholder method for further development
+     * Method prints out a message when the button is clicked
+     */
     @FXML
-    private void recipeAddButtonClicked() {
+    void recipeAddButtonClicked() {
         System.out.println("User wants to add a recipe.");
     }
 
+    /**
+     * This is a placeholder method for further development
+     * Method prints out a message when the button is clicked
+     */
     @FXML
     private void recipeRemoveButtonClicked() {
         System.out.println("User wants to remove a recipe.");
     }
 
+    /**
+     * This is a placeholder method for further development
+     * Method prints out a message when the button is clicked
+     */
     @FXML
     private void ingredientAddButtonClicked() {
         System.out.println("User wants to add an ingredient.");
     }
 
+    /**
+     * This is a placeholder method for further development
+     * Method prints out a message when the button is clicked
+     */
     @FXML
     private void ingredientRemoveButtonClicked() {
         System.out.println("User wants to remove an ingredient.");
     }
 
+    /**
+     * This is a placeholder method for further development
+     * Method prints out a message when the button is clicked
+     */
     @FXML
     private void preparationAddButtonClicked() {
         System.out.println("User wants to add a preparation.");
     }
 
+    /**
+     * This is a placeholder method for further development
+     * Method prints out a message when the button is clicked
+     */
     @FXML
     private void preparationRemoveButtonClicked() {
         System.out.println("User wants to remove a preparation.");
     }
+
+    /**
+     * This is a placeholder method for further development
+     * Method prints out a message when the button is clicked
+     */
+    @FXML
+    private void editItemButtonClicked() {
+        System.out.println("Editing selected item...");
+    }
+
+    /**
+     * This is a placeholder method for further development
+     * Method prints out a message when the button is clicked
+     */
+    @FXML
+    private void editRecipeTitleButtonClicked() {
+        System.out.println("Editing recipe title...");
+    }
+
+    /**
+     * This is a placeholder a helper method for further list management
+     * Method prints out a message when the button is clicked
+     */
+    @FXML
+    private void addIngredientToList(String ingredient) {
+        System.out.println("Added ingredient: " + ingredient);
+    }
+
+    /**
+     * This is a placeholder a helper method for further list management
+     * Method prints out a message when the button is clicked
+     */
+    @FXML
+    private void addPreparationStep(String step) {
+        System.out.println("Added preparation step: " + step);
+    }
+
 
     @FXML
     private Button addIngredientButton;
