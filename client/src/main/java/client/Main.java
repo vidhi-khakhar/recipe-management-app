@@ -25,6 +25,7 @@ import com.google.inject.Injector;
 import client.scenes.MainCtrl;
 import client.utils.ServerUtils;
 import javafx.application.Application;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -46,8 +47,18 @@ public class Main extends Application {
 			return;
 		}
 
-	
+	    var mainUserInterface = FXML.load(MainCtrl.class, "client", "scenes", "MainUserInterface.fxml");
+        var mainUserInterfaceScene = new Scene(mainUserInterface.getValue());
+
+        String cssPath = getClass().getResource("/client/scenes/FoodPal.css").toExternalForm();
+        mainUserInterfaceScene.getStylesheets().add(cssPath);
+
+        primaryStage.setTitle("HelloWorld");
+        primaryStage.setScene(mainUserInterfaceScene);
+        primaryStage.show();
+
 		var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-		mainCtrl.initialize(primaryStage);
+		mainCtrl.initialize(primaryStage, mainUserInterfaceScene);
+
 	}
 }

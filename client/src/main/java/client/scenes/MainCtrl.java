@@ -15,13 +15,14 @@
  */
 package client.scenes;
 
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class MainCtrl {
 
     private Stage primaryStage;
 
-    public void initialize(Stage primaryStage) {
+    public void initialize(Stage primaryStage, Scene mainUserInterfaceScene) {
         this.primaryStage = primaryStage;
         primaryStage.show();
     }
