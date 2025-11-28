@@ -68,7 +68,7 @@ public class Ingredient {
     /**
      * Default constructor for JPA.
      */
-    public Ingredient() {
+    protected Ingredient() {
 
     }
 
@@ -78,10 +78,9 @@ public class Ingredient {
      * @param proteinPer100g Protein content per 100g.
      * @param fatPer100g Fat content per 100g.
      * @param carbsPer100g Carbohydrate content per 100g.
-     * @param kcalPer100g Caloric content per 100g.
      * @param language Language code (e.g., "en", "nl", "de").
      */
-    public Ingredient(String name, double proteinPer100g, double fatPer100g, double carbsPer100g, double kcalPer100g, String language) {
+    public Ingredient(String name, double proteinPer100g, double fatPer100g, double carbsPer100g, String language) {
         this.name = Objects.requireNonNull(name, "Name of an ingredient cannot be null");
         this.proteinPer100g = proteinPer100g;
         this.fatPer100g = fatPer100g;
