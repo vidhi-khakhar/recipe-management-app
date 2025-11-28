@@ -9,7 +9,8 @@ import server.RecipeService;
 
 @RestController
 @RequestMapping("/api/v1/recipes")
-public class RecipeController {
+public class
+RecipeController {
 
     private final RecipeService rService;
 
@@ -64,7 +65,6 @@ public class RecipeController {
         @RequestBody Recipe recipe
     ) {
         try {
-            this.rService.getRecipeById(id);
             this.rService.updateRecipe(id, recipe);
             return ResponseEntity.ok(id);
         } catch (NoSuchElementException e) {
@@ -80,7 +80,6 @@ public class RecipeController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Long> deleteRecipe(@PathVariable Long id) {
         try {
-            this.rService.getRecipeById(id);
             this.rService.deleteRecipeById(id);
             return ResponseEntity.ok(id);
         } catch (NoSuchElementException e) {
