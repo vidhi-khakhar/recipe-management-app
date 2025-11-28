@@ -87,4 +87,4 @@ public class RecipeIngredient {
     public void setInformal(String informal) { this.informal = informal; }
 }
 
-}
+
