@@ -38,6 +38,7 @@ public class RecipeIngredient {
      * Informal description, e.g. "a pinch", "to taste".
      * If this is set, amount/unit can be null.
      */
+    @Column(name = "informal_amount")
     private String informal;
 
     @SuppressWarnings("unused")
