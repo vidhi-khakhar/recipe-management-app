@@ -227,7 +227,7 @@ class RecipeCollectionTest {
     }
 
     @Test
-    void equalsreturnsFalsewhenContentsDiffer() {
+    void equals_returnsFalse_whenContentsDiffer() {
         RecipeCollection a = new RecipeCollection();
         RecipeCollection b = new RecipeCollection();
         a.add(recipeWithId(1, "Lasagna"));

@@ -61,7 +61,7 @@ public class RecipeCollection {
      *         or Optional.empty() if not found
      */
     public Optional<Recipe> getById(Long id) {
-        return Optional.of(recipes.get(id));
+        return Optional.ofNullable(recipes.get(id));
     }
 
     /**
@@ -99,7 +99,7 @@ public class RecipeCollection {
      * @return list of matching recipes, sorted alphabetically by title (case-insensitive)
      */
     public List<Recipe> searchByTitle(String query) {
-        if (query == null) return getAll();
+        if (query == null || query.isBlank()) return getAll();
         String q = query.toLowerCase();
         return recipes.values().stream()
                 .filter(r -> r.getTitle() != null &&
