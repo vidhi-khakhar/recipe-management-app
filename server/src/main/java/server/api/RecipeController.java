@@ -8,15 +8,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.RecipeRepository;
+import server.RecipeService;
 
 @RestController
 @RequestMapping("/api/v1/recipes")
 public class RecipeController {
 
-    private final RecipeRepository repo;
+    private final RecipeService rService;
 
-    public RecipeController(RecipeRepository repo) {
-        this.repo = repo;
+    public RecipeController(RecipeService service) {
+        this.rService = service;
     }
 
     /**
@@ -26,7 +27,7 @@ public class RecipeController {
      */
     @PostMapping
     public ResponseEntity<Long> createRecipe(@RequestBody Recipe recipe) {
-        this.repo.save(recipe);
+        this.rService.createRecipe(recipe);
 
         return ResponseEntity.ok(recipe.getRecipeId());
     }
@@ -37,7 +38,7 @@ public class RecipeController {
      */
     @GetMapping
     public ResponseEntity<List<Recipe>> getAllRecipes() {
-        return ResponseEntity.ok(this.repo.findAll());
+        return ResponseEntity.ok(this.rService.getAllRecipes());
     }
 
     /**
@@ -48,7 +49,7 @@ public class RecipeController {
     @GetMapping("/{id}")
     public ResponseEntity<Recipe> getRecipe(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok(this.repo.findById(id).orElseThrow());
+            return ResponseEntity.ok(this.rService.getRecipeById(id));
         } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
         }
@@ -65,11 +66,14 @@ public class RecipeController {
         @PathVariable Long id,
         @RequestBody Recipe recipe
     ) {
-        if (this.repo.findById(id).isPresent()) {
-            this.repo.save(recipe);
+        try {
+            this.rService.getRecipeById(id);
+            this.rService.updateRecipe(id, recipe);
             return ResponseEntity.ok(id);
         }
-        return ResponseEntity.notFound().build();
+        catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**
@@ -79,10 +83,12 @@ public class RecipeController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Long> deleteRecipe(@PathVariable Long id) {
-        if (this.repo.findById(id).isPresent()) {
-            this.repo.deleteById(id);
+        try {
+            this.rService.deleteRecipeById(id);
             return ResponseEntity.ok(id);
         }
-        return ResponseEntity.notFound().build();
+        catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
