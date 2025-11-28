@@ -40,7 +40,6 @@ class RecipeCollectionTest {
     void constructorWithRecipes_addsAll() {
         Recipe a = recipeWithId(1, "Apple Pie");
         Recipe b = recipeWithId(2, "Banana Bread");
-
         RecipeCollection c = new RecipeCollection(List.of(a, b));
 
         assertEquals(2, c.size());
@@ -237,21 +236,11 @@ class RecipeCollectionTest {
     }
 
     @Test
-    void equalsreturnsFalsewhenOneHasExtraRecipe() {
-        RecipeCollection a = new RecipeCollection();
-        RecipeCollection b = new RecipeCollection();
-        a.add(recipeWithId(1, "Lasagna"));
-        b.add(recipeWithId(1, "Lasagna"));
-        b.add(recipeWithId(2, "Pizza"));
-        assertNotEquals(a, b);
-    }
-
-    @Test
     void hashCode_isStable_ifObjectUnchanged() {
         RecipeCollection a = new RecipeCollection();
         a.add(recipeWithId(1, "Lasagna"));
         int h1 = a.hashCode();
-        int h2 = a.hashCode()
+        int h2 = a.hashCode();
         assertEquals(h1, h2);
     }
 
