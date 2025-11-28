@@ -3,7 +3,6 @@ package server.api;
 import commons.Recipe;
 import java.util.List;
 import java.util.NoSuchElementException;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.RecipeService;
@@ -68,8 +67,7 @@ public class RecipeController {
             this.rService.getRecipeById(id);
             this.rService.updateRecipe(id, recipe);
             return ResponseEntity.ok(id);
-        }
-        catch (NoSuchElementException e) {
+        } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
         }
     }
@@ -82,10 +80,10 @@ public class RecipeController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Long> deleteRecipe(@PathVariable Long id) {
         try {
+            this.rService.getRecipeById(id);
             this.rService.deleteRecipeById(id);
             return ResponseEntity.ok(id);
-        }
-        catch (NoSuchElementException e) {
+        } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
         }
     }
