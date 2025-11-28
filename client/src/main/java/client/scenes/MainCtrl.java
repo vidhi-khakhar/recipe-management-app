@@ -66,6 +66,15 @@ public class MainCtrl {
      * Method prints out a message when the button is clicked
      */
     @FXML
+    private void refreshButtonClicked() {
+        System.out.println("Refreshing button clicked!");
+    }
+
+    /**
+     * This is a placeholder method for further development
+     * Method prints out a message when the button is clicked
+     */
+    @FXML
     void recipeAddButtonClicked() {
         System.out.println("User wants to add a recipe.");
     }
@@ -120,7 +129,16 @@ public class MainCtrl {
      * Method prints out a message when the button is clicked
      */
     @FXML
-    private void editItemButtonClicked() {
+    private void editIngredientButtonClicked() {
+        System.out.println("Editing selected item...");
+    }
+
+    /**
+     * This is a placeholder method for further development
+     * Method prints out a message when the button is clicked
+     */
+    @FXML
+    private void editPreparationButtonClicked() {
         System.out.println("Editing selected item...");
     }
 
@@ -136,6 +154,7 @@ public class MainCtrl {
     /**
      * This is a placeholder a helper method for further list management
      * Method prints out a message when the button is clicked
+     * @param ingredient the ingredient to be added
      */
     @FXML
     private void addIngredientToList(String ingredient) {
@@ -145,6 +164,7 @@ public class MainCtrl {
     /**
      * This is a placeholder a helper method for further list management
      * Method prints out a message when the button is clicked
+     * @param step the step to be added
      */
     @FXML
     private void addPreparationStep(String step) {
