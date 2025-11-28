@@ -28,7 +28,7 @@
                                  <children>
                                     <Pane prefHeight="96.0" prefWidth="35.0" HBox.hgrow="ALWAYS" />
                                     <TextField fx:id="searchBar" prefHeight="31.0" prefWidth="218.0" styleClass="searchbar" HBox.hgrow="ALWAYS" />
-                                    <Button fx:id="searchButton" mnemonicParsing="false" onAction="#handleClick" prefHeight="31.0" prefWidth="0.0" styleClass="roundbutton" text="S">
+                                    <Button fx:id="searchButton" mnemonicParsing="false" onAction="#searchButtonClicked" prefHeight="31.0" prefWidth="0.0" styleClass="roundbutton" text="S">
                                        <HBox.margin>
                                           <Insets left="4.0" />
                                        </HBox.margin>

@@ -34,9 +34,26 @@ public class MainCtrl {
     }
 
     /**
+     * The placeholder for the search functionality
+     * It checks if there is a query typed in the searchbar and then prints the query
+     * to the console if it exists,
+     * otherwise it would print "Please enter a query."
+     */
+    @FXML
+    private void searchButtonClicked() {
+        String query = searchBar.getText();
+        if (query == null || query.isEmpty()) {
+            System.out.println("Please enter a query.");
+        } else {
+            System.out.println("Searching for: " + query);
+            // Actual functionality should be added here!
+        }
+    }
+
+    /**
      * This method prints out the button name + "is clicked!" to the console
      * when a button is clicked in the UI.
-     * @param event  the ActionEvent triggered when the button is clicked.
+     * @param event the ActionEvent triggered when the button is clicked.
      */
     @FXML
     private void handleClick(ActionEvent event) {
