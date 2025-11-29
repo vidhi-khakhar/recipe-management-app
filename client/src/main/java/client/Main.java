@@ -25,6 +25,8 @@ import com.google.inject.Injector;
 import client.scenes.MainCtrl;
 import client.utils.ServerUtils;
 import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -46,8 +48,34 @@ public class Main extends Application {
 			return;
 		}
 
-	
+        System.out.println("Starting application...");
+	    var mainUserInterface = FXML.load(MainCtrl.class, "client", "scenes", "MainUserInterface.fxml");
+        var mainUserInterfaceScene = new Scene(mainUserInterface.getValue());
+
+        String cssPath = getClass().getResource("/client/scenes/FoodPal.css").toExternalForm();
+        mainUserInterfaceScene.getStylesheets().add(cssPath);
+
+        primaryStage.setMinWidth(600);
+        primaryStage.setMinHeight(500);
+
+        Font.loadFont(getClass().getResourceAsStream("client/CascadiaCode-VariableFont_wght.ttf"), 12);
+        primaryStage.setTitle("FoodPal");
+        primaryStage.setScene(mainUserInterfaceScene);
+        primaryStage.show();
+
 		var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-		mainCtrl.initialize(primaryStage);
+		mainCtrl.initialize(primaryStage, mainUserInterfaceScene);
+
+        System.out.println("Window opened with width: " + primaryStage.getWidth() +
+                " and height: " + primaryStage.getHeight());
+
+        primaryStage.widthProperty().addListener((obs, oldWidth, newWidth) -> {
+            System.out.println("Window width changed from " + oldWidth + " to " + newWidth);
+        });
+
+        primaryStage.heightProperty().addListener((obs, oldHeight, newHeight) -> {
+            System.out.println("Window height changed from " + oldHeight + " to " + newHeight);
+        });
+
 	}
 }
