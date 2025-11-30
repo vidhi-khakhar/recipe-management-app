@@ -83,13 +83,35 @@
          <center>
             <StackPane prefHeight="337.0" prefWidth="316.0" BorderPane.alignment="CENTER">
                <children>
-                  <Pane prefHeight="200.0" prefWidth="200.0" visible="false">
+                  <Pane fx:id="noIngredientPane" prefHeight="200.0" prefWidth="200.0">
                      <children>
-                        <Label text="No Ingredient Selected" />
-                        <Label layoutX="10.0" layoutY="10.0" text="Please select an ingredient to view its nutritional values." />
+                        <VBox prefHeight="337.0" prefWidth="316.0">
+                           <children>
+                              <HBox prefHeight="114.0" prefWidth="316.0" />
+                              <HBox layoutX="10.0" layoutY="10.0" prefHeight="100.0" prefWidth="320.0">
+                                 <children>
+                                    <VBox prefHeight="98.0" prefWidth="316.0">
+                                       <children>
+                                          <Label text="No Ingredient Selected" textAlignment="CENTER">
+                                             <VBox.margin>
+                                                <Insets left="90.0" right="75.0" />
+                                             </VBox.margin>
+                                          </Label>
+                                          <Label text="Please select an ingredient to view its nutritional values.">
+                                             <VBox.margin>
+                                                <Insets left="10.0" right="10.0" top="5.0" />
+                                             </VBox.margin>
+                                          </Label>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                              <HBox layoutX="10.0" layoutY="110.0" prefHeight="127.0" prefWidth="316.0" />
+                           </children>
+                        </VBox>
                      </children>
                   </Pane>
-                  <Pane prefHeight="200.0" prefWidth="200.0">
+                  <Pane fx:id="ingredientDetailsPane" prefHeight="200.0" prefWidth="200.0" visible="false">
                      <children>
                         <VBox prefHeight="334.0" prefWidth="318.0">
                            <children>
