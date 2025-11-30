@@ -171,6 +171,13 @@ public class MainCtrl {
         System.out.println("Added preparation step: " + step);
     }
 
+    @FXML
+    private void downloadButtonClicked() {
+        System.out.println("Download button clicked!");
+    }
+
+    @FXML
+    private Button downloadButton;
 
     @FXML
     private Button addIngredientButton;
