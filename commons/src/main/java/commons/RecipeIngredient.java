@@ -1,0 +1,90 @@
+package commons;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import java.util.*;
+
+@Entity
+@Table(name = "recipe_ingredient")
+public class RecipeIngredient {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+    // Many lines belong to one recipe
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "recipe_id")
+    @JsonIgnore
+    private Recipe recipe;
+
+    // One ingredient can be used in many recipes
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "ingredient_id")
+    private Ingredient ingredient;
+
+    /**
+     * Formal amount (e.g. 100). For informal amounts, leave null.
+     */
+    private Double amount;
+
+    /**
+     * Unit for the amount (e.g. G, TBSP). For informal amounts, leave null.
+     */
+    @Enumerated(EnumType.STRING)
+    private Unit unit;
+
+    /**
+     * Informal description, e.g. "a pinch", "to taste".
+     * If this is set, amount/unit can be null.
+     */
+    @Column(name = "informal_amount")
+    private String informal;
+
+    @SuppressWarnings("unused")
+    protected RecipeIngredient() {}
+
+    /**
+     * Creates a recipe ingredient that is an ingredient in recipe
+     * @param recipe
+     * @param ingredient
+     */
+    public RecipeIngredient(Recipe recipe, Ingredient ingredient) {
+        this.recipe = Objects.requireNonNull(recipe);
+        this.ingredient = Objects.requireNonNull(ingredient);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        RecipeIngredient that = (RecipeIngredient) o;
+        return Objects.equals(id, that.id) && Objects.equals(recipe, that.recipe) && Objects.equals(ingredient, that.ingredient) && Objects.equals(amount, that.amount) && unit == that.unit && Objects.equals(informal, that.informal);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, recipe, ingredient, amount, unit, informal);
+    }
+
+    // Getters/setters
+
+    public Long getId() { return id; }
+
+    public Recipe getRecipe() { return recipe; }
+
+    public Ingredient getIngredient() { return ingredient; }
+
+    public Double getAmount() { return amount; }
+
+    public void setAmount(Double amount) { this.amount = amount; }
+
+    public Unit getUnit() { return unit; }
+
+    public void setUnit(Unit unit) { this.unit = unit; }
+
+    public String getInformal() { return informal; }
+
+    public void setInformal(String informal) { this.informal = informal; }
+}
+
+
