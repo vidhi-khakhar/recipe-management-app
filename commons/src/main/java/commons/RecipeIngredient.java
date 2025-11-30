@@ -9,28 +9,26 @@ import java.util.*;
 public class RecipeIngredient {
 
     @EmbeddedId
-    private RecipeIngredientKey id =  new RecipeIngredientKey();
+    private RecipeIngredientKey id;
 
     // Many lines belong to one recipe
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @MapsId("recipeId")
+    @JoinColumn(name = "recipe_id", nullable = false)
     @JsonIgnore
     private Recipe recipe;
 
     // One ingredient can be used in many recipes
     @ManyToOne(optional = false)
     @MapsId("ingredientId")
+    @JoinColumn(name = "ingredient_id", nullable = false)
     private Ingredient ingredient;
 
-    @Column(name = "recipe_id")
-    private Long  recipeId;
-
-    @Column(name = "ingredient_id")
-    private Long ingredientId;
 
     /**
      * Formal amount (e.g. 100). For informal amounts, leave null.
      */
+    @Column(name = "amount")
     private Double amount;
 
     /**
@@ -70,9 +68,6 @@ public class RecipeIngredient {
         recipeIngredient.unit = unit;
         recipeIngredient.informal = null;
 
-        recipeIngredient.recipeId = recipe.getRecipeId();
-        recipeIngredient.ingredientId = ingredient.getId();
-
         return recipeIngredient;
     }
 
@@ -92,9 +87,6 @@ public class RecipeIngredient {
         recipeIngredient.informal = informal;
         recipeIngredient.amount = null;
         recipeIngredient.unit = null;
-
-        recipeIngredient.recipeId = recipe.getRecipeId();
-        recipeIngredient.ingredientId = ingredient.getId();
 
         return recipeIngredient;
     }
