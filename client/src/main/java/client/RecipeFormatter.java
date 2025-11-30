@@ -3,14 +3,17 @@ package client;
 import commons.Recipe;
 
 public class RecipeFormatter {
-    public RecipeFormatter() { }
+    private Recipe recipe;
+
+    public RecipeFormatter(Recipe recipe) {
+        this.recipe = recipe;
+    }
 
     /**
      * Format recipe as plaintext.
-     * @param recipe recipe to be formatted
      * @return recipe formatted as plaintext (String)
      */
-    public String formatPlaintext(Recipe recipe) {
+    public String formatPlaintext() {
         StringBuilder text = new StringBuilder();
 
         // Recipe: recipe_name (language)
@@ -39,10 +42,9 @@ public class RecipeFormatter {
 
     /**
      * Format recipe as markdown.
-     * @param recipe the recipe to be formatted
      * @return recipe formatted as markdown (String)
      */
-    public String formatMarkdown(Recipe recipe) {
+    public String formatMarkdown() {
         StringBuilder text = new StringBuilder();
 
         text.append("# Recipe: " + recipe.getTitle());

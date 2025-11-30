@@ -15,8 +15,11 @@
  */
 package client.scenes;
 
+import client.RecipeFormatter;
+import commons.Recipe;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -24,6 +27,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
 
 public class MainCtrl {
     private Stage primaryStage;
@@ -172,8 +179,33 @@ public class MainCtrl {
     }
 
     @FXML
-    private void downloadButtonClicked() {
+    private void downloadButtonClicked() throws IOException {
         System.out.println("Download button clicked!");
+
+        // TODO: select actual recipe
+        Recipe recipeTest = new Recipe("Sarmale");
+        saveRecipe(recipeTest);
+    }
+
+    /**
+     * Saves a recipe in chosen path. 
+     * @param recipe recipe to be save
+     * @throws IOException
+     */
+    private void saveRecipe(Recipe recipe) throws IOException {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save recipe");
+        fileChooser.setInitialFileName(recipe.getTitle() + ".txt");
+
+        File file = fileChooser.showSaveDialog(primaryStage);
+        if (file != null) {
+            try {
+                String text = (new RecipeFormatter(recipe)).formatPlaintext();
+                FileUtils.writeStringToFile(file, text);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @FXML

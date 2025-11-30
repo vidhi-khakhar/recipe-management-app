@@ -14,7 +14,6 @@ class RecipeFormatterTest {
 
     @BeforeEach
     void setUp() {
-        recipeFormatter = new RecipeFormatter();
         recipe = new Recipe("Sarmale", "ro");
         recipe.setIngredients(List.of(
                 "varza",
@@ -23,11 +22,12 @@ class RecipeFormatterTest {
         recipe.setInstructions(List.of(
                 "Sa se toace carnea",
                 "Se ruleaza in foi de varza"));
+        recipeFormatter = new RecipeFormatter(recipe);
     }
 
     @Test
     void formatPlaintextTest() {
-        String text = recipeFormatter.formatPlaintext(recipe);
+        String text = recipeFormatter.formatPlaintext();
         assertTrue(text.contains("Recipe: Sarmale (ro)"));
         assertTrue(text.contains("Ingredients: \n\t- varza"));
         assertTrue(text.contains("Instructions: \n\t1. Sa se toace carnea"));
@@ -35,7 +35,7 @@ class RecipeFormatterTest {
 
     @Test
     void formatMarkdownTest() {
-        String text = recipeFormatter.formatMarkdown(recipe);
+        String text = recipeFormatter.formatMarkdown();
         assertTrue(text.contains("# Recipe: Sarmale (ro)"));
         assertTrue(text.contains("## Ingredients: \n- varza"));
         assertTrue(text.contains("## Instructions: \n1. Sa se toace carnea"));
