@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="589.0" prefWidth="905.0" stylesheets="@FoodPal.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane prefHeight="589.0" prefWidth="905.0" stylesheets="@FoodPal.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MainCtrl">
    <children>
       <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
@@ -28,7 +28,7 @@
                                  <children>
                                     <Pane prefHeight="96.0" prefWidth="35.0" HBox.hgrow="ALWAYS" />
                                     <TextField fx:id="searchBar" prefHeight="31.0" prefWidth="218.0" styleClass="searchbar" HBox.hgrow="ALWAYS" />
-                                    <Button fx:id="searchButton" mnemonicParsing="false" prefHeight="31.0" prefWidth="0.0" styleClass="roundbutton" text="S">
+                                    <Button fx:id="searchButton" mnemonicParsing="false" onAction="#searchButtonClicked" prefHeight="31.0" prefWidth="0.0" styleClass="roundbutton" text="S">
                                        <HBox.margin>
                                           <Insets left="4.0" />
                                        </HBox.margin>
@@ -49,7 +49,7 @@
                         </Label>
                         <HBox alignment="BOTTOM_RIGHT" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                            <children>
-                              <Button fx:id="refreshButton" mnemonicParsing="false" styleClass="roundbutton" text="R" HBox.hgrow="ALWAYS">
+                              <Button fx:id="refreshButton" mnemonicParsing="false" onAction="#handleClick" styleClass="roundbutton" text="R" HBox.hgrow="ALWAYS">
                                  <HBox.margin>
                                     <Insets bottom="5.0" right="5.0" />
                                  </HBox.margin>
@@ -77,7 +77,7 @@
                   </VBox>
                   <HBox alignment="CENTER" prefHeight="50.0" prefWidth="266.0" VBox.vgrow="NEVER">
                      <children>
-                        <Button fx:id="addRecipeButton" mnemonicParsing="false" prefHeight="38.0" prefWidth="161.0" styleClass="h3" text="+ Add" HBox.hgrow="ALWAYS">
+                        <Button fx:id="addRecipeButton" mnemonicParsing="false" onAction="#recipeAddButtonClicked" prefHeight="38.0" prefWidth="161.0" styleClass="h3" text="+ Add" HBox.hgrow="ALWAYS">
                            <font>
                               <Font size="17.0" />
                            </font>
@@ -85,7 +85,7 @@
                               <Insets right="5.0" />
                            </HBox.margin>
                         </Button>
-                        <Button fx:id="removeRecipeButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="23.0" prefWidth="43.0" text="-" HBox.hgrow="ALWAYS">
+                        <Button fx:id="removeRecipeButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#recipeRemoveButtonClicked" prefHeight="23.0" prefWidth="43.0" text="-" HBox.hgrow="ALWAYS">
                            <font>
                               <Font size="17.0" />
                            </font>
@@ -116,7 +116,7 @@
                         <HBox prefHeight="43.0" prefWidth="639.0" styleClass="titlelablebox" VBox.vgrow="NEVER">
                            <children>
                               <Label fx:id="titleRecipeLabel" styleClass="h2" text="titleLabel" />
-                              <Button fx:id="editRecipeTitleButton" mnemonicParsing="false" prefHeight="31.0" prefWidth="63.0" styleClass="roundbutton" text="edit">
+                              <Button fx:id="editRecipeTitleButton" mnemonicParsing="false" onAction="#handleClick" prefHeight="31.0" prefWidth="63.0" styleClass="roundbutton" text="edit">
                                  <HBox.margin>
                                     <Insets bottom="5.0" left="5.0" />
                                  </HBox.margin></Button>
@@ -135,19 +135,19 @@
                                              </HBox.margin>
                                           </Label>
                                           <Region prefHeight="31.0" prefWidth="242.0" HBox.hgrow="ALWAYS" />
-                                          <Button fx:id="editItemButton" mnemonicParsing="false" text="edit">
+                                          <Button fx:id="editItemButton" mnemonicParsing="false" onAction="#handleClick" text="edit">
                                              <font>
                                                 <Font name="Cascadia Code Regular" size="12.0" />
                                              </font>
                                           </Button>
-                                          <Button fx:id="removeItemButton" mnemonicParsing="false" text="remove" />
+                                          <Button fx:id="removeItemButton" mnemonicParsing="false" onAction="#ingredientRemoveButtonClicked" text="remove" />
                                        </children>
                                     </HBox>
                                  </children>
                                  <VBox.margin>
                                     <Insets top="3.0" />
                                  </VBox.margin></VBox>
-                              <Button fx:id="addIngredientButton" mnemonicParsing="false" styleClass="roundbutton" text="➕">
+                              <Button fx:id="addIngredientButton" mnemonicParsing="false" onAction="#ingredientAddButtonClicked" styleClass="roundbutton" text="➕">
                                  <VBox.margin>
                                     <Insets top="3.0" />
                                  </VBox.margin></Button>
@@ -160,7 +160,7 @@
                            <children>
                               <Label styleClass="h3" text="Preparation" />
                               <VBox fx:id="preparationList" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS" />
-                              <Button fx:id="addPreparationButton" mnemonicParsing="false" prefHeight="31.0" prefWidth="1.0" styleClass="roundbutton" text="➕">
+                              <Button fx:id="addPreparationButton" mnemonicParsing="false" onAction="#preparationAddButtonClicked" prefHeight="31.0" prefWidth="1.0" styleClass="roundbutton" text="➕">
                                  <VBox.margin>
                                     <Insets top="3.0" />
                                  </VBox.margin></Button>
