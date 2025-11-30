@@ -35,7 +35,7 @@ public class NutritionalValueCtrl {
 
     @FXML
     void addIngredient(ActionEvent event) {
-
+        System.out.println("User wants to add an ingredient.");
     }
 
 }

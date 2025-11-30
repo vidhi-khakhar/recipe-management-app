@@ -23,6 +23,7 @@ import java.net.URISyntaxException;
 import com.google.inject.Injector;
 
 import client.scenes.MainCtrl;
+import client.scenes.NutritionalValueCtrl;
 import client.utils.ServerUtils;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -41,41 +42,25 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 
-		var serverUtils = INJECTOR.getInstance(ServerUtils.class);
-		if (!serverUtils.isServerAvailable()) {
-			var msg = "Server needs to be started before the client, but it does not seem to be available. Shutting down.";
-			System.err.println(msg);
-			return;
-		}
+		var mainUserInterface = FXML.load(MainCtrl.class, "client", "scenes", "MainUserInterface.fxml");
+    var mainUserInterfaceScene = new Scene(mainUserInterface.getValue());
 
-        System.out.println("Starting application...");
-	    var mainUserInterface = FXML.load(MainCtrl.class, "client", "scenes", "MainUserInterface.fxml");
-        var mainUserInterfaceScene = new Scene(mainUserInterface.getValue());
+    // preload nutritional values scene
+    var nutritionInterface = FXML.load(NutritionalValueCtrl.class, "client", "scenes", "NutrionalValueInterface.fxml");
+    var nutritionScene = new Scene(nutritionInterface.getValue());
 
-        String cssPath = getClass().getResource("/client/scenes/FoodPal.css").toExternalForm();
-        mainUserInterfaceScene.getStylesheets().add(cssPath);
+    // add stylesheets if needed
+    String cssPath = getClass().getResource("/client/scenes/FoodPal.css").toExternalForm();
+    mainUserInterfaceScene.getStylesheets().add(cssPath);
+    nutritionScene.getStylesheets().add(cssPath);
 
-        primaryStage.setMinWidth(600);
-        primaryStage.setMinHeight(500);
+    primaryStage.setScene(mainUserInterfaceScene);
+    primaryStage.setTitle("FoodPal");
+    primaryStage.show();
 
-        Font.loadFont(getClass().getResourceAsStream("client/CascadiaCode-VariableFont_wght.ttf"), 12);
-        primaryStage.setTitle("FoodPal");
-        primaryStage.setScene(mainUserInterfaceScene);
-        primaryStage.show();
-
-		var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-		mainCtrl.initialize(primaryStage, mainUserInterfaceScene);
-
-        System.out.println("Window opened with width: " + primaryStage.getWidth() +
-                " and height: " + primaryStage.getHeight());
-
-        primaryStage.widthProperty().addListener((obs, oldWidth, newWidth) -> {
-            System.out.println("Window width changed from " + oldWidth + " to " + newWidth);
-        });
-
-        primaryStage.heightProperty().addListener((obs, oldHeight, newHeight) -> {
-            System.out.println("Window height changed from " + oldHeight + " to " + newHeight);
-        });
+    // pass both scenes into controller
+    var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+    mainCtrl.initialize(primaryStage, mainUserInterfaceScene, nutritionScene);
 
 	}
 }
