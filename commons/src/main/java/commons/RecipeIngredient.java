@@ -95,7 +95,7 @@ public class RecipeIngredient {
     @PrePersist
     @PreUpdate
     private void validate() {
-        boolean hasFormal = amount != null || unit != null;
+        boolean hasFormal = amount != null && unit != null;
         boolean hasInformal = informal != null && !informal.isBlank();
 
         if ((amount == null) != (unit == null)) {
