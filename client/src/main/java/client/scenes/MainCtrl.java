@@ -17,12 +17,16 @@ package client.scenes;
 
 import commons.Recipe;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.fxml.FXML;
 import javafx.scene.layout.VBox;
 
+import java.io.IOException;
 import java.util.Optional;
 
 public class MainCtrl {
@@ -98,21 +102,11 @@ public class MainCtrl {
 
         Recipe selectedRecipe = (Recipe) sidebarList.getSelectionModel().getSelectedItem();
         if (selectedRecipe == null) {
-            System.out.println("Please select a recipe.");
+            System.out.println("Please select a recipe first.");
             return;
         }
 
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.getDialogPane().getStylesheets().
-                add(getClass().getResource("/client/scenes/FoodPal.css").toExternalForm());
-
-        dialog.setTitle("Add ingredient");
-        dialog.setHeaderText("Enter an ingredient");
-        dialog.setContentText("Ingredient: ");
-
-        Optional<String> result = dialog.showAndWait();
-        selectedRecipe.getIngredients().add(String.valueOf(result));
-        System.out.println("Ingredient added!");
+        // TODO: Load AddIngredient scene popup
     }
 
     /**
