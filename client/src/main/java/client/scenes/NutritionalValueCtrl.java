@@ -1,74 +1,60 @@
 package client.scenes;
 
-import javafx.event.ActionEvent;
+import javafx.beans.binding.Bindings;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import javafx.collections.ListChangeListener;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.Pane;
-
+import javafx.scene.text.Font;
 
 public class NutritionalValueCtrl {
     // Buttons
-    @FXML
-    private Button addIngredientButton;
-
-    @FXML
-    private Button removeIngredientButton;
+    @FXML private Button addIngredientButton;
+    @FXML private Button removeIngredientButton;
 
     // TextFields
-
-    @FXML
-    private TextField ingredientName;
-
-    @FXML
-    private TextField carbValue;
-
-    @FXML
-    private TextField fatValue;
-
-    @FXML
-    private TextField proteinValue;
+    @FXML private TextField ingredientName;
+    @FXML private TextField carbValue;
+    @FXML private TextField fatValue;
+    @FXML private TextField proteinValue;
 
     // Labels
+    @FXML private Label kcalValue;
+    @FXML private Label RecipeUsageValueLabel;
 
-    @FXML
-    private Label kcalValue;
+    // Center Pane & StackPane
+    @FXML private StackPane stackPane;
+    @FXML private Pane noIngredientPane;
+    @FXML private Pane ingredientDetailsPane;
 
-    @FXML
-    private Label RecipeUsageValueLabel;
+    // Labels inside noIngredientPane
+    @FXML private Label noIngredientTitle;
+    @FXML private Label noIngredientSubtitle;
 
-
-    // ListView and Panes
-    @FXML
-    private ListView<?> sidebarList;
-
-    @FXML
-    private StackPane stackPane;
-
-    @FXML
-    private Pane noIngredientPane;
-
-    @FXML
-    private Pane ingredientDetailsPane;
+    // Sidebar
+    @FXML private ListView<?> sidebarList;
 
     @FXML
     public void initialize() {
-        // Initially, if list is empty, show "No Ingredient" pane
+        // Initially show/hide panes based on list selection
         updateStackPaneVisibility();
 
-        // Add listener for selection changes
+        // Listen for selection changes
         sidebarList.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             updateStackPaneVisibility();
         });
 
-        // Add listener for changes to the list itself
+        // Listen for items added/removed in the list
         sidebarList.getItems().addListener((ListChangeListener<Object>) change -> {
             updateStackPaneVisibility();
         });
+
+        bindLabelFontSize(noIngredientTitle, 70);  
+        bindLabelFontSize(noIngredientSubtitle, 80);
     }
 
     private void updateStackPaneVisibility() {
@@ -84,6 +70,16 @@ public class NutritionalValueCtrl {
         }
     }
 
+    // Dynamic font sizing.
+    private void bindLabelFontSize(Label label, double growthFactor) {
+        double baseFontSize = 9;
+
+        label.fontProperty().bind(Bindings.createObjectBinding(() -> {
+            double size = baseFontSize + Math.min(noIngredientPane.getWidth(), noIngredientPane.getHeight()) / growthFactor;
+            return new Font("System", size);
+        }, noIngredientPane.widthProperty(), noIngredientPane.heightProperty()));
+    }
+
 
     @FXML
     void addIngredient() {
@@ -92,10 +88,9 @@ public class NutritionalValueCtrl {
 
     @FXML
     void removeIngredient() {
-        System.out.println("User wants to add an ingredient.");
+        System.out.println("User wants to remove an ingredient.");
     }
 
-    
     @FXML
     void updateIngredientName() {
         System.out.println("User wants to update ingredient name.");
@@ -115,5 +110,4 @@ public class NutritionalValueCtrl {
     void updateIngredientCarbs() {
         System.out.println("User wants to update ingredient carbs.");
     }
-
 }
