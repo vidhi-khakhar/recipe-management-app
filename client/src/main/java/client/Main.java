@@ -51,8 +51,15 @@ public class Main extends Application {
 
     // add stylesheets if needed
     String cssPath = getClass().getResource("/client/scenes/FoodPal.css").toExternalForm();
+    String cssPathNutri = getClass().getResource("/client/scenes/NutritionalValue.css").toExternalForm();
     mainUserInterfaceScene.getStylesheets().add(cssPath);
-    nutritionScene.getStylesheets().add(cssPath);
+    nutritionScene.getStylesheets().add(cssPathNutri);
+
+    primaryStage.setMinWidth(600);
+    primaryStage.setMinHeight(500);
+
+    Font.loadFont(getClass().getResourceAsStream("client/CascadiaCode-VariableFont_wght.ttf"), 12);
+
 
     primaryStage.setScene(mainUserInterfaceScene);
     primaryStage.setTitle("FoodPal");
@@ -61,6 +68,18 @@ public class Main extends Application {
     // pass both scenes into controller
     var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
     mainCtrl.initialize(primaryStage, mainUserInterfaceScene, nutritionScene);
+
+    System.out.println("Window opened with width: " + primaryStage.getWidth() +
+                " and height: " + primaryStage.getHeight());
+
+        primaryStage.widthProperty().addListener((obs, oldWidth, newWidth) -> {
+            System.out.println("Window width changed from " + oldWidth + " to " + newWidth);
+        });
+
+        primaryStage.heightProperty().addListener((obs, oldHeight, newHeight) -> {
+            System.out.println("Window height changed from " + oldHeight + " to " + newHeight);
+        });
+
 
 	}
 }

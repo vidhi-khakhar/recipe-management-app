@@ -16,7 +16,6 @@
 
 .headerlabel {
     -fx-background-color: #8191b3;
-    -fx-background-radius: 8;
     -fx-padding: 8 16 8 16;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 6, 0.3, 0, 2);
 }
