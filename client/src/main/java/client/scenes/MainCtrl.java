@@ -100,13 +100,25 @@ public class MainCtrl {
     private void ingredientAddButtonClicked() {
         System.out.println("User wants to add an ingredient.");
 
-        Recipe selectedRecipe = (Recipe) sidebarList.getSelectionModel().getSelectedItem();
-        if (selectedRecipe == null) {
-            System.out.println("Please select a recipe first.");
-            return;
-        }
+//        Recipe selectedRecipe = (Recipe) sidebarList.getSelectionModel().getSelectedItem();
+//        if (selectedRecipe == null) {
+//            System.out.println("Please select a recipe first.");
+//            return;
+//        }
 
         // TODO: Load AddIngredient scene popup
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("AddIngredientScene.fxml"));
+            Parent root = loader.load();        // Constructs all JavaFX objects from FXML file
+
+            Stage popup = new Stage();          // Create new stage to keep main UI open
+            popup.initOwner(primaryStage);      // Sets the stage from which popup originates
+            popup.setTitle("Add Ingredient");   // Sets title
+            popup.setScene(new Scene(root));    // Loads the AddIngredientScene
+            popup.showAndWait();                // Pause execution until window closed
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
