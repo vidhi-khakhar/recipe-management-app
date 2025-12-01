@@ -57,7 +57,7 @@
                               <Insets right="5.0" />
                            </HBox.margin>
                         </Button>
-                        <Button fx:id="removeIngredientButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="23.0" prefWidth="43.0" text="-" HBox.hgrow="ALWAYS">
+                        <Button fx:id="removeIngredientButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#removeIngredient" prefHeight="23.0" prefWidth="43.0" text="-" HBox.hgrow="ALWAYS">
                            <font>
                               <Font size="17.0" />
                            </font>
@@ -83,7 +83,7 @@
          <center>
             <StackPane prefHeight="337.0" prefWidth="316.0" BorderPane.alignment="CENTER">
                <children>
-                  <Pane fx:id="noIngredientPane" prefHeight="200.0" prefWidth="200.0">
+                  <Pane fx:id="noIngredientPane" prefHeight="200.0" prefWidth="200.0" visible="false">
                      <children>
                         <VBox prefHeight="337.0" prefWidth="316.0">
                            <children>
@@ -111,13 +111,13 @@
                         </VBox>
                      </children>
                   </Pane>
-                  <Pane fx:id="ingredientDetailsPane" prefHeight="200.0" prefWidth="200.0" visible="false">
+                  <Pane fx:id="ingredientDetailsPane" prefHeight="200.0" prefWidth="200.0">
                      <children>
                         <VBox prefHeight="334.0" prefWidth="318.0">
                            <children>
                               <HBox prefHeight="54.0" prefWidth="318.0">
                                  <children>
-                                    <TextField fx:id="ingredientName" prefHeight="26.0" prefWidth="206.0" promptText="Ingredient Name" style="-fx-background-color: #ffffff; -fx-border-color: BLACK;">
+                                    <TextField fx:id="ingredientName" onKeyReleased="#updateIngredientName" prefHeight="26.0" prefWidth="206.0" promptText="Ingredient Name" style="-fx-background-color: #ffffff; -fx-border-color: BLACK;">
                                        <HBox.margin>
                                           <Insets bottom="2.0" left="2.0" right="2.0" top="15.0" />
                                        </HBox.margin>
@@ -140,7 +140,7 @@
                                        </HBox.margin>
                                     </Label>
                                     <HBox prefHeight="54.0" prefWidth="46.0" />
-                                    <TextField fx:id="proteinValue" prefHeight="26.0" prefWidth="206.0" promptText="0" style="-fx-background-color: #ffffff; -fx-border-color: BLACK;">
+                                    <TextField fx:id="proteinValue" onKeyReleased="#updateIngredientProtein" prefHeight="26.0" prefWidth="206.0" promptText="0" style="-fx-background-color: #ffffff; -fx-border-color: BLACK;">
                                        <HBox.margin>
                                           <Insets bottom="5.0" left="5.0" right="10.0" top="5.0" />
                                        </HBox.margin>
@@ -155,7 +155,7 @@
                                        </HBox.margin>
                                     </Label>
                                     <HBox prefHeight="54.0" prefWidth="73.0" />
-                                    <TextField fx:id="fatValue" prefHeight="26.0" prefWidth="206.0" promptText="0" style="-fx-background-color: #ffffff; -fx-border-color: BLACK;">
+                                    <TextField fx:id="fatValue" onKeyReleased="#updateIngredientFat" prefHeight="26.0" prefWidth="206.0" promptText="0" style="-fx-background-color: #ffffff; -fx-border-color: BLACK;">
                                        <HBox.margin>
                                           <Insets right="10.0" top="5.0" />
                                        </HBox.margin>
@@ -170,7 +170,7 @@
                                        </HBox.margin>
                                     </Label>
                                     <HBox prefHeight="54.0" prefWidth="14.0" />
-                                    <TextField fx:id="carbValue" prefHeight="26.0" prefWidth="206.0" promptText="0" style="-fx-background-color: #ffffff; -fx-border-color: BLACK;">
+                                    <TextField fx:id="carbValue" onKeyReleased="#updateIngredientCarbs" prefHeight="26.0" prefWidth="206.0" promptText="0" style="-fx-background-color: #ffffff; -fx-border-color: BLACK;">
                                        <HBox.margin>
                                           <Insets right="10.0" top="5.0" />
                                        </HBox.margin>
@@ -184,7 +184,7 @@
                                           <Insets bottom="2.0" left="2.0" right="5.0" top="8.0" />
                                        </HBox.margin>
                                     </Label>
-                                    <Label fx:id="kcalValue" layoutX="12.0" layoutY="18.0" prefHeight="18.0" prefWidth="189.0">
+                                    <Label fx:id="kcalValueLabel" layoutX="12.0" layoutY="18.0" prefHeight="18.0" prefWidth="189.0">
                                        <HBox.margin>
                                           <Insets left="5.0" right="10.0" top="8.0" />
                                        </HBox.margin>
@@ -193,7 +193,7 @@
                               </HBox>
                               <HBox layoutX="10.0" layoutY="119.0" prefHeight="54.0" prefWidth="318.0">
                                  <children>
-                                    <Label text="Used in X Recipes" textAlignment="CENTER">
+                                    <Label fx:id="RecipeUsageValueLabel" text="Used in X Recipes" textAlignment="CENTER">
                                        <HBox.margin>
                                           <Insets bottom="20.0" left="100.0" right="100.0" top="20.0" />
                                        </HBox.margin>

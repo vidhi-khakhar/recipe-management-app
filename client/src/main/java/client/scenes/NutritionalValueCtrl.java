@@ -12,9 +12,17 @@ import javafx.scene.layout.Pane;
 
 
 public class NutritionalValueCtrl {
-
+    // Buttons
     @FXML
     private Button addIngredientButton;
+
+    @FXML
+    private Button removeIngredientButton;
+
+    // TextFields
+
+    @FXML
+    private TextField ingredientName;
 
     @FXML
     private TextField carbValue;
@@ -23,17 +31,18 @@ public class NutritionalValueCtrl {
     private TextField fatValue;
 
     @FXML
-    private TextField ingredientName;
+    private TextField proteinValue;
+
+    // Labels
 
     @FXML
     private Label kcalValue;
 
     @FXML
-    private TextField proteinValue;
+    private Label RecipeUsageValueLabel;
 
-    @FXML
-    private Button removeIngredientButton;
 
+    // ListView and Panes
     @FXML
     private ListView<?> sidebarList;
 
@@ -77,8 +86,34 @@ public class NutritionalValueCtrl {
 
 
     @FXML
-    void addIngredient(ActionEvent event) {
+    void addIngredient() {
         System.out.println("User wants to add an ingredient.");
+    }
+
+    @FXML
+    void removeIngredient() {
+        System.out.println("User wants to add an ingredient.");
+    }
+
+    
+    @FXML
+    void updateIngredientName() {
+        System.out.println("User wants to update ingredient name.");
+    }
+
+    @FXML
+    void updateIngredientProtein() {
+        System.out.println("User wants to update ingredient protein.");
+    }
+
+    @FXML
+    void updateIngredientFat() {
+        System.out.println("User wants to update ingredient fat.");
+    }
+
+    @FXML
+    void updateIngredientCarbs() {
+        System.out.println("User wants to update ingredient carbs.");
     }
 
 }
