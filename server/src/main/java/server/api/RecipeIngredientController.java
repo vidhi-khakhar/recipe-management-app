@@ -14,12 +14,4 @@ public class RecipeIngredientController {
         this.recipeIngredientService = recipeIngredientService;
     }
 
-    // TODO: Add ingredient in recipe
-    @PostMapping
-
-    // TODO: Change ingredient in recipe
-    @PutMapping
-
-    // TODO: Delete ingredient in recipe
-    @DeleteMapping
 }

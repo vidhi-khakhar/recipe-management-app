@@ -15,15 +15,15 @@
  */
 package client.scenes;
 
+import commons.Recipe;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+
+import java.util.Optional;
 
 public class MainCtrl {
     private Stage primaryStage;
@@ -95,6 +95,24 @@ public class MainCtrl {
     @FXML
     private void ingredientAddButtonClicked() {
         System.out.println("User wants to add an ingredient.");
+
+        Recipe selectedRecipe = (Recipe) sidebarList.getSelectionModel().getSelectedItem();
+        if (selectedRecipe == null) {
+            System.out.println("Please select a recipe.");
+            return;
+        }
+
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.getDialogPane().getStylesheets().
+                add(getClass().getResource("/client/scenes/FoodPal.css").toExternalForm());
+
+        dialog.setTitle("Add ingredient");
+        dialog.setHeaderText("Enter an ingredient");
+        dialog.setContentText("Ingredient: ");
+
+        Optional<String> result = dialog.showAndWait();
+        selectedRecipe.getIngredients().add(String.valueOf(result));
+        System.out.println("Ingredient added!");
     }
 
     /**
