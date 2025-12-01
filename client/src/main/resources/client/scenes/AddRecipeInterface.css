@@ -3,19 +3,6 @@
     -fx-background-color: #9bacd2;
     -fx-font-family: "Cascadia Code";
 }
-
-.h1 {
-    -fx-font-size: 32px;
-    -fx-font-weight: bold;
-    -fx-text-fill: white;
-}
-
-.h2 {
-    -fx-font-size: 24px;
-    -fx-font-weight: bold;
-    -fx-text-fill: white;
-}
-
 .h3 {
     -fx-font-size: 1.6em;
     -fx-font-weight: normal;
@@ -31,6 +18,23 @@
     -fx-text-fill: white;
 }
 
+/*SEARCH BUTTON STYLING*/
+.searchbar {
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0.2, 0, 0);
+    -fx-focus-color: transparent;
+    -fx-border-color: transparant;
+    -fx-background-color: white;
+}
+
+.searchbar-background {
+    -fx-background-color: rgba(255,255,255,0.2);
+    -fx-background-radius: 8;
+    -fx-wrap-text: true;
+    -fx-padding: 8;
+}
+
+/*SEARCH BUTTON STYLING*/
 .add-button {
     -fx-text-fill: white;
     -fx-background-color: #8191b3;
@@ -43,7 +47,7 @@
     -fx-font-weight: bold;
 }
 
-.button:hover{
+.button:hover {
     -fx-background-color: #6f7fa1;
 }
 
@@ -51,54 +55,5 @@
     -fx-background-color: #6a78a0; /* iets donkerder dan hover */
 }
 
-.roundbutton {
-    -fx-background-radius: 100;
-}
-
-.searchbar{
-    -fx-background-radius: 8;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0.2, 0, 0);
-    -fx-focus-color: transparent;
-    -fx-border-color: transparant;
-    -fx-background-color: white;
-}
-
-/*SIDEBAR STYLING*/
-.sidebar {
-    -fx-background-color: #9bacd2;
-    -fx-background-radius: 8;
-    -fx-padding: 4;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 6, 0.3, 0, 0);
-}
-
-.list-view.sidebar-list {
-    -fx-background-color: rgba(255,255,255,0.2);
-    -fx-background-radius: 8;
-    -fx-wrap-text: true;
-}
-.list-view.sidebar-list .list-cell {
-    -fx-text-fill: white;
-    -fx-background-color: transparent;
-    -fx-font-size: 16px;
-    -fx-padding: 8 12;
-    -fx-wrap-text: true;
-
-}
-.list-view.sidebar-list .list-cell:hover {
-    -fx-text-fill: #e0e0e0;
-}
-.list-view.sidebar-list .list-cell:selected {
-    -fx-background-color: #8191b3;
-    -fx-text-fill: white;
-    -fx-background-radius: 8;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 6, 0.3, 0, 0);
-}
-
-.searchbar-background {
-    -fx-background-color: rgba(255,255,255,0.2);
-    -fx-background-radius: 8;
-    -fx-wrap-text: true;
-    -fx-padding: 8;
-}
 
 
