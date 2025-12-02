@@ -27,14 +27,17 @@ public class AddButtonCtrl {
     @FXML
     private Label statusLabel;
 
-    //Search method
+    //Adding Recipe methods
     @FXML
     private void recipeAddRequest() {
         String query = recipeInput.getText();
         if (query == null || query.isEmpty()) {
-            System.out.println("Please enter a query.");
+            System.out.println("Please enter a query."); // Can be removed in the future
+            statusLabel.setText("Please enter a query.");
+            statusLabel.setStyle("-fx-text-fill: red;");
         } else {
-            System.out.println("Searching for: " + query);
+            statusLabel.setText("");
+            System.out.println("Adding request for: " + query); // Can be removed in the future
             // Actual functionality should be added here!
         }
     }
