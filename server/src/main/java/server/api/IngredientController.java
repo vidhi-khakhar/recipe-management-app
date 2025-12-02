@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import server.IngredientService;
 
 @RestController
-@RequestMapping("/api/vi/ingredients")
+@RequestMapping("/api/v1/ingredients")
 public class IngredientController {
     private final IngredientService iService;
 
@@ -76,7 +76,7 @@ public class IngredientController {
      * @param id the id of the ingredient to delete
      * @return The id of the ingredient that was deleted, or 404 if not found
      */
-    @DeleteMapping("/id")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Long> deleteIngredient(@PathVariable Long id){
         try{
             this.iService.deleteIngredientById(id);
