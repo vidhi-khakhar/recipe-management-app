@@ -42,23 +42,31 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 
-		var mainUserInterface = FXML.load(MainCtrl.class, "client", "scenes", "MainUserInterface.fxml");
+    var mainUserInterface = FXML.load(MainCtrl.class, "client", "scenes", "MainUserInterface.fxml");
     var mainUserInterfaceScene = new Scene(mainUserInterface.getValue());
 
     // preload nutritional values scene
     var nutritionInterface = FXML.load(NutritionalValueCtrl.class, "client", "scenes", "NutrionalValueInterface.fxml");
     var nutritionScene = new Scene(nutritionInterface.getValue());
 
+    //preload recipe add scene
+    var recipeAddInterface = FXML.load(NutritionalValueCtrl.class, "client", "scenes", "AddRecipeInterface.fxml");
+    var recipeAddScene = new Scene(recipeAddInterface.getValue());
+
+
     // add stylesheets if needed
     String cssPath = getClass().getResource("/client/scenes/FoodPal.css").toExternalForm();
     String cssPathNutri = getClass().getResource("/client/scenes/NutritionalValue.css").toExternalForm();
+    String cssPathRecipe = getClass().getResource("/client/scenes/AddRecipeInterface.css").toExternalForm();
+
     mainUserInterfaceScene.getStylesheets().add(cssPath);
     nutritionScene.getStylesheets().add(cssPathNutri);
+    recipeAddScene.getStylesheets().add(cssPathRecipe);
 
     primaryStage.setMinWidth(600);
     primaryStage.setMinHeight(500);
 
-    Font.loadFont(getClass().getResourceAsStream("client/CascadiaCode-VariableFont_wght.ttf"), 12);
+    Font.loadFont(getClass().getResourceAsStream("/client/CascadiaCode-VariableFont_wght.ttf"), 12);
 
 
     primaryStage.setScene(mainUserInterfaceScene);
@@ -67,7 +75,7 @@ public class Main extends Application {
 
     // pass both scenes into controller
     var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-    mainCtrl.initialize(primaryStage, mainUserInterfaceScene, nutritionScene);
+    mainCtrl.initialize(primaryStage, mainUserInterfaceScene, nutritionScene, recipeAddScene);
 
     System.out.println("Window opened with width: " + primaryStage.getWidth() +
                 " and height: " + primaryStage.getHeight());

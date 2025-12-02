@@ -27,11 +27,13 @@ import javafx.scene.layout.VBox;
 
 public class MainCtrl {
     private Stage primaryStage;
-     private Scene nutritionScene; 
+    private Scene nutritionScene;
+    private Scene recipeAddScene;
 
-    public void initialize(Stage primaryStage, Scene mainUserInterfaceScene, Scene nutritionScene) {
+    public void initialize(Stage primaryStage, Scene mainUserInterfaceScene, Scene nutritionScene, Scene recipeAddScene) {
         this.primaryStage = primaryStage;
         this.nutritionScene = nutritionScene; // store it for later
+        this.recipeAddScene = recipeAddScene; // store it for later
         primaryStage.show();
     }
 
@@ -173,7 +175,7 @@ public class MainCtrl {
         System.out.println("Added preparation step: " + step);
     }
 
-     @FXML
+    @FXML
     void showNutritionWindow() {
         if (nutritionScene == null) {
             System.err.println("Nutrition scene not initialized!");
@@ -185,6 +187,20 @@ public class MainCtrl {
         secondaryStage.setScene(nutritionScene);
         secondaryStage.initOwner(primaryStage); // makes it modal to main window if desired
         secondaryStage.show();
+    }
+
+    @FXML
+    void showAddRecipeWindow() {
+        if (recipeAddScene == null) {
+            System.err.println("Recipe add scene not initialized!");
+            return;
+        }
+
+        Stage recipeAddStage = new Stage();
+        recipeAddStage.setTitle("Add Recipe");
+        recipeAddStage.setScene(recipeAddScene);
+        recipeAddStage.initOwner(primaryStage);
+        recipeAddStage.show();
     }
 
 

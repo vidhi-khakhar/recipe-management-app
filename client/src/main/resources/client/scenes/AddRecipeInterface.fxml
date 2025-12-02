@@ -9,8 +9,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="256.0" prefWidth="407.0" stylesheets="@AddRecipeInterface.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="256.0" prefWidth="407.0" stylesheets="@AddRecipeInterface.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AddButtonCtrl">
    <children>
       <VBox alignment="CENTER" prefHeight="251.0" prefWidth="429.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -26,8 +25,8 @@
                      <children>
                         <HBox alignment="CENTER" maxHeight="-Infinity" prefHeight="52.0" prefWidth="309.0" spacing="6.0" styleClass="searchbar-background" HBox.hgrow="ALWAYS">
                            <children>
-                              <TextField prefHeight="39.0" prefWidth="239.0" styleClass="searchbar" HBox.hgrow="ALWAYS" />
-                              <Button alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="39.0" prefWidth="50.0" styleClass="add-button" text="Add" HBox.hgrow="ALWAYS" />
+                              <TextField fx:id="recipeInput" onAction="#recipeAddRequest" prefHeight="39.0" prefWidth="239.0" promptText="Enter the recipe name" styleClass="searchbar" HBox.hgrow="ALWAYS" />
+                              <Button fx:id="recipeAddButton" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#recipeAddRequest" prefHeight="39.0" prefWidth="50.0" styleClass="add-button" text="Add" HBox.hgrow="ALWAYS" />
                            </children>
                            <HBox.margin>
                               <Insets left="50.0" right="50.0" />
@@ -38,7 +37,7 @@
                         <Insets top="10.0" />
                      </VBox.margin>
                   </HBox>
-                  <Label styleClass="h4" text="StatusLabel" VBox.vgrow="ALWAYS" />
+                  <Label fx:id="statusLabel" styleClass="h4" VBox.vgrow="ALWAYS" />
                   <Pane prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>

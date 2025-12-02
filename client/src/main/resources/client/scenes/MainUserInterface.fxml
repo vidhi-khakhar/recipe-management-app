@@ -176,7 +176,7 @@
                               </VBox>
                               <HBox alignment="CENTER" prefHeight="50.0" prefWidth="266.0">
                                  <children>
-                                    <Button fx:id="addRecipeButton1" mnemonicParsing="false" onAction="#recipeAddButtonClicked" prefHeight="38.0" prefWidth="161.0" styleClass="h3" text="+ Add" HBox.hgrow="ALWAYS">
+                                    <Button fx:id="addRecipeButton1" mnemonicParsing="false" onAction="#showAddRecipeWindow" prefHeight="38.0" prefWidth="161.0" styleClass="h3" text="+ Add" HBox.hgrow="ALWAYS">
                                        <font>
                                           <Font size="17.0" />
                                        </font>
