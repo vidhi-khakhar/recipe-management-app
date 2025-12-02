@@ -148,7 +148,7 @@
                            <children>
                               <Button fx:id="nutritionalValueButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#showNutritionWindow" prefHeight="34.0" prefWidth="128.0" text="Nutritional Value">
                                  <HBox.margin>
-                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                    <Insets bottom="5.0" left="5.0" right="7.0" top="5.0" />
                                  </HBox.margin>
                               </Button>
                            </children>
