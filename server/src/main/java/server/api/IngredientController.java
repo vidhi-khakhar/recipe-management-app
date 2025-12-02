@@ -16,6 +16,11 @@ public class IngredientController {
         this.iService = service;
     }
 
+    /**
+     * Defines endpoint for creating ingredients in the repository
+     * @param ingredient the ingredient specified in the POST request to add to the repo
+     * @return the id of the entity added
+     */
     @PostMapping
     public ResponseEntity<Long> create(@RequestBody Ingredient ingredient){
         Ingredient i = iService.createIngredient(ingredient);
@@ -23,12 +28,21 @@ public class IngredientController {
         return ResponseEntity.ok(i.getId());
     }
 
+    /**
+     * Defines endpoint for getting all ingredients from the repository
+     * @return all ingredients in the repository as a list of Ingredient objects
+     */
     @GetMapping
     public ResponseEntity<List<Ingredient>> getAllIngredients(){
 
         return ResponseEntity.ok(this.iService.getAllRecipes());
     }
 
+    /**
+     * Defines endpoint for getting an ingrendient by its id from the repository
+     * @param id the id of the ingredient to get from the repo
+     * @return the ingredient with the specified id, or 404 if not found
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Ingredient> getIngredientById(@PathVariable Long id){
         try {
@@ -38,6 +52,12 @@ public class IngredientController {
         }
     }
 
+    /**
+     * Defines endpoint for replacing an ingredient in the repository
+     * @param id the id of the ingredient to replace
+     * @param ingredient the ingredient to replace with
+     * @return id of the ingredient that was replaced, or 404 if not found
+     */
     @PutMapping("/{id}")
     public ResponseEntity<Long> updateIngredient(
             @PathVariable Long id,
@@ -51,6 +71,11 @@ public class IngredientController {
       }
     }
 
+    /**
+     * Defines endpoint for deleting an ingredient from the repository
+     * @param id the id of the ingredient to delete
+     * @return The id of the ingredient that was deleted, or 404 if not found
+     */
     @DeleteMapping("/id")
     public ResponseEntity<Long> deleteIngredient(@PathVariable Long id){
         try{
