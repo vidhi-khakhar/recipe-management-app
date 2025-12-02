@@ -23,9 +23,9 @@ public class IngredientController {
      */
     @PostMapping
     public ResponseEntity<Long> create(@RequestBody Ingredient ingredient){
-        Ingredient i = iService.createIngredient(ingredient);
+        this.iService.createIngredient(ingredient);
 
-        return ResponseEntity.ok(i.getId());
+        return ResponseEntity.ok(ingredient.getId());
     }
 
     /**
