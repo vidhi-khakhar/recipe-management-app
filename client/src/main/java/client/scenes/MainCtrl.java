@@ -19,10 +19,13 @@ import commons.Recipe;
 import commons.RecipeIngredient;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.fxml.FXML;
@@ -133,8 +136,34 @@ public class MainCtrl {
     }
 
     private void addRecipeIngredientToUI(RecipeIngredient recipeIngredient) {
-        Label label = new Label(recipeIngredient.toString());
-        ingredientList.getChildren().add(label);
+        // To create a new row
+        HBox ingredientItem = new HBox();
+        ingredientItem.setAlignment(Pos.CENTER_LEFT);
+        ingredientItem.setSpacing(8.0);
+        ingredientItem.getStyleClass().add("recipe-item");
+
+
+        Label itemLabel = new Label(recipeIngredient.getIngredient().toString());
+        itemLabel.setStyle("-fx-padding: 0 0 0 9;"); // <Insets left="9.0">
+
+
+        // To throw the buttons to the right
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        // Edit button
+        Button editButton = new Button("edit");
+        editButton.setOnAction(this::editIngredientButtonClicked);
+
+        // Remove button
+        Button removeButton = new Button("remove");
+        removeButton.setOnAction(this::ingredientRemoveButtonClicked);
+
+        // Put it all into HBox
+        ingredientItem.getChildren().addAll(itemLabel, spacer, editButton, removeButton);
+
+        // Put the HBox (the row) in the ingredientList
+        ingredientList.getChildren().add(ingredientItem);
     }
 
     /**
