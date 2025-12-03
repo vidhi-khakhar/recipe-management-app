@@ -15,14 +15,15 @@
  */
 package client.scenes;
 
+import commons.Recipe;
+import commons.RecipeCollection;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
 public class MainCtrl {
@@ -30,11 +31,51 @@ public class MainCtrl {
     private Scene nutritionScene;
     private Scene recipeAddScene;
 
-    public void initialize(Stage primaryStage, Scene mainUserInterfaceScene, Scene nutritionScene, Scene recipeAddScene) {
+    private final RecipeCollection recipeCollection = new RecipeCollection();
+    private final ObservableList<Recipe> recipesObservableList = FXCollections.observableArrayList();
+
+    // Changed to initScenes since initialize has a different purpose
+    public void initScenes(Stage primaryStage, Scene mainUserInterfaceScene, Scene nutritionScene, Scene recipeAddScene) {
         this.primaryStage = primaryStage;
         this.nutritionScene = nutritionScene; // store it for later
         this.recipeAddScene = recipeAddScene; // store it for later
         primaryStage.show();
+    }
+
+    @FXML
+    public void initialize() {
+        sidebarList.setItems(recipesObservableList);
+
+        // Makes it so that only the title is visible in the list
+        sidebarList.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(Recipe item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item.getTitle());
+                }
+            }
+        });
+
+        sidebarList.getSelectionModel().selectedItemProperty().addListener((obs, oldRecipe, newRecipe) -> {
+            if (newRecipe != null) {
+                onRecipeSelected(newRecipe);
+            }
+        });
+    }
+
+    private void onRecipeSelected(Recipe recipe) {
+        titleRecipeLabel.setText(recipe.getTitle());
+        //TODO showIngredients(recipe);
+        //TODO showInstructions(recipe);
+    }
+
+    public void addRecipe(Recipe recipe) {
+        // adds the recipe object to the list!
+        recipesObservableList.add(recipe);
     }
 
     /**
@@ -74,19 +115,7 @@ public class MainCtrl {
         System.out.println("Refreshing button clicked!");
     }
 
-    /**
-     * This is a placeholder method for further development
-     * Method prints out a message when the button is clicked
-     */
-    @FXML
-    void recipeAddButtonClicked() {
-        System.out.println("User wants to add a recipe.");
-    }
 
-    /**
-     * This is a placeholder method for further development
-     * Method prints out a message when the button is clicked
-     */
     @FXML
     private void recipeRemoveButtonClicked() {
         System.out.println("User wants to remove a recipe.");
@@ -203,6 +232,8 @@ public class MainCtrl {
         recipeAddStage.show();
     }
 
+    @FXML
+    private ListView<Recipe> sidebarList;
 
     @FXML
     private Button addIngredientButton;
@@ -246,9 +277,6 @@ public class MainCtrl {
 
     @FXML
     private Button searchButton;
-
-    @FXML
-    private ListView<?> sidebarList;
 
     @FXML
     private Label titleRecipeLabel;

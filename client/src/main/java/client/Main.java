@@ -20,6 +20,7 @@ import static com.google.inject.Guice.createInjector;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import client.scenes.AddButtonCtrl;
 import com.google.inject.Injector;
 
 import client.scenes.MainCtrl;
@@ -50,8 +51,9 @@ public class Main extends Application {
     var nutritionScene = new Scene(nutritionInterface.getValue());
 
     //preload recipe add scene
-    var recipeAddInterface = FXML.load(NutritionalValueCtrl.class, "client", "scenes", "AddRecipeInterface.fxml");
+    var recipeAddInterface = FXML.load(AddButtonCtrl.class, "client", "scenes", "AddRecipeInterface.fxml");
     var recipeAddScene = new Scene(recipeAddInterface.getValue());
+    var recipeAddCtrl = recipeAddInterface.getKey(); // The instance of the controller
 
 
     // add stylesheets if needed
@@ -75,7 +77,11 @@ public class Main extends Application {
 
     // pass both scenes into controller
     var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-    mainCtrl.initialize(primaryStage, mainUserInterfaceScene, nutritionScene, recipeAddScene);
+    mainCtrl.initScenes(primaryStage, mainUserInterfaceScene, nutritionScene, recipeAddScene);
+
+    // Passing the instance of mainCtrl to the recipe class, so that the recipe controller
+    // can access the main controller (for displaying purposes).
+    recipeAddCtrl.setMainCtrl(mainCtrl);
 
     System.out.println("Window opened with width: " + primaryStage.getWidth() +
                 " and height: " + primaryStage.getHeight());
