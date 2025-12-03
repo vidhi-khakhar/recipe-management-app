@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import org.glassfish.jersey.client.ClientConfig;
 
+/**
+ * Utility class for communicating with the backend to manage recipes.
+ */
 public class RecipeServerUtils {
 
     private static final int HTTP_OK = 200;
@@ -24,6 +27,12 @@ public class RecipeServerUtils {
         new ClientConfig()
     );
 
+    /**
+     * Creates a new recipe on the server.
+     * @param recipe the recipe to create
+     * @return the ID of the created recipe
+     * @throws ProcessingException if there's a network error or server error
+     */
     public Long createRecipe(Recipe recipe) throws ProcessingException {
         try {
             Response response = CLIENT.target(SERVER + "api/v1/recipes")
@@ -47,6 +56,11 @@ public class RecipeServerUtils {
         }
     }
 
+    /**
+     * Retrieves all recipes from the server.
+     * @return a list of all recipes
+     * @throws ProcessingException if there's a network error or server error
+     */
     public List<Recipe> getAllRecipes() throws ProcessingException {
         try {
             Response response = CLIENT.target(SERVER + "api/v1/recipes")
@@ -67,6 +81,13 @@ public class RecipeServerUtils {
         }
     }
 
+    /**
+     * Retrieves a specific recipe by its ID.
+     * @param id the ID of the recipe to retrieve
+     * @return the recipe with the specified ID
+     * @throws ProcessingException if there's a network error or server error
+     * @throws NoSuchElementException if no recipe with the specified ID exists
+     */
     public Recipe getRecipe(Long id)
         throws ProcessingException, NoSuchElementException {
         try {
@@ -95,6 +116,14 @@ public class RecipeServerUtils {
         }
     }
 
+    /**
+     * Replaces an existing recipe on the server with a new one.
+     * @param id the ID of the recipe to replace
+     * @param recipe the new recipe data
+     * @return true if the replacement was successful
+     * @throws ProcessingException if there's a network error or server error during replacement
+     * @throws NoSuchElementException if no recipe with the specified ID exists
+     */
     public boolean replaceRecipe(Long id, Recipe recipe)
         throws ProcessingException, NoSuchElementException {
         try {
@@ -123,6 +152,13 @@ public class RecipeServerUtils {
         }
     }
 
+    /**
+     * Deletes a recipe from the server.
+     * @param id the ID of the recipe to delete
+     * @return true if the deletion was successful
+     * @throws ProcessingException if there's a network error or server error during deletion
+     * @throws NoSuchElementException if no recipe with the specified ID exists
+     */
     public boolean deleteRecipe(Long id)
         throws ProcessingException, NoSuchElementException {
         try {
