@@ -22,6 +22,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.fxml.FXML;
@@ -96,13 +97,11 @@ public class MainCtrl {
     }
 
     /**
-     * This is a placeholder method for further development
-     * Method prints out a message when the button is clicked
+     * Adds an ingredient to a recipe.
+     * Method also prints out a message when the button is clicked.
      */
     @FXML
     private void ingredientAddButtonClicked() {
-        System.out.println("User wants to add an ingredient.");
-
 //        Recipe selectedRecipe = (Recipe) sidebarList.getSelectionModel().getSelectedItem();
 //        if (selectedRecipe == null) {
 //            System.out.println("Please select a recipe first.");
@@ -129,6 +128,8 @@ public class MainCtrl {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        System.out.println("Added ingredient.");
     }
 
     private void addRecipeIngredientToUI(RecipeIngredient recipeIngredient) {
@@ -137,12 +138,16 @@ public class MainCtrl {
     }
 
     /**
-     * This is a placeholder method for further development
-     * Method prints out a message when the button is clicked
+     * Removes an ingredient from a recipe.
+     * Method also prints out a message when the button is clicked.
      */
     @FXML
-    private void ingredientRemoveButtonClicked() {
-        System.out.println("User wants to remove an ingredient.");
+    private void ingredientRemoveButtonClicked(ActionEvent event) {
+        Button removeButton = (Button) event.getSource(); // To identify the button of which ingredient was clicked
+        HBox ingredientToRemove = (HBox) removeButton.getParent(); // To delete the whole row
+        ingredientList.getChildren().remove(ingredientToRemove);
+
+        System.out.println("Removed ingredient.");
     }
 
     /**
@@ -168,8 +173,34 @@ public class MainCtrl {
      * Method prints out a message when the button is clicked
      */
     @FXML
-    private void editIngredientButtonClicked() {
-        System.out.println("Editing selected item...");
+    private void editIngredientButtonClicked(ActionEvent event) {
+        Button editButton = (Button) event.getSource();
+        HBox ingredientToEdit = (HBox) editButton.getParent();
+        Label ingredientLabel = (Label) ingredientToEdit.getChildren().get(0);
+
+        // Test recipe
+        Recipe selectedRecipe = new Recipe("Sarmale");
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("AddIngredientScene.fxml"));
+            Parent root = loader.load();
+
+            AddIngredientCtrl controller = loader.getController();
+            controller.setRecipe(selectedRecipe);
+
+            Stage popup = new Stage();
+            popup.initOwner(primaryStage);
+            popup.setTitle("Edit Ingredient");
+            popup.setScene(new Scene(root));
+            System.out.println("Popup about to show");
+            popup.showAndWait();
+
+            ingredientLabel.setText(controller.getRecipeIngredient().toString());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        System.out.println("Edited ingredient.");
     }
 
     /**

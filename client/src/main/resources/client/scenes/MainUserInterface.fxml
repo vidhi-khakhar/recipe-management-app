@@ -91,7 +91,7 @@
                                              </HBox.margin>
                                           </Label>
                                           <Region prefHeight="31.0" prefWidth="242.0" HBox.hgrow="ALWAYS" />
-                                          <Button fx:id="editItemButton" mnemonicParsing="false" onAction="#handleClick" text="edit">
+                                          <Button fx:id="editItemButton" mnemonicParsing="false" onAction="#editIngredientButtonClicked" text="edit">
                                              <font>
                                                 <Font name="Cascadia Code Regular" size="12.0" />
                                              </font>
