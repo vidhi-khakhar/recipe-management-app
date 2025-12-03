@@ -14,9 +14,9 @@ class IngredientTest {
         Ingredient ingredient = new Ingredient("Sugar", 0.0, 0.0, 100.0, "en");
 
         assertEquals("Sugar", ingredient.getName());
-        assertEquals(0.0, ingredient.getproteinPer100g(), 0.0001);
-        assertEquals(0.0, ingredient.getfatPer100g(), 0.0001);
-        assertEquals(100.0, ingredient.getcarbsPer100g(), 0.0001);
+        assertEquals(0.0, ingredient.getProteinPer100g(), 0.0001);
+        assertEquals(0.0, ingredient.getFatPer100g(), 0.0001);
+        assertEquals(100.0, ingredient.getCarbsPer100g(), 0.0001);
         assertEquals("en", ingredient.getLanguage());
     }
 

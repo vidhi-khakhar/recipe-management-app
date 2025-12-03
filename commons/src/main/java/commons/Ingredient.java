@@ -124,31 +124,31 @@ public class Ingredient {
         this.name = name;
     }
 
-    public double getproteinPer100g() {
+    public double getProteinPer100g() {
         return proteinPer100g;
     }
 
-    public void setproteinPer100g(double proteinPer100g) {
+    public void setProteinPer100g(double proteinPer100g) {
         this.proteinPer100g = proteinPer100g;
     }
 
-    public double getfatPer100g() {
+    public double getFatPer100g() {
         return fatPer100g;
     }
 
-    public void setfatPer100g(double fatPer100g) {
+    public void setFatPer100g(double fatPer100g) {
         this.fatPer100g = fatPer100g;
     }
 
-    public double getcarbsPer100g() {
+    public double getCarbsPer100g() {
         return carbsPer100g;
     }
 
-    public void setcarbsPer100g(double carbsPer100g) {
+    public void setCarbsPer100g(double carbsPer100g) {
         this.carbsPer100g = carbsPer100g;
     }
 
-    public double getkcalPer100g() {
+    public double getKcalPer100g() {
         return kcalPer100g;
     }
 
