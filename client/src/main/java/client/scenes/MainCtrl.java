@@ -16,6 +16,7 @@
 package client.scenes;
 
 import commons.Recipe;
+import commons.RecipeIngredient;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -108,19 +109,31 @@ public class MainCtrl {
 //            return;
 //        }
 
-        // TODO: Load AddIngredient scene popup
+        // Test recipe
+        Recipe selectedRecipe = new Recipe("Sarmale");
+
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("AddIngredientScene.fxml"));
             Parent root = loader.load();        // Constructs all JavaFX objects from FXML file
+
+            AddIngredientCtrl controller = loader.getController();
+            controller.setRecipe(selectedRecipe);
 
             Stage popup = new Stage();          // Create new stage to keep main UI open
             popup.initOwner(primaryStage);      // Sets the stage from which popup originates
             popup.setTitle("Add Ingredient");   // Sets title
             popup.setScene(new Scene(root));    // Loads the AddIngredientScene
             popup.showAndWait();                // Pause execution until window closed
+
+            addRecipeIngredientToUI(controller.getRecipeIngredient());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void addRecipeIngredientToUI(RecipeIngredient recipeIngredient) {
+        Label label = new Label(recipeIngredient.toString());
+        ingredientList.getChildren().add(label);
     }
 
     /**

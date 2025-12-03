@@ -152,6 +152,23 @@ public class RecipeIngredient {
         this.unit = null;
         this.amount = null;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(this.ingredient.getName());
+        sb.append(" ");
+
+        if (this.informal != null) {
+            sb.append(this.informal);
+        } else {
+            sb.append(this.amount);
+            sb.append(this.unit);
+        }
+
+        return sb.toString();
+    }
 }
 
 

@@ -155,5 +155,8 @@ public class Ingredient {
         this.language = language;
     }
 
-
+    @Override
+    public String toString() {
+        return name;
+    }
 }

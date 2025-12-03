@@ -1,17 +1,23 @@
 package client.scenes;
 
 import commons.Ingredient;
+import commons.Recipe;
+import commons.RecipeIngredient;
 import commons.Unit;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.util.List;
 
 public class AddIngredientCtrl {
+    private Recipe recipe;
+    private RecipeIngredient recipeIngredient;
+
     // UI Elements
     @FXML
     private Button saveButton;
@@ -25,6 +31,12 @@ public class AddIngredientCtrl {
     @FXML
     private ChoiceBox<String> unitTypeChoiceBox;
 
+    @FXML
+    private ChoiceBox<Ingredient> ingredientChoiceBox;
+
+    @FXML
+    private TextField amountTextField;
+
     /**
      * Explanation of unitTypeChoiceBox:
      *      selectionModel - in the case of a ChoiceBox it is a SingleSelectionModel
@@ -33,6 +45,10 @@ public class AddIngredientCtrl {
      */
     @FXML
     public void initialize() {
+        // Test ingredient, lacking all global ingredients
+        ingredientChoiceBox.getItems().addAll(
+                new Ingredient("Varza", 100, 11, 12, "en"));
+
         unitTypeChoiceBox.getItems().addAll("Formal", "Informal");
 
         unitTypeChoiceBox.getSelectionModel()
@@ -52,14 +68,37 @@ public class AddIngredientCtrl {
     }
 
     // Button Methods
+
+    /**
+     * Create RecipeIngredient entity based on user input.
+     * Close the popup and return information to MainCtrl.
+     * @return the created RecipeIngredient instance
+     */
     @FXML
     private void saveButtonClicked() {
         System.out.println("User saved ingredient to recipe.");
 
-        //TODO: Get user input and create RecipeIngredient
+        // Get ingredient
+        Ingredient ingredient = ingredientChoiceBox.getSelectionModel().getSelectedItem();
 
-        Stage stage = (Stage) saveButton.getScene().getWindow();
-        stage.close();
+        // Get amount & create recipeIngredient
+        String type = unitTypeChoiceBox.getValue();
+        if (type.equals("Formal")) {
+            double amount = Double.parseDouble(amountTextField.getText());
+            recipeIngredient = RecipeIngredient.formal(recipe,
+                    ingredient, amount, unitChoiceBox.getValue());
+        } else {
+            String informal = amountTextField.getText();
+            recipeIngredient = RecipeIngredient.informal(recipe,
+                    ingredient, informal);
+        }
+
+        System.out.println("User saved ingredient to recipe.");
+        closeWindow();
+    }
+
+    public void setRecipe(Recipe recipe) {
+        this.recipe = recipe;
     }
 
     /**
@@ -67,9 +106,19 @@ public class AddIngredientCtrl {
      */
     @FXML
     private void cancelButtonClicked() {
-        System.out.println("User canceled adding ingredient.");
+        recipeIngredient = null;
 
+        System.out.println("User canceled adding ingredient.");
+        closeWindow();
+    }
+
+    public RecipeIngredient getRecipeIngredient() {
+        return recipeIngredient;
+    }
+
+    private void closeWindow() {
         Stage stage = (Stage) cancelButton.getScene().getWindow();
         stage.close();
     }
+
 }
