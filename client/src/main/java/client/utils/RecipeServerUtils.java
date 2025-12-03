@@ -7,6 +7,7 @@ import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -39,10 +40,7 @@ public class RecipeServerUtils {
                 .request(APPLICATION_JSON)
                 .post(Entity.json(recipe));
 
-            if (
-                response.getStatus() == HTTP_OK ||
-                response.getStatus() == HTTP_CREATED
-            ) {
+            if (response.getStatus() == HTTP_CREATED) {
                 return response.readEntity(Long.class);
             } else {
                 throw new ProcessingException(
@@ -50,9 +48,7 @@ public class RecipeServerUtils {
                 );
             }
         } catch (ProcessingException e) {
-            throw new ProcessingException(
-                "Network error creating recipe: " + e.getMessage()
-            );
+            throw new ProcessingException("Network error creating recipe");
         }
     }
 
@@ -68,16 +64,14 @@ public class RecipeServerUtils {
                 .get();
 
             if (response.getStatus() == HTTP_OK) {
-                return response.readEntity(java.util.List.class);
+                return response.readEntity(new GenericType<List<Recipe>>() {});
             } else {
                 throw new ProcessingException(
                     "Failed to get recipes, HTTP " + response.getStatus()
                 );
             }
         } catch (ProcessingException e) {
-            throw new ProcessingException(
-                "Network error getting recipes: " + e.getMessage()
-            );
+            throw new ProcessingException("Network error getting recipes");
         }
     }
 
@@ -110,9 +104,7 @@ public class RecipeServerUtils {
                 );
             }
         } catch (ProcessingException e) {
-            throw new ProcessingException(
-                "Network error getting recipe " + id + ": " + e.getMessage()
-            );
+            throw new ProcessingException("Network error getting recipe " + id);
         }
     }
 
@@ -147,7 +139,7 @@ public class RecipeServerUtils {
             }
         } catch (ProcessingException e) {
             throw new ProcessingException(
-                "Network error replacing recipe " + id + ": " + e.getMessage()
+                "Network error replacing recipe " + id
             );
         }
     }
@@ -182,7 +174,7 @@ public class RecipeServerUtils {
             }
         } catch (ProcessingException e) {
             throw new ProcessingException(
-                "Network error deleting recipe " + id + ": " + e.getMessage()
+                "Network error deleting recipe " + id
             );
         }
     }
