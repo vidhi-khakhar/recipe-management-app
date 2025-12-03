@@ -15,6 +15,7 @@ import java.util.Objects;
 @Table(name = "ingredient")
 public class Ingredient {
 
+
     /**
      * id identifies the ingredient in the database.
      * It is the primary key.
@@ -111,6 +112,10 @@ public class Ingredient {
             return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }
@@ -145,6 +150,10 @@ public class Ingredient {
 
     public double getkcalPer100g() {
         return kcalPer100g;
+    }
+
+    public void setKcalPer100g(double kcalPer100g) {
+        this.kcalPer100g = kcalPer100g;
     }
     
     public String getLanguage() {
