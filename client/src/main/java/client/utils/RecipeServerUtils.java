@@ -35,8 +35,9 @@ public class RecipeServerUtils {
      * @throws ProcessingException if there's a network error or server error
      */
     public Long createRecipe(Recipe recipe) throws ProcessingException {
+        Response response = null;
         try {
-            Response response = CLIENT.target(SERVER + "api/v1/recipes")
+            response = CLIENT.target(SERVER + "api/v1/recipes")
                 .request(APPLICATION_JSON)
                 .post(Entity.json(recipe));
 
@@ -47,8 +48,10 @@ public class RecipeServerUtils {
                     "Failed to create recipe, HTTP " + response.getStatus()
                 );
             }
-        } catch (ProcessingException e) {
-            throw new ProcessingException("Network error creating recipe");
+        } finally {
+            if (response != null) {
+                response.close();
+            }
         }
     }
 
@@ -58,8 +61,9 @@ public class RecipeServerUtils {
      * @throws ProcessingException if there's a network error or server error
      */
     public List<Recipe> getAllRecipes() throws ProcessingException {
+        Response response = null;
         try {
-            Response response = CLIENT.target(SERVER + "api/v1/recipes")
+            response = CLIENT.target(SERVER + "api/v1/recipes")
                 .request(APPLICATION_JSON)
                 .get();
 
@@ -70,8 +74,10 @@ public class RecipeServerUtils {
                     "Failed to get recipes, HTTP " + response.getStatus()
                 );
             }
-        } catch (ProcessingException e) {
-            throw new ProcessingException("Network error getting recipes");
+        } finally {
+            if (response != null) {
+                response.close();
+            }
         }
     }
 
@@ -84,8 +90,9 @@ public class RecipeServerUtils {
      */
     public Recipe getRecipe(Long id)
         throws ProcessingException, NoSuchElementException {
+        Response response = null;
         try {
-            Response response = CLIENT.target(SERVER + "api/v1/recipes/" + id)
+            response = CLIENT.target(SERVER + "api/v1/recipes/" + id)
                 .request(APPLICATION_JSON)
                 .get();
 
@@ -103,8 +110,10 @@ public class RecipeServerUtils {
                         response.getStatus()
                 );
             }
-        } catch (ProcessingException e) {
-            throw new ProcessingException("Network error getting recipe " + id);
+        } finally {
+            if (response != null) {
+                response.close();
+            }
         }
     }
 
@@ -118,8 +127,9 @@ public class RecipeServerUtils {
      */
     public boolean replaceRecipe(Long id, Recipe recipe)
         throws ProcessingException, NoSuchElementException {
+        Response response = null;
         try {
-            Response response = CLIENT.target(SERVER + "api/v1/recipes/" + id)
+            response = CLIENT.target(SERVER + "api/v1/recipes/" + id)
                 .request(APPLICATION_JSON)
                 .put(Entity.json(recipe));
 
@@ -137,10 +147,10 @@ public class RecipeServerUtils {
                         response.getStatus()
                 );
             }
-        } catch (ProcessingException e) {
-            throw new ProcessingException(
-                "Network error replacing recipe " + id
-            );
+        } finally {
+            if (response != null) {
+                response.close();
+            }
         }
     }
 
@@ -153,8 +163,9 @@ public class RecipeServerUtils {
      */
     public boolean deleteRecipe(Long id)
         throws ProcessingException, NoSuchElementException {
+        Response response = null;
         try {
-            Response response = CLIENT.target(SERVER + "api/v1/recipes/" + id)
+            response = CLIENT.target(SERVER + "api/v1/recipes/" + id)
                 .request(APPLICATION_JSON)
                 .delete();
 
@@ -172,10 +183,10 @@ public class RecipeServerUtils {
                         response.getStatus()
                 );
             }
-        } catch (ProcessingException e) {
-            throw new ProcessingException(
-                "Network error deleting recipe " + id
-            );
+        } finally {
+            if (response != null) {
+                response.close();
+            }
         }
     }
 }
