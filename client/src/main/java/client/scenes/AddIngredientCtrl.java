@@ -38,6 +38,7 @@ public class AddIngredientCtrl {
     private TextField amountTextField;
 
     /**
+     * The ChoiceBoxes have the default value of the first element.
      * Explanation of unitTypeChoiceBox:
      *      selectionModel - in the case of a ChoiceBox it is a SingleSelectionModel
      *      selectedItemProperty - indicates the currently selected item in the selection model
@@ -48,8 +49,13 @@ public class AddIngredientCtrl {
         // Test ingredient, lacking all global ingredients
         ingredientChoiceBox.getItems().addAll(
                 new Ingredient("Varza", 100, 11, 12, "en"));
+        ingredientChoiceBox.setValue(ingredientChoiceBox.getItems().get(0));
 
         unitTypeChoiceBox.getItems().addAll("Formal", "Informal");
+        unitTypeChoiceBox.setValue(unitTypeChoiceBox.getItems().get(0));
+
+        unitChoiceBox.setItems(FXCollections.observableArrayList(Unit.values()));
+        unitChoiceBox.setValue(unitChoiceBox.getItems().get(0));
 
         unitTypeChoiceBox.getSelectionModel()
                 .selectedItemProperty()
@@ -60,7 +66,6 @@ public class AddIngredientCtrl {
 
     public void updateUnitChoiceBoxVisibility(String unitType) {
         if (unitType.equals("Formal")) {
-            unitChoiceBox.setItems(FXCollections.observableArrayList(Unit.values()));
             unitChoiceBox.setVisible(true);
         } else if (unitType.equals("Informal")) {
             unitChoiceBox.setVisible(false);

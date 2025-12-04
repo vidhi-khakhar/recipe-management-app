@@ -143,7 +143,7 @@ public class MainCtrl {
         ingredientItem.getStyleClass().add("recipe-item");
 
 
-        Label itemLabel = new Label(recipeIngredient.getIngredient().toString());
+        Label itemLabel = new Label(recipeIngredient.toString());
         itemLabel.setStyle("-fx-padding: 0 0 0 9;"); // <Insets left="9.0">
 
 
