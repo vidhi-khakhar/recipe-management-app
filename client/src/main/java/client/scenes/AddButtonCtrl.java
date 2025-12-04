@@ -67,7 +67,9 @@ public class AddButtonCtrl {
                     statusLabel.setStyle("-fx-text-fill: green;");
 
                 } catch (Exception e) {
-                    System.out.println("Something went wrong: " + e.getMessage());
+                    statusLabel.setText("Something went wrong during adding recipe.");
+                    statusLabel.setStyle("-fx-text-fill: red;");
+                    System.out.println("Something went wrong during the creation of a recipe: " + e.getMessage());
                 }
 
             }
@@ -92,6 +94,5 @@ public class AddButtonCtrl {
         }
         return true;
     }
-
 }
 

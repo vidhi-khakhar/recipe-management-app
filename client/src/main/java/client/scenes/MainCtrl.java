@@ -28,6 +28,8 @@ import javafx.stage.Stage;
 import javafx.fxml.FXML;
 import javafx.scene.layout.VBox;
 
+import java.util.List;
+
 public class MainCtrl {
     private Stage primaryStage;
     private Scene nutritionScene;
@@ -71,7 +73,26 @@ public class MainCtrl {
                 onRecipeSelected(newRecipe);
             }
         });
+
+        loadRecipesFromDatabase();
     }
+
+    /**
+     * Loads all recipes from the database. That way once the UI is opened, all
+     * previously stored recipes are displayed.
+     */
+    private void loadRecipesFromDatabase() {
+        try {
+            // Stores the recipes from the database in a list
+            List<Recipe> recipesFromDb = recipeServerUtils.getAllRecipes();
+
+            // Adds the recipes from the recipesFromDb list and adds it to the observable list
+            recipesObservableList.addAll(recipesFromDb);
+        } catch (Exception e) {
+            System.out.println("Failed to load recipes: " + e.getMessage());
+        }
+    }
+
 
     private void onRecipeSelected(Recipe recipe) {
         titleRecipeLabel.setText(recipe.getTitle());
@@ -257,6 +278,7 @@ public class MainCtrl {
         recipeAddStage.setTitle("Add Recipe");
         recipeAddStage.setScene(recipeAddScene);
         recipeAddStage.initOwner(primaryStage);
+
         recipeAddStage.show();
     }
 
