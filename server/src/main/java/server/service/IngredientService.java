@@ -10,12 +10,19 @@ import server.database.IngredientRepository;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
+
 @Service
 public class IngredientService {
+
 
     @Autowired
     private IngredientRepository ingredientRepository;
 
+    /**
+     * gets the ingredient by it's id
+     * @param id
+     * @return
+     */
     public Ingredient getIngredientById(Long id) {
         try {
             return ingredientRepository.findById(id).get();
@@ -24,6 +31,15 @@ public class IngredientService {
         }
     }
 
+    /**
+     * updates the ingredient and recalculates kcal per 100g
+     * @param id
+     * @param name
+     * @param proteinPer100g
+     * @param fatPer100g
+     * @param carbsPer100g
+     * @return
+     */
     public Ingredient updateIngredientKcal(Long id, String name, double proteinPer100g, double fatPer100g, double carbsPer100g) {
         double newKcalPer100g = 4 * proteinPer100g + 4 * carbsPer100g + 9 * fatPer100g;
         Ingredient ingredient = ingredientRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Ingredient not found"));
@@ -31,10 +47,19 @@ public class IngredientService {
         return ingredientRepository.save(ingredient);
     }
 
+    /**
+     * creates an ingredient in the repo
+     * @param ingredient
+     */
     public void createIngredient(Ingredient ingredient) {
         ingredientRepository.save(ingredient);
     }
 
+    /**
+     * updates the ingredient for when something is changed
+     * @param id
+     * @param updatedIngredient
+     */
     public void updateIngredient(Long id, Ingredient updatedIngredient) {
         Objects.requireNonNull(updatedIngredient, "Updated ingredient cannot be null.");
 
@@ -44,10 +69,16 @@ public class IngredientService {
         ingredientToUpdate.setProteinPer100g(updatedIngredient.getProteinPer100g());
         ingredientToUpdate.setFatPer100g(updatedIngredient.getFatPer100g());
         ingredientToUpdate.setCarbsPer100g(updatedIngredient.getCarbsPer100g());
+//        ingredientToUpdate.setKcalPer100g(updateIngredientKcal(id, updatedIngredient.getName(),
+//                updatedIngredient.getProteinPer100g(), updatedIngredient.getFatPer100g(), updatedIngredient.getCarbsPer100g()));
 
         ingredientRepository.save(ingredientToUpdate);
     }
 
+    /**
+     * deletes an ingredient
+     * @param id
+     */
     public void deleteIngredientById(Long id) {
         if (ingredientRepository.existsById(id)) {
             ingredientRepository.deleteById(id);
