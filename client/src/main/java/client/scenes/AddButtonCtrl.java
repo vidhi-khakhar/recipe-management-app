@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.utils.RecipeServerUtils;
 import com.google.inject.Inject;
 import commons.Recipe;
 import commons.RecipeCollection;
@@ -22,7 +23,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
 public class AddButtonCtrl {
-    private MainCtrl mainCtrl;
+    private final MainCtrl mainCtrl;
+    private final RecipeServerUtils recipeServerUtils;
 
     @FXML
     private Button recipeAddButton;
@@ -33,10 +35,11 @@ public class AddButtonCtrl {
     @FXML
     private Label statusLabel;
 
-    //The connection between MainCtrl and AddButtonCtrl
+    //The connection between other classes
     @Inject
-    public AddButtonCtrl(MainCtrl mainCtrl) {
+    public AddButtonCtrl(MainCtrl mainCtrl,  RecipeServerUtils recipeServerUtils) {
         this.mainCtrl = mainCtrl;
+        this.recipeServerUtils = recipeServerUtils;
     }
 
     //Adding Recipe methods
@@ -50,7 +53,24 @@ public class AddButtonCtrl {
         } else {
             statusLabel.setText("");
             System.out.println("Adding request for: " + query); // Can be removed in the future
-            recipeValidation(query);
+            if(recipeValidation(query)){
+                query = query.substring(0, 1).toUpperCase() + query.substring(1);
+                Recipe recipe = new Recipe(query);
+
+                try{
+                    recipeServerUtils.createRecipe(recipe);
+
+                    mainCtrl.addRecipe(recipe); // update the UI
+
+                    recipeInput.clear();
+                    statusLabel.setText("Recipe added!");
+                    statusLabel.setStyle("-fx-text-fill: green;");
+
+                } catch (Exception e) {
+                    System.out.println("Er is een fout opgetreden: " + e.getMessage());
+                }
+
+            }
         }
     }
 
@@ -59,31 +79,18 @@ public class AddButtonCtrl {
      * Also makes sure the first letter is a capital
      * @param query the given recipe name by the user
      */
-    private void recipeValidation(String query) {
-        if(query.length()>20){
+    private boolean recipeValidation(String query) {
+        if (query.length() > 20) {
             statusLabel.setText("The name is longer than 20 characters.");
             statusLabel.setStyle("-fx-text-fill: red;");
-            return;
+            return false;
         }
-        if(query.matches(".*[\\*\"'\\`@].*")){
+        if (query.matches(".*[\\*\"'\\`@].*")) {
             statusLabel.setText("The name contains illegal characters.");
             statusLabel.setStyle("-fx-text-fill: red;");
-            return;
+            return false;
         }
-
-        query = query.substring(0, 1).toUpperCase() + query.substring(1);
-        Recipe recipe = new Recipe(query);
-        addToDb(recipe); // add to database
-        mainCtrl.addRecipe(recipe); // update the UI
-
-
-        recipeInput.clear();
-        statusLabel.setText("Recipe added!");
-        statusLabel.setStyle("-fx-text-fill: green;");;
-    }
-
-    public void addToDb(Recipe recipe){
-
+        return true;
     }
 
 }
