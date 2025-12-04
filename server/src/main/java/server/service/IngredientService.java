@@ -1,8 +1,6 @@
 package server.service;
 
 import commons.Ingredient;
-import commons.Recipe;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import server.database.IngredientRepository;
@@ -33,7 +31,7 @@ public class IngredientService {
 
     /**
      * updates the ingredient and recalculates kcal per 100g
-     * @param id
+     *
      * @param name
      * @param proteinPer100g
      * @param fatPer100g

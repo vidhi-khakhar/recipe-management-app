@@ -11,9 +11,8 @@ class IngredientTest {
      */
     @Test
     void testConstructorWithValidValues() {
-        Ingredient ingredient = new Ingredient(123L, "Sugar", 0.0, 0.0, 100.0);
+        Ingredient ingredient = new Ingredient("Sugar", 0.0, 0.0, 100.0);
 
-        assertEquals(123, ingredient.getId());
         assertEquals("Sugar", ingredient.getName());
         assertEquals(0.0, ingredient.getProteinPer100g(), 0.0001);
         assertEquals(0.0, ingredient.getFatPer100g(), 0.0001);
@@ -35,15 +34,9 @@ class IngredientTest {
      */
     @Test
     void testNameCannotBeNull() {
-        assertThrows(NullPointerException.class, () -> { new Ingredient(132L, null, 0.0, 0.0, 0.0);}
-        );
-        
-    }
-
-    @Test
-    void testIdCannotBeNull() {
-        assertThrows(NullPointerException.class, () -> { new Ingredient(132L, null, 0.0, 0.0, 0.0);}
+        assertThrows(NullPointerException.class, () -> { new Ingredient(null, 0.0, 0.0, 0.0);}
         );
 
     }
+
 }

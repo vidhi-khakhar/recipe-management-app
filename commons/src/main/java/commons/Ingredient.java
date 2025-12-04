@@ -19,9 +19,9 @@ public class Ingredient {
      * id identifies the ingredient in the database.
      * It is the primary key.
      */
-    @Id
-    @GeneratedValue
-    private Long id;
+    @Id // Specifies the primary key.
+    @GeneratedValue(strategy = GenerationType.AUTO) // Auto-generated primary key.
+    private Long ingredientId;
 
     /**
      * Version field for optimistic locking.
@@ -74,8 +74,7 @@ public class Ingredient {
      * @param fatPer100g     Fat content per 100g.
      * @param carbsPer100g   Carbohydrate content per 100g.
      */
-    public Ingredient(Long id, String name, double proteinPer100g, double fatPer100g, double carbsPer100g) {
-        this.id = Objects.requireNonNull(id, "An ingredients id cannot be Null");
+    public Ingredient(String name, double proteinPer100g, double fatPer100g, double carbsPer100g) {
         this.name = Objects.requireNonNull(name, "Name of an ingredient cannot be null");
         this.proteinPer100g = proteinPer100g;
         this.fatPer100g = fatPer100g;
@@ -98,11 +97,11 @@ public class Ingredient {
 
 
     public Long getId() {
-            return id;
+            return ingredientId;
     }
 
     public void setId(Long id) {
-        this.id = id;
+        this.ingredientId = ingredientId;
     }
 
     public String getName() {

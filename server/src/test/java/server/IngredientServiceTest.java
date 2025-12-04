@@ -25,25 +25,24 @@ class IngredientServiceTest {
 
     @Test
     void getIngredientById() {
-        Ingredient ingredient = new Ingredient(123L, "Mozzarella", 18.0, 19.0, 1.0);
+        Ingredient ingredient = new Ingredient("Mozzarella", 18.0, 19.0, 1.0);
         Long id = ingredient.getId();
 
         when(ingredientRepository.findById(id)).thenReturn(Optional.of(ingredient));
 
-        assertEquals(123L, ingredientService.getIngredientById(id).getId());
+        assertEquals("Mozzarella", ingredientService.getIngredientById(id).getName());
     }
 
     @Test
     void createIngredient() {
-        Ingredient ingredient = new Ingredient(123L, "Mozzarella", 18.0, 19.0, 1.0);
+        Ingredient ingredient = new Ingredient("Mozzarella", 18.0, 19.0, 1.0);
 
-        assertNotNull(ingredient.getId());
         assertNotNull(ingredient.getName());
     }
 
     @Test
     void deleteIngredientById() {
-        Ingredient ingredient = new Ingredient(123L, "Mozzarella", 18.0, 19.0, 1.0);
+        Ingredient ingredient = new Ingredient("Mozzarella", 18.0, 19.0, 1.0);
         Long id = ingredient.getId();
 
         when(ingredientRepository.existsById(id)).thenReturn(true);
@@ -54,11 +53,11 @@ class IngredientServiceTest {
 
     @Test
     void updateIngredient() {
-        Ingredient ingredientToUpdate = new Ingredient(123L, "Mozzarella", 18.0, 19.0, 1.0);
+        Ingredient ingredientToUpdate = new Ingredient("Mozzarella", 18.0, 19.0, 1.0);
         Long id = ingredientToUpdate.getId();
         when(ingredientRepository.findById(id)).thenReturn(Optional.of(ingredientToUpdate));
 
-        Ingredient updatedIngredient = new Ingredient(123L, "Buffel Mozzarella", 13.0, 23.0, 0.6);
+        Ingredient updatedIngredient = new Ingredient("Buffel Mozzarella", 13.0, 23.0, 0.6);
         ingredientService.updateIngredient(id, updatedIngredient);
 
         verify(ingredientRepository, times(1)).save(ingredientToUpdate);
