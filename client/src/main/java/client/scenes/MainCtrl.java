@@ -268,7 +268,6 @@ public class MainCtrl {
     @FXML
     private Button removeRecipeButton;
 
-    
     @FXML
     private Button nutritionalValueButton;
 

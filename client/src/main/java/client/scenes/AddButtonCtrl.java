@@ -41,18 +41,39 @@ public class AddButtonCtrl {
     private void recipeAddRequest() {
         String query = recipeInput.getText().trim();
         if (query == null || query.isEmpty()) {
-            System.out.println("Please enter a query."); // Can be removed in the future
-            statusLabel.setText("Please enter a query.");
+            System.out.println("Please enter a name."); // Can be removed in the future
+            statusLabel.setText("Please enter a name.");
             statusLabel.setStyle("-fx-text-fill: red;");
         } else {
             statusLabel.setText("");
             System.out.println("Adding request for: " + query); // Can be removed in the future
-            Recipe recipe = new Recipe(query);
-            mainCtrl.addRecipe(recipe); // update main
-            recipeInput.clear();
-            statusLabel.setText("Recipe added!");
-            statusLabel.setStyle("-fx-text-fill: green;");
+            recipeValidation(query);
         }
+    }
+
+    /**
+     * Checks whether the given input suffices the criteria
+     * Also makes sure the first letter is a capital
+     * @param query the given recipe name by the user
+     */
+    private void recipeValidation(String query) {
+        if(query.length()>20){
+            statusLabel.setText("The name is longer than 20 characters.");
+            statusLabel.setStyle("-fx-text-fill: red;");
+            return;
+        }
+        if(query.matches(".*[\\*\"'\\`@].*")){
+            statusLabel.setText("The name contains illegal characters.");
+            statusLabel.setStyle("-fx-text-fill: red;");
+            return;
+        }
+
+        query = query.substring(0, 1).toUpperCase() + query.substring(1);
+        Recipe recipe = new Recipe(query);
+        mainCtrl.addRecipe(recipe); // update main
+        recipeInput.clear();
+        statusLabel.setText("Recipe added!");
+        statusLabel.setStyle("-fx-text-fill: green;");;
     }
 
 }
