@@ -51,6 +51,7 @@ public class MainCtrl {
         this.nutritionScene = nutritionScene; // store it for later
         this.recipeAddScene = recipeAddScene; // store it for later
         primaryStage.show();
+        //HelloWorld!
     }
 
     /**
