@@ -58,7 +58,7 @@ public class AddButtonCtrl {
                 Recipe recipe = new Recipe(query);
 
                 try{
-                    recipeServerUtils.createRecipe(recipe);
+                    recipe.setRecipeId(recipeServerUtils.createRecipe(recipe));
 
                     mainCtrl.addRecipe(recipe); // update the UI
 
@@ -67,7 +67,7 @@ public class AddButtonCtrl {
                     statusLabel.setStyle("-fx-text-fill: green;");
 
                 } catch (Exception e) {
-                    System.out.println("Er is een fout opgetreden: " + e.getMessage());
+                    System.out.println("Something went wrong: " + e.getMessage());
                 }
 
             }

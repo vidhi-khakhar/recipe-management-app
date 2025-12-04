@@ -15,6 +15,8 @@
  */
 package client.scenes;
 
+import client.utils.RecipeServerUtils;
+import com.google.inject.Inject;
 import commons.Recipe;
 import commons.RecipeCollection;
 import javafx.collections.FXCollections;
@@ -31,7 +33,7 @@ public class MainCtrl {
     private Scene nutritionScene;
     private Scene recipeAddScene;
 
-    private final RecipeCollection recipeCollection = new RecipeCollection();
+    private final RecipeServerUtils recipeServerUtils;
     private final ObservableList<Recipe> recipesObservableList = FXCollections.observableArrayList();
 
     // Changed to initScenes since initialize has a different purpose
@@ -40,6 +42,10 @@ public class MainCtrl {
         this.nutritionScene = nutritionScene; // store it for later
         this.recipeAddScene = recipeAddScene; // store it for later
         primaryStage.show();
+    }
+    @Inject
+    public MainCtrl(RecipeServerUtils recipeServerUtils) {
+        this.recipeServerUtils = recipeServerUtils;
     }
 
     @FXML
@@ -74,8 +80,6 @@ public class MainCtrl {
     }
 
     public void addRecipe(Recipe recipe) {
-        //TODO add to database
-
         // adds the recipe object to the list!
         recipesObservableList.add(recipe);
     }
@@ -96,8 +100,9 @@ public class MainCtrl {
     }
 
     public void removeRecipe(Recipe recipe) {
-        //TODO remove from database
-
+        System.out.println("Removing recipe [" + recipe.getRecipeId() + "] " + recipe.getTitle());
+        // removes the recipe entity from database
+        recipeServerUtils.deleteRecipe(recipe.getRecipeId());
         // removes the recipe object to the list!
         recipesObservableList.remove(recipe);
     }
