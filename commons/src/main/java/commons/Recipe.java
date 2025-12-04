@@ -195,8 +195,8 @@ public class Recipe {
      */
 
     @Override
-    public boolean equals(Object anotherNote) {
-        return EqualsBuilder.reflectionEquals(this,anotherNote);
+    public boolean equals(Object anotherRecipe) {
+        return EqualsBuilder.reflectionEquals(this,anotherRecipe);
     }
 
     /**
