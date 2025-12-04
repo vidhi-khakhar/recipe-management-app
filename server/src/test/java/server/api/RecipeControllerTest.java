@@ -85,7 +85,7 @@ class RecipeControllerTest {
         Recipe recipe = new Recipe("Updated Recipe");
         var id = recipe.getRecipeId();
 
-        ResponseEntity<Long> result = recipeController.replaceRecipe(
+        ResponseEntity<Long> result = recipeController.updateRecipe(
             id,
             recipe
         );
@@ -103,7 +103,7 @@ class RecipeControllerTest {
             .when(rService)
             .updateRecipe(eq(1L), any(Recipe.class));
 
-        ResponseEntity<Long> result = recipeController.replaceRecipe(
+        ResponseEntity<Long> result = recipeController.updateRecipe(
             1L,
             recipe
         );
