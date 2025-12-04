@@ -74,8 +74,37 @@ public class MainCtrl {
     }
 
     public void addRecipe(Recipe recipe) {
+        //TODO add to database
+
         // adds the recipe object to the list!
         recipesObservableList.add(recipe);
+    }
+
+    @FXML
+    private void recipeRemoveButtonClicked() {
+        Recipe selected = sidebarList.getSelectionModel().getSelectedItem();
+
+        if (selected == null) {
+            System.out.println("No recipe selected!");
+            return;
+        }
+
+        removeRecipe(selected);
+        clearUI();
+        sidebarList.getSelectionModel().clearSelection();
+
+    }
+
+    public void removeRecipe(Recipe recipe) {
+        //TODO remove from database
+
+        // removes the recipe object to the list!
+        recipesObservableList.remove(recipe);
+    }
+
+    public void clearUI() {
+        titleRecipeLabel.setText("No recipe selected!");
+        //TODO remove ingredients and instruction step
     }
 
     /**
@@ -113,12 +142,6 @@ public class MainCtrl {
     @FXML
     private void refreshButtonClicked() {
         System.out.println("Refreshing button clicked!");
-    }
-
-
-    @FXML
-    private void recipeRemoveButtonClicked() {
-        System.out.println("User wants to remove a recipe.");
     }
 
     /**

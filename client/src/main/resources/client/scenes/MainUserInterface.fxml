@@ -184,7 +184,7 @@
                                           <Insets right="5.0" />
                                        </HBox.margin>
                                     </Button>
-                                    <Button fx:id="removeRecipeButton1" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#recipeRemoveButtonClicked" prefHeight="23.0" prefWidth="43.0" text="-" HBox.hgrow="ALWAYS">
+                                    <Button fx:id="removeRecipeButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#recipeRemoveButtonClicked" prefHeight="23.0" prefWidth="43.0" text="-" HBox.hgrow="ALWAYS">
                                        <font>
                                           <Font size="17.0" />
                                        </font>
