@@ -35,15 +35,15 @@ class IngredientTest {
      */
     @Test
     void testNameCannotBeNull() {
-        Ingredient ingredient = new Ingredient(132L, null, 0.0, 0.0, 0.0);
-        assertNotNull(ingredient.getName());
-
+        assertThrows(NullPointerException.class, () -> { new Ingredient(132L, null, 0.0, 0.0, 0.0);}
+        );
+        
     }
 
     @Test
     void testIdCannotBeNull() {
+        assertThrows(NullPointerException.class, () -> { new Ingredient(132L, null, 0.0, 0.0, 0.0);}
+        );
 
-        Ingredient ingredient = new Ingredient(null, "apple", 0.0, 0.0, 0.0);
-        assertNotNull(ingredient.getId());
     }
 }
