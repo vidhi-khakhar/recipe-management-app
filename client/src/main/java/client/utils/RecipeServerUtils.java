@@ -4,11 +4,8 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import commons.Recipe;
 import jakarta.ws.rs.ProcessingException;
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.Entity;
-import jakarta.ws.rs.core.GenericType;
-import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.client.*;
+import jakarta.ws.rs.core.*;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.glassfish.jersey.client.ClientConfig;
@@ -22,11 +19,27 @@ public class RecipeServerUtils {
     private static final int HTTP_CREATED = 201;
     private static final int HTTP_NOT_FOUND = 404;
 
-    private static final String SERVER = "http://localhost:8080/";
+    private static final String DEFAULT_SERVER = "http://localhost:8080/";
 
-    private static final Client CLIENT = ClientBuilder.newClient(
-        new ClientConfig()
-    );
+    private final Client client;
+    private final String serverUrl;
+
+    /**
+     * Default constructor with default values
+     */
+    public RecipeServerUtils() {
+        this(ClientBuilder.newClient(new ClientConfig()), DEFAULT_SERVER);
+    }
+
+    /**
+     * Constructor allowing configuration of a custom Client and server URL.
+     * @param client the JAX-RS client
+     * @param serverUrl the base URL of the server
+     */
+    public RecipeServerUtils(Client client, String serverUrl) {
+        this.client = client;
+        this.serverUrl = serverUrl.endsWith("/") ? serverUrl : serverUrl + "/";
+    }
 
     /**
      * Creates a new recipe on the server.
@@ -36,7 +49,8 @@ public class RecipeServerUtils {
      */
     public Long createRecipe(Recipe recipe) throws ProcessingException {
         try (
-            Response response = CLIENT.target(SERVER + "api/v1/recipes")
+            Response response = client
+                .target(serverUrl + "api/v1/recipes")
                 .request(APPLICATION_JSON)
                 .post(Entity.json(recipe))
         ) {
@@ -57,7 +71,8 @@ public class RecipeServerUtils {
      */
     public List<Recipe> getAllRecipes() throws ProcessingException {
         try (
-            Response response = CLIENT.target(SERVER + "api/v1/recipes")
+            Response response = client
+                .target(serverUrl + "api/v1/recipes")
                 .request(APPLICATION_JSON)
                 .get()
         ) {
@@ -81,7 +96,8 @@ public class RecipeServerUtils {
     public Recipe getRecipe(Long id)
         throws ProcessingException, NoSuchElementException {
         try (
-            Response response = CLIENT.target(SERVER + "api/v1/recipes/" + id)
+            Response response = client
+                .target(serverUrl + "api/v1/recipes/" + id)
                 .request(APPLICATION_JSON)
                 .get()
         ) {
@@ -113,7 +129,8 @@ public class RecipeServerUtils {
     public boolean replaceRecipe(Long id, Recipe recipe)
         throws ProcessingException, NoSuchElementException {
         try (
-            Response response = CLIENT.target(SERVER + "api/v1/recipes/" + id)
+            Response response = client
+                .target(serverUrl + "api/v1/recipes/" + id)
                 .request(APPLICATION_JSON)
                 .put(Entity.json(recipe))
         ) {
@@ -144,7 +161,8 @@ public class RecipeServerUtils {
     public boolean deleteRecipe(Long id)
         throws ProcessingException, NoSuchElementException {
         try (
-            Response response = CLIENT.target(SERVER + "api/v1/recipes/" + id)
+            Response response = client
+                .target(serverUrl + "api/v1/recipes/" + id)
                 .request(APPLICATION_JSON)
                 .delete()
         ) {
