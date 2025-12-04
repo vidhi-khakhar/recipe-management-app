@@ -79,10 +79,6 @@ public class Main extends Application {
     var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
     mainCtrl.initScenes(primaryStage, mainUserInterfaceScene, nutritionScene, recipeAddScene);
 
-    // Passing the instance of mainCtrl to the recipe class, so that the recipe controller
-    // can access the main controller (for displaying purposes).
-    recipeAddCtrl.setMainCtrl(mainCtrl);
-
     System.out.println("Window opened with width: " + primaryStage.getWidth() +
                 " and height: " + primaryStage.getHeight());
 

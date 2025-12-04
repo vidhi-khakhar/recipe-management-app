@@ -1,5 +1,6 @@
 package client.scenes;
 
+import com.google.inject.Inject;
 import commons.Recipe;
 import commons.RecipeCollection;
 import javafx.beans.binding.Bindings;
@@ -32,7 +33,9 @@ public class AddButtonCtrl {
     @FXML
     private Label statusLabel;
 
-    public void setMainCtrl(MainCtrl mainCtrl) {
+    //The connection between MainCtrl and AddButtonCtrl
+    @Inject
+    public AddButtonCtrl(MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
     }
 
@@ -70,10 +73,17 @@ public class AddButtonCtrl {
 
         query = query.substring(0, 1).toUpperCase() + query.substring(1);
         Recipe recipe = new Recipe(query);
-        mainCtrl.addRecipe(recipe); // update main
+        addToDb(recipe); // add to database
+        mainCtrl.addRecipe(recipe); // update the UI
+
+
         recipeInput.clear();
         statusLabel.setText("Recipe added!");
         statusLabel.setStyle("-fx-text-fill: green;");;
+    }
+
+    public void addToDb(Recipe recipe){
+
     }
 
 }
