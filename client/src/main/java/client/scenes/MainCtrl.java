@@ -38,6 +38,13 @@ public class MainCtrl {
     private final RecipeServerUtils recipeServerUtils;
     private final ObservableList<Recipe> recipesObservableList = FXCollections.observableArrayList();
 
+    /**
+     * Initializes the scenes
+     * @param primaryStage the main stage
+     * @param mainUserInterfaceScene the main UI scene
+     * @param nutritionScene the nutrition scene
+     * @param recipeAddScene the add recipe scene
+     */
     // Changed to initScenes since initialize has a different purpose
     public void initScenes(Stage primaryStage, Scene mainUserInterfaceScene, Scene nutritionScene, Scene recipeAddScene) {
         this.primaryStage = primaryStage;
@@ -45,11 +52,26 @@ public class MainCtrl {
         this.recipeAddScene = recipeAddScene; // store it for later
         primaryStage.show();
     }
+
+    /**
+     * The constructor that connects the ServerUtils to this controller
+     * @param recipeServerUtils the utility class responsible for server communication
+     */
     @Inject
     public MainCtrl(RecipeServerUtils recipeServerUtils) {
         this.recipeServerUtils = recipeServerUtils;
     }
 
+    /**
+     * Initializes the main UI controller.
+     * <p>
+     * This method is automatically called by the FXML loader after the
+     * controller's root element has been completely processed. It sets up
+     * the ListView `sidebarList` to use `recipesObservableList` as its data
+     * source and configures a custom cell factory so that only the recipe
+     * title is displayed in the list.
+     * </p>
+     */
     @FXML
     public void initialize() {
         sidebarList.setItems(recipesObservableList);
@@ -93,18 +115,28 @@ public class MainCtrl {
         }
     }
 
-
+    /**
+     * Changes the UI according to the selected recipe
+     * @param recipe the recipe that is selected
+     */
     private void onRecipeSelected(Recipe recipe) {
         titleRecipeLabel.setText(recipe.getTitle());
         //TODO showIngredients(recipe);
         //TODO showInstructions(recipe);
     }
 
+    /**
+     * Adds the recipe to the list that is displayed by the UI.
+     * @param recipe the to be added recipe.
+     */
     public void addRecipe(Recipe recipe) {
         // adds the recipe object to the list!
         recipesObservableList.add(recipe);
     }
 
+    /**
+     * Determines which recipe is selected and passes it to the helper methods.
+     */
     @FXML
     private void recipeRemoveButtonClicked() {
         Recipe selected = sidebarList.getSelectionModel().getSelectedItem();
@@ -120,6 +152,11 @@ public class MainCtrl {
 
     }
 
+    /**
+     * Called by the `recipeRemoveButtonClicked()` method
+     * Removes a recipe from the database and the list that is displayed by the UI
+     * @param recipe the to be removed recipe.
+     */
     public void removeRecipe(Recipe recipe) {
         System.out.println("Removing recipe [" + recipe.getRecipeId() + "] " + recipe.getTitle());
         // removes the recipe entity from database
@@ -128,6 +165,9 @@ public class MainCtrl {
         recipesObservableList.remove(recipe);
     }
 
+    /**
+     * Changes all the UI elements to be either removed or have default text
+     */
     public void clearUI() {
         titleRecipeLabel.setText("No recipe selected!");
         //TODO remove ingredients and instruction step
@@ -190,7 +230,7 @@ public class MainCtrl {
 
     /**
      * This is a placeholder method for further development
-     * Method prints out a message when the button is clicked
+     * Method prints out a message when the button is clicked.
      */
     @FXML
     private void preparationAddButtonClicked() {
@@ -253,6 +293,10 @@ public class MainCtrl {
         System.out.println("Added preparation step: " + step);
     }
 
+    /**
+     * Makes sure the window with the nutrition information is opened once the
+     * nutritional values button is pressed
+     */
     @FXML
     void showNutritionWindow() {
         if (nutritionScene == null) {
@@ -266,7 +310,10 @@ public class MainCtrl {
         secondaryStage.initOwner(primaryStage); // makes it modal to main window if desired
         secondaryStage.show();
     }
-
+    /**
+     * Makes sure the window with the add recipe functionality is opened once the
+     * Add button is pressed.
+     */
     @FXML
     void showAddRecipeWindow() {
         if (recipeAddScene == null) {
