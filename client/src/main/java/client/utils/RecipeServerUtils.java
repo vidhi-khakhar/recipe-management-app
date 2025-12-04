@@ -35,22 +35,17 @@ public class RecipeServerUtils {
      * @throws ProcessingException if there's a network error or server error
      */
     public Long createRecipe(Recipe recipe) throws ProcessingException {
-        Response response = null;
-        try {
-            response = CLIENT.target(SERVER + "api/v1/recipes")
+        try (
+            Response response = CLIENT.target(SERVER + "api/v1/recipes")
                 .request(APPLICATION_JSON)
-                .post(Entity.json(recipe));
-
+                .post(Entity.json(recipe))
+        ) {
             if (response.getStatus() == HTTP_CREATED) {
                 return response.readEntity(Long.class);
             } else {
                 throw new ProcessingException(
                     "Failed to create recipe, HTTP " + response.getStatus()
                 );
-            }
-        } finally {
-            if (response != null) {
-                response.close();
             }
         }
     }
@@ -61,22 +56,17 @@ public class RecipeServerUtils {
      * @throws ProcessingException if there's a network error or server error
      */
     public List<Recipe> getAllRecipes() throws ProcessingException {
-        Response response = null;
-        try {
-            response = CLIENT.target(SERVER + "api/v1/recipes")
+        try (
+            Response response = CLIENT.target(SERVER + "api/v1/recipes")
                 .request(APPLICATION_JSON)
-                .get();
-
+                .get()
+        ) {
             if (response.getStatus() == HTTP_OK) {
                 return response.readEntity(new GenericType<List<Recipe>>() {});
             } else {
                 throw new ProcessingException(
                     "Failed to get recipes, HTTP " + response.getStatus()
                 );
-            }
-        } finally {
-            if (response != null) {
-                response.close();
             }
         }
     }
@@ -90,12 +80,11 @@ public class RecipeServerUtils {
      */
     public Recipe getRecipe(Long id)
         throws ProcessingException, NoSuchElementException {
-        Response response = null;
-        try {
-            response = CLIENT.target(SERVER + "api/v1/recipes/" + id)
+        try (
+            Response response = CLIENT.target(SERVER + "api/v1/recipes/" + id)
                 .request(APPLICATION_JSON)
-                .get();
-
+                .get()
+        ) {
             if (response.getStatus() == HTTP_OK) {
                 return response.readEntity(Recipe.class);
             } else if (response.getStatus() == HTTP_NOT_FOUND) {
@@ -110,10 +99,6 @@ public class RecipeServerUtils {
                         response.getStatus()
                 );
             }
-        } finally {
-            if (response != null) {
-                response.close();
-            }
         }
     }
 
@@ -127,12 +112,11 @@ public class RecipeServerUtils {
      */
     public boolean replaceRecipe(Long id, Recipe recipe)
         throws ProcessingException, NoSuchElementException {
-        Response response = null;
-        try {
-            response = CLIENT.target(SERVER + "api/v1/recipes/" + id)
+        try (
+            Response response = CLIENT.target(SERVER + "api/v1/recipes/" + id)
                 .request(APPLICATION_JSON)
-                .put(Entity.json(recipe));
-
+                .put(Entity.json(recipe))
+        ) {
             if (response.getStatus() == HTTP_OK) {
                 return true;
             } else if (response.getStatus() == HTTP_NOT_FOUND) {
@@ -147,10 +131,6 @@ public class RecipeServerUtils {
                         response.getStatus()
                 );
             }
-        } finally {
-            if (response != null) {
-                response.close();
-            }
         }
     }
 
@@ -163,12 +143,11 @@ public class RecipeServerUtils {
      */
     public boolean deleteRecipe(Long id)
         throws ProcessingException, NoSuchElementException {
-        Response response = null;
-        try {
-            response = CLIENT.target(SERVER + "api/v1/recipes/" + id)
+        try (
+            Response response = CLIENT.target(SERVER + "api/v1/recipes/" + id)
                 .request(APPLICATION_JSON)
-                .delete();
-
+                .delete()
+        ) {
             if (response.getStatus() == HTTP_OK) {
                 return true;
             } else if (response.getStatus() == HTTP_NOT_FOUND) {
@@ -182,10 +161,6 @@ public class RecipeServerUtils {
                         ", HTTP " +
                         response.getStatus()
                 );
-            }
-        } finally {
-            if (response != null) {
-                response.close();
             }
         }
     }
