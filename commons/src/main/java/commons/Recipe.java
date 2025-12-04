@@ -183,6 +183,10 @@ public class Recipe {
         this.servings = servings;
     }
 
+    public void setRecipeId(Long recipeId) {
+        this.recipeId = recipeId;
+    }
+
     /**
      * @param anotherRecipe another recipe
      * @return whether two recipes are equal
