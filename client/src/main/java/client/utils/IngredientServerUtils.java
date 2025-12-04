@@ -34,11 +34,11 @@ public class IngredientServerUtils {
      * @throws ProcessingException if there's a network error or server error
      */
     public Long createIngredient(Ingredient ingredient) throws ProcessingException {
-        try {
-            Response response = CLIENT.target(SERVER + "api/v1/ingredients")
+        try
+            (Response response = CLIENT.target(SERVER + "api/v1/ingredients")
                     .request(APPLICATION_JSON)
-                    .post(Entity.json(ingredient));
-
+                    .post(Entity.json(ingredient)))
+        {
             if (
                     response.getStatus() == HTTP_OK ||
                             response.getStatus() == HTTP_CREATED
@@ -51,7 +51,7 @@ public class IngredientServerUtils {
             }
         } catch (ProcessingException e) {
             throw new ProcessingException(
-                    "Network error creating ingredient: " + e.getMessage()
+                    "Network error creating ingredient: " + e.getMessage(), e
             );
         }
     }
@@ -62,22 +62,16 @@ public class IngredientServerUtils {
      * @throws ProcessingException if there's a network error or server error
      */
     public List<Ingredient> getAllIngredients() throws ProcessingException {
-        try {
-            Response response = CLIENT.target(SERVER + "api/v1/ingredients")
-                    .request(APPLICATION_JSON)
-                    .get();
+        try (Response response = CLIENT.target(SERVER + "api/v1/ingredients")
+                .request(APPLICATION_JSON)
+                .get()) {
 
             if (response.getStatus() == HTTP_OK) {
                 return response.readEntity(new jakarta.ws.rs.core.GenericType<List<Ingredient>>() {});
-            } else {
-                throw new ProcessingException(
-                        "Failed to get ingredients, HTTP " + response.getStatus()
-                );
             }
+            throw new ProcessingException("Failed to get ingredients, HTTP " + response.getStatus());
         } catch (ProcessingException e) {
-            throw new ProcessingException(
-                    "Network error getting ingredients: " + e.getMessage()
-            );
+            throw new ProcessingException("Network error getting ingredients: " + e.getMessage(), e);
         }
     }
 
@@ -90,11 +84,10 @@ public class IngredientServerUtils {
      */
     public Ingredient getIngredient(Long id)
             throws ProcessingException, NoSuchElementException {
-        try {
-            Response response = CLIENT.target(SERVER + "api/v1/ingredients/" + id)
+        try (Response response = CLIENT.target(SERVER + "api/v1/ingredients/" + id)
                     .request(APPLICATION_JSON)
-                    .get();
-
+                    .get())
+        {
             if (response.getStatus() == HTTP_OK) {
                 return response.readEntity(Ingredient.class);
             } else if (response.getStatus() == HTTP_NOT_FOUND) {
@@ -111,7 +104,7 @@ public class IngredientServerUtils {
             }
         } catch (ProcessingException e) {
             throw new ProcessingException(
-                    "Network error getting ingredient " + id + ": " + e.getMessage()
+                    "Network error getting ingredient " + id + ": " + e.getMessage(), e
             );
         }
     }
@@ -126,11 +119,10 @@ public class IngredientServerUtils {
      */
     public boolean replaceIngredient(Long id, Ingredient ingredient)
             throws ProcessingException, NoSuchElementException {
-        try {
-            Response response = CLIENT.target(SERVER + "api/v1/ingredients/" + id)
+        try (Response response = CLIENT.target(SERVER + "api/v1/ingredients/" + id)
                     .request(APPLICATION_JSON)
-                    .put(Entity.json(ingredient));
-
+                    .put(Entity.json(ingredient)))
+        {
             if (response.getStatus() == HTTP_OK) {
                 return true;
             } else if (response.getStatus() == HTTP_NOT_FOUND) {
@@ -147,7 +139,7 @@ public class IngredientServerUtils {
             }
         } catch (ProcessingException e) {
             throw new ProcessingException(
-                    "Network error replacing ingredient " + id + ": " + e.getMessage()
+                    "Network error replacing ingredient " + id + ": " + e.getMessage(), e
             );
         }
     }
@@ -161,11 +153,11 @@ public class IngredientServerUtils {
      */
     public boolean deleteIngredient(Long id)
             throws ProcessingException, NoSuchElementException {
-        try {
-            Response response = CLIENT.target(SERVER + "api/v1/ingredients/" + id)
+        try
+            (Response response = CLIENT.target(SERVER + "api/v1/ingredients/" + id)
                     .request(APPLICATION_JSON)
-                    .delete();
-
+                    .delete())
+        {
             if (response.getStatus() == HTTP_OK) {
                 return true;
             } else if (response.getStatus() == HTTP_NOT_FOUND) {
@@ -182,7 +174,7 @@ public class IngredientServerUtils {
             }
         } catch (ProcessingException e) {
             throw new ProcessingException(
-                    "Network error deleting ingredient " + id + ": " + e.getMessage()
+                    "Network error deleting ingredient " + id + ": " + e.getMessage(), e
             );
         }
     }
