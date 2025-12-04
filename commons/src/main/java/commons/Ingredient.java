@@ -2,7 +2,6 @@ package commons;
 
 
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.Order;
 
 import java.util.Objects;
 
@@ -61,12 +60,6 @@ public class Ingredient {
     private double kcalPer100g;
 
     /**
-     * language of the ingredient, default "en"
-     */
-    @Column(nullable = false)
-    private String language = "en";
-
-    /**
      * Default constructor for JPA.
      */
     protected Ingredient() {
@@ -75,24 +68,20 @@ public class Ingredient {
 
     /**
      * Constructor with all fields except id and version.
-     * @param name Name of the ingredient.
+     *
+     * @param name           Name of the ingredient.
      * @param proteinPer100g Protein content per 100g.
-     * @param fatPer100g Fat content per 100g.
-     * @param carbsPer100g Carbohydrate content per 100g.
-     * @param language Language code (e.g., "en", "nl", "de").
+     * @param fatPer100g     Fat content per 100g.
+     * @param carbsPer100g   Carbohydrate content per 100g.
      */
-    public Ingredient(String name, double proteinPer100g, double fatPer100g, double carbsPer100g, String language) {
+    public Ingredient(Long id, String name, double proteinPer100g, double fatPer100g, double carbsPer100g) {
+        this.id = Objects.requireNonNull(id, "An ingredients id cannot be Null");
         this.name = Objects.requireNonNull(name, "Name of an ingredient cannot be null");
         this.proteinPer100g = proteinPer100g;
         this.fatPer100g = fatPer100g;
         this.carbsPer100g = carbsPer100g;
         this.kcalPer100g = calculatingKcal(proteinPer100g, fatPer100g, carbsPer100g);
 
-        if (language == null || language.trim().length() != 2) {
-            this.language = "en";
-        } else {
-            this.language = language.trim().toLowerCase();
-        }
     }
 
     /**
@@ -154,14 +143,6 @@ public class Ingredient {
 
     public void setKcalPer100g(double kcalPer100g) {
         this.kcalPer100g = kcalPer100g;
-    }
-    
-    public String getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(String language) {
-        this.language = language;
     }
 
 

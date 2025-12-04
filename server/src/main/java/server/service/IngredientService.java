@@ -21,7 +21,7 @@ public class IngredientService {
     /**
      * gets the ingredient by it's id
      * @param id
-     * @return
+     * @return an Ingredient
      */
     public Ingredient getIngredientById(Long id) {
         try {
@@ -38,11 +38,11 @@ public class IngredientService {
      * @param proteinPer100g
      * @param fatPer100g
      * @param carbsPer100g
-     * @return
+     * @return an Ingredient with an updated kcalPer100g
      */
     public Ingredient updateIngredientKcal(Long id, String name, double proteinPer100g, double fatPer100g, double carbsPer100g) {
         double newKcalPer100g = 4 * proteinPer100g + 4 * carbsPer100g + 9 * fatPer100g;
-        Ingredient ingredient = ingredientRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Ingredient not found"));
+        Ingredient ingredient = ingredientRepository.findById(id).orElseThrow(() -> new NoSuchElementException ("Ingredient not found"));
         ingredient.setKcalPer100g(newKcalPer100g);
         return ingredientRepository.save(ingredient);
     }
