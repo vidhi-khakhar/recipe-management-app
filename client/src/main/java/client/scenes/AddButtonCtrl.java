@@ -35,14 +35,23 @@ public class AddButtonCtrl {
     @FXML
     private Label statusLabel;
 
-    //The connection between other classes
+    /**
+     * Constructs an AddButtonCtrl and injects the necessary dependencies.
+     * The injected dependencies allow this controller to communicate with the
+     * server for recipe operations and to update the main UI.
+     * @param mainCtrl the main controller, used to update the UI when a recipe is added
+     * @param recipeServerUtils the utility class responsible for server communication,
+     *                          used to create and manage recipes
+     */
     @Inject
     public AddButtonCtrl(MainCtrl mainCtrl,  RecipeServerUtils recipeServerUtils) {
         this.mainCtrl = mainCtrl;
         this.recipeServerUtils = recipeServerUtils;
     }
 
-    //Adding Recipe methods
+    /**
+     * Handles the action of adding a new recipe when the user clicks the "Add" button.
+     */
     @FXML
     private void recipeAddRequest() {
         String query = recipeInput.getText().trim();
