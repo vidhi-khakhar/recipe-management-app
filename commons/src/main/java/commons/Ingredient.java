@@ -2,7 +2,6 @@ package commons;
 
 
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.Order;
 
 import java.util.Objects;
 
@@ -15,13 +14,14 @@ import java.util.Objects;
 @Table(name = "ingredient")
 public class Ingredient {
 
+
     /**
      * id identifies the ingredient in the database.
      * It is the primary key.
      */
-    @Id
-    @GeneratedValue
-    private Long id;
+    @Id // Specifies the primary key.
+    @GeneratedValue(strategy = GenerationType.AUTO) // Auto-generated primary key.
+    private Long ingredientId;
 
     /**
      * Version field for optimistic locking.
@@ -60,12 +60,6 @@ public class Ingredient {
     private double kcalPer100g;
 
     /**
-     * language of the ingredient, default "en"
-     */
-    @Column(nullable = false)
-    private String language = "en";
-
-    /**
      * Default constructor for JPA.
      */
     protected Ingredient() {
@@ -74,24 +68,19 @@ public class Ingredient {
 
     /**
      * Constructor with all fields except id and version.
-     * @param name Name of the ingredient.
+     *
+     * @param name           Name of the ingredient.
      * @param proteinPer100g Protein content per 100g.
-     * @param fatPer100g Fat content per 100g.
-     * @param carbsPer100g Carbohydrate content per 100g.
-     * @param language Language code (e.g., "en", "nl", "de").
+     * @param fatPer100g     Fat content per 100g.
+     * @param carbsPer100g   Carbohydrate content per 100g.
      */
-    public Ingredient(String name, double proteinPer100g, double fatPer100g, double carbsPer100g, String language) {
+    public Ingredient(String name, double proteinPer100g, double fatPer100g, double carbsPer100g) {
         this.name = Objects.requireNonNull(name, "Name of an ingredient cannot be null");
         this.proteinPer100g = proteinPer100g;
         this.fatPer100g = fatPer100g;
         this.carbsPer100g = carbsPer100g;
         this.kcalPer100g = calculatingKcal(proteinPer100g, fatPer100g, carbsPer100g);
 
-        if (language == null || language.trim().length() != 2) {
-            this.language = "en";
-        } else {
-            this.language = language.trim().toLowerCase();
-        }
     }
 
     /**
@@ -108,7 +97,11 @@ public class Ingredient {
 
 
     public Long getId() {
-            return id;
+            return ingredientId;
+    }
+
+    public void setId(Long id) {
+        this.ingredientId = ingredientId;
     }
 
     public String getName() {
@@ -119,40 +112,36 @@ public class Ingredient {
         this.name = name;
     }
 
-    public double getproteinPer100g() {
+    public double getProteinPer100g() {
         return proteinPer100g;
     }
 
-    public void setproteinPer100g(double proteinPer100g) {
+    public void setProteinPer100g(double proteinPer100g) {
         this.proteinPer100g = proteinPer100g;
     }
 
-    public double getfatPer100g() {
+    public double getFatPer100g() {
         return fatPer100g;
     }
 
-    public void setfatPer100g(double fatPer100g) {
+    public void setFatPer100g(double fatPer100g) {
         this.fatPer100g = fatPer100g;
     }
 
-    public double getcarbsPer100g() {
+    public double getCarbsPer100g() {
         return carbsPer100g;
     }
 
-    public void setcarbsPer100g(double carbsPer100g) {
+    public void setCarbsPer100g(double carbsPer100g) {
         this.carbsPer100g = carbsPer100g;
     }
 
-    public double getkcalPer100g() {
+    public double getKcalPer100g() {
         return kcalPer100g;
     }
-    
-    public String getLanguage() {
-        return language;
-    }
 
-    public void setLanguage(String language) {
-        this.language = language;
+    public void setKcalPer100g(double kcalPer100g) {
+        this.kcalPer100g = kcalPer100g;
     }
 
 
