@@ -29,6 +29,7 @@ import javafx.fxml.FXML;
 import javafx.scene.layout.VBox;
 
 import java.util.List;
+import java.util.Optional;
 
 public class MainCtrl {
     private Stage primaryStage;
@@ -90,6 +91,7 @@ public class MainCtrl {
             }
         });
 
+        // The listeners for the selected recipe
         sidebarList.getSelectionModel().selectedItemProperty().addListener((obs, oldRecipe, newRecipe) -> {
             if (newRecipe != null) {
                 onRecipeSelected(newRecipe);
@@ -146,9 +148,36 @@ public class MainCtrl {
             return;
         }
 
+        if(!deleteConfirmation()){
+            return;
+        }
+
         removeRecipe(selected);
         clearUI();
         sidebarList.getSelectionModel().clearSelection();
+
+    }
+
+    /**
+     * Opens an alert when user clicks the recipe deletion button.
+     * @return true if user confirms the deletion
+     *         false if user cancels the deletion
+     */
+    private boolean deleteConfirmation() {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirmation");
+            alert.setHeaderText("Are you sure you want to delete this recipe?");
+
+            // Wait for the conformation from the user
+            Optional<ButtonType> result = alert.showAndWait();
+
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                // If confirmed
+                return true;
+            } else {
+                // If cancelled
+                return false;
+            }
 
     }
 
@@ -325,6 +354,8 @@ public class MainCtrl {
         recipeAddStage.setTitle("Add Recipe");
         recipeAddStage.setScene(recipeAddScene);
         recipeAddStage.initOwner(primaryStage);
+
+        
 
         recipeAddStage.show();
     }
