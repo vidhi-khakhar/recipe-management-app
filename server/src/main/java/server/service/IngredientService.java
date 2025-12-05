@@ -1,10 +1,12 @@
 package server.service;
 
 import commons.Ingredient;
+import commons.Recipe;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import server.database.IngredientRepository;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
@@ -27,6 +29,14 @@ public class IngredientService {
         } catch (NoSuchElementException e) {
             throw new NoSuchElementException("Ingredient with id " + id + " not found.");
         }
+    }
+
+    /**
+     * Reads all ingredients.
+     * @return list of all ingredients in database
+     */
+    public List<Ingredient> getAllIngredients() {
+        return ingredientRepository.findAll();
     }
 
     /**

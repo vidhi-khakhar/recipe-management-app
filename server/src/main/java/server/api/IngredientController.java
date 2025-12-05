@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import server.IngredientService;
+import server.service.IngredientService;
 
 @RestController
 @RequestMapping("/api/v1/ingredients")
@@ -35,7 +35,7 @@ public class IngredientController {
     @GetMapping
     public ResponseEntity<List<Ingredient>> getAllIngredients(){
 
-        return ResponseEntity.ok(this.iService.getAllRecipes());
+        return ResponseEntity.ok(this.iService.getAllIngredients());
     }
 
     /**
@@ -46,7 +46,7 @@ public class IngredientController {
     @GetMapping("/{id}")
     public ResponseEntity<Ingredient> getIngredientById(@PathVariable Long id){
         try {
-            return ResponseEntity.ok(this.iService.getIngredientById());
+            return ResponseEntity.ok(this.iService.getIngredientById(id));
         }catch(NoSuchElementException e){
             return ResponseEntity.notFound().build();
         }
