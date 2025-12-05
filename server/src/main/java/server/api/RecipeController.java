@@ -9,8 +9,7 @@ import server.RecipeService;
 
 @RestController
 @RequestMapping("/api/v1/recipes")
-public class
-RecipeController {
+public class RecipeController {
 
     private final RecipeService rService;
 
@@ -27,7 +26,7 @@ RecipeController {
     public ResponseEntity<Long> createRecipe(@RequestBody Recipe recipe) {
         this.rService.createRecipe(recipe);
 
-        return ResponseEntity.ok(recipe.getRecipeId());
+        return ResponseEntity.status(201).body(recipe.getRecipeId());
     }
 
     /**
@@ -54,13 +53,13 @@ RecipeController {
     }
 
     /**
-     * Defines endpoint for replacing a recipe in the repository
-     * @param id the id of the recipe to replace
-     * @param recipe the recipe to replace with
-     * @return id of the recipe that was replaced, or 404 if not found
+     * Defines endpoint for updating a recipe in the repository
+     * @param id the id of the recipe to update
+     * @param recipe the recipe to update with
+     * @return id of the recipe that was updated, or 404 if not found
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Long> replaceRecipe(
+    public ResponseEntity<Long> updateRecipe(
         @PathVariable Long id,
         @RequestBody Recipe recipe
     ) {
