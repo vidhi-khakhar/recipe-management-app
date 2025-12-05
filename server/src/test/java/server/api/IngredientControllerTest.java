@@ -13,20 +13,20 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import server.IngredientService;
+import server.service.IngredientService;
 
 @ExtendWith(MockitoExtension.class)
 class IngredientControllerTest {
 
     @Mock
-    private IngredientService rService;
+    private IngredientService iService;
 
     @InjectMocks
     private IngredientController ingredientController;
 
     @Test
     void createsIngredientAndReturnsNewUUID() {
-        var result = ingredientController.createIngredient(new Ingredient("test", 1.0, 1.0, 1.0, "en"));
+        var result = ingredientController.create(new Ingredient("test", 1.0, 1.0, 1.0));
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result);
@@ -34,76 +34,76 @@ class IngredientControllerTest {
 
     @Test
     void createsIngredientAndExists() {
-        assertNotNull(ingredientController.createIngredient(new Ingredient("test",1.0, 1.0, 1.0, "en")));
-        verify(rService, times(1)).createIngredient(new Ingredient("test",1.0, 1.0, 1.0, "en"));
+        assertNotNull(ingredientController.create(new Ingredient("test",1.0, 1.0, 1.0)));
+        verify(iService, times(1)).createIngredient(new Ingredient("test",1.0, 1.0, 1.0));
     }
 
     @Test
     void returnsAllIngredientsWhenGettingAll() {
-    Ingredient ingredient1 = new Ingredient("Ingredient 1", 1.0, 1.0, 1.0, "en");
-        Ingredient ingredient2 = new Ingredient("Ingredient 2", 1.0, 1.0, 1.0, "en");
+    Ingredient ingredient1 = new Ingredient("Ingredient 1", 1.0, 1.0, 1.0);
+        Ingredient ingredient2 = new Ingredient("Ingredient 2", 1.0, 1.0, 1.0);
         List<Ingredient> ingredients = List.of(ingredient1, ingredient2);
 
-        when(rService.getAllIngredients()).thenReturn(ingredients);
+        when(iService.getAllIngredients()).thenReturn(ingredients);
 
         ResponseEntity<List<Ingredient>> result = ingredientController.getAllIngredients();
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(ingredients, result.getBody());
-        verify(rService, times(1)).getAllIngredients();
+        verify(iService, times(1)).getAllIngredients();
     }
 
     @Test
     void returnsIngredientWhenFoundByID() {
-        Ingredient ingredient = new Ingredient("Test Ingredient", 1.0, 1.0, 1.0, "en");
-        var id = ingredient.getIngredientId();
+        Ingredient ingredient = new Ingredient("Test Ingredient", 1.0, 1.0, 1.0);
+        var id = ingredient.getId();
 
-        when(rService.getIngredientById(id)).thenReturn(ingredient);
+        when(iService.getIngredientById(id)).thenReturn(ingredient);
 
-        ResponseEntity<Ingredient> result = ingredientController.getIngredient(id);
+        ResponseEntity<Ingredient> result = ingredientController.getIngredientById(id);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(ingredient, result.getBody());
-        verify(rService, times(1)).getIngredientById(id);
+        verify(iService, times(1)).getIngredientById(id);
     }
 
     @Test
     void returns404WhenIngredientDoesNotExist() {
-        when(rService.getIngredientById(1L)).thenThrow(
+        when(iService.getIngredientById(1L)).thenThrow(
                 new NoSuchElementException("")
         );
 
-        ResponseEntity<Ingredient> result = ingredientController.getIngredient(1L);
+        ResponseEntity<Ingredient> result = ingredientController.getIngredientById(1L);
 
         assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
         assertNull(result.getBody());
-        verify(rService, times(1)).getIngredientById(1L);
+        verify(iService, times(1)).getIngredientById(1L);
     }
 
     @Test
     void updatesIngredientWhenReplacingExistingOne() {
-        Ingredient ingredient = new Ingredient("Updated Ingredient", 1.0, 1.0, 1.0, "en");
-        var id = ingredient.getIngredientId();
+        Ingredient ingredient = new Ingredient("Updated Ingredient", 1.0, 1.0, 1.0);
+        var id = ingredient.getId();
 
-        ResponseEntity<Long> result = ingredientController.replaceIngredient(
+        ResponseEntity<Long> result = ingredientController.updateIngredient(
                 id,
                 ingredient
         );
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(id, result.getBody());
-        verify(rService, times(1)).updateIngredient(id, ingredient);
+        verify(iService, times(1)).updateIngredient(id, ingredient);
     }
 
     @Test
     void returns404WhenTryingToReplaceNonExistentIngredient() {
-        Ingredient ingredient = new Ingredient("Updated Ingredient", 1.0, 1.0, 1.0, "en");
+        Ingredient ingredient = new Ingredient("Updated Ingredient", 1.0, 1.0, 1.0);
 
         doThrow(new NoSuchElementException("Ingredient not found"))
-                .when(rService)
+                .when(iService)
                 .updateIngredient(eq(1L), any(Ingredient.class));
 
-        ResponseEntity<Long> result = ingredientController.replaceIngredient(
+        ResponseEntity<Long> result = ingredientController.updateIngredient(
                 1L,
                 ingredient
         );
@@ -111,25 +111,25 @@ class IngredientControllerTest {
         assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
         assertNull(result.getBody());
 
-        verify(rService, times(1)).updateIngredient(eq(1L), any(Ingredient.class));
+        verify(iService, times(1)).updateIngredient(eq(1L), any(Ingredient.class));
     }
 
     @Test
     void removesIngredientWhenDeletingExistingOne() {
-        Ingredient ingredient = new Ingredient("Test Ingredient", 1.0, 1.0, 1.0, "en");
-        var id = ingredient.getIngredientId();
+        Ingredient ingredient = new Ingredient("Test Ingredient", 1.0, 1.0, 1.0);
+        var id = ingredient.getId();
 
         ResponseEntity<Long> result = ingredientController.deleteIngredient(id);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(id, result.getBody());
-        verify(rService, times(1)).deleteIngredientById(id);
+        verify(iService, times(1)).deleteIngredientById(id);
     }
 
     @Test
     void returns404WhenTryingToDeleteNonExistentIngredient() {
         doThrow(new NoSuchElementException("Ingredient not found"))
-                .when(rService)
+                .when(iService)
                 .deleteIngredientById(1L);
 
         ResponseEntity<Long> result = ingredientController.deleteIngredient(1L);
@@ -137,7 +137,7 @@ class IngredientControllerTest {
         assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
         assertNull(result.getBody());
 
-        verify(rService, times(1)).deleteIngredientById(1L);
+        verify(iService, times(1)).deleteIngredientById(1L);
     }
 }
 

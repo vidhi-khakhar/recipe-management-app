@@ -2,6 +2,7 @@ package commons;
 
 
 import jakarta.persistence.*;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import java.util.Objects;
 
@@ -93,6 +94,17 @@ public class Ingredient {
     public static double calculatingKcal(double protein, double fat, double carbs) {
         double kcalPer100g = 4 * (protein + carbs) + 9 * fat;
         return kcalPer100g;
+    }
+
+    /**
+     * @param anotherIngredient another ingredient
+     * @return whether two ingredients are equal
+     * Note: Reflection means the library automatically looks at the object’s fields at runtime instead of you manually listing them.
+     * Uses reflection to compare all fields of this object with the other object.
+     */
+    @Override
+    public boolean equals(Object anotherIngredient) {
+        return EqualsBuilder.reflectionEquals(this,anotherIngredient);
     }
 
 
