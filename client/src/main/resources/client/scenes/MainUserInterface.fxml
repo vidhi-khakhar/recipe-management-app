@@ -156,7 +156,7 @@
                            <children>
                               <VBox prefHeight="363.0" prefWidth="266.0" VBox.vgrow="ALWAYS">
                                  <children>
-                                    <ListView fx:id="sidebarList1" prefHeight="341.0" prefWidth="250.0" styleClass="sidebar-list" VBox.vgrow="ALWAYS">
+                                    <ListView fx:id="sidebarList" prefHeight="341.0" prefWidth="250.0" styleClass="sidebar-list" VBox.vgrow="ALWAYS">
                                        <VBox.margin>
                                           <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
                                        </VBox.margin>
@@ -168,7 +168,7 @@
                               </VBox>
                               <HBox alignment="CENTER" prefHeight="50.0" prefWidth="266.0">
                                  <children>
-                                    <Button fx:id="addRecipeButton1" mnemonicParsing="false" onAction="#recipeAddButtonClicked" prefHeight="38.0" prefWidth="161.0" styleClass="h3" text="+ Add" HBox.hgrow="ALWAYS">
+                                    <Button fx:id="addRecipeButton1" mnemonicParsing="false" onAction="#showAddRecipeWindow" prefHeight="38.0" prefWidth="161.0" styleClass="h3" text="+ Add" HBox.hgrow="ALWAYS">
                                        <font>
                                           <Font size="17.0" />
                                        </font>
@@ -176,7 +176,7 @@
                                           <Insets right="5.0" />
                                        </HBox.margin>
                                     </Button>
-                                    <Button fx:id="removeRecipeButton1" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#recipeRemoveButtonClicked" prefHeight="23.0" prefWidth="43.0" text="-" HBox.hgrow="ALWAYS">
+                                    <Button fx:id="removeRecipeButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#recipeRemoveButtonClicked" prefHeight="23.0" prefWidth="43.0" text="-" HBox.hgrow="ALWAYS">
                                        <font>
                                           <Font size="17.0" />
                                        </font>

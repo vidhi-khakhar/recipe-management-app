@@ -28,7 +28,7 @@ class RecipeControllerTest {
     void createsRecipeAndReturnsNewUUID() {
         var result = recipeController.createRecipe(new Recipe("test"));
 
-        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertNotNull(result);
     }
 
@@ -85,10 +85,7 @@ class RecipeControllerTest {
         Recipe recipe = new Recipe("Updated Recipe");
         var id = recipe.getRecipeId();
 
-        ResponseEntity<Long> result = recipeController.replaceRecipe(
-            id,
-            recipe
-        );
+        ResponseEntity<Long> result = recipeController.updateRecipe(id, recipe);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(id, result.getBody());
@@ -103,10 +100,7 @@ class RecipeControllerTest {
             .when(rService)
             .updateRecipe(eq(1L), any(Recipe.class));
 
-        ResponseEntity<Long> result = recipeController.replaceRecipe(
-            1L,
-            recipe
-        );
+        ResponseEntity<Long> result = recipeController.updateRecipe(1L, recipe);
 
         assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
         assertNull(result.getBody());
