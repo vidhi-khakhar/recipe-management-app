@@ -28,14 +28,15 @@ class IngredientControllerTest {
     void createsIngredientAndReturnsNewUUID() {
         var result = ingredientController.createIngredient(new Ingredient("test", 1.0, 1.0, 1.0));
 
-        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertNotNull(result);
     }
 
     @Test
     void createsIngredientAndExists() {
-        assertNotNull(ingredientController.createIngredient(new Ingredient("test",1.0, 1.0, 1.0)));
-        verify(iService, times(1)).createIngredient(new Ingredient("test",1.0, 1.0, 1.0));
+        Ingredient ing = new Ingredient("test", 1.0, 1.0, 1.0);
+        ingredientController.createIngredient(ing);
+        verify(iService).createIngredient(same(ing));
     }
 
     @Test
@@ -82,36 +83,35 @@ class IngredientControllerTest {
 
     @Test
     void updatesIngredientWhenReplacingExistingOne() {
-        Ingredient ingredient = new Ingredient("Updated Ingredient", 1.0, 1.0, 1.0);
-        var id = ingredient.getId();
+        Long id = 1L;
+        Ingredient updated = new Ingredient("Updated Ingredient", 1.0, 1.0, 1.0);
 
-        ResponseEntity<Long> result = ingredientController.updateIngredient(
-                id,
-                ingredient
-        );
+        when(iService.getIngredientById(id)).thenReturn(new Ingredient("Existing", 1.0, 1.0, 1.0));
+
+        ResponseEntity<Long> result = ingredientController.updateIngredient(id, updated);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(id, result.getBody());
-        verify(iService, times(1)).updateIngredient(id, ingredient);
+
+        verify(iService, times(1)).getIngredientById(id);
+        verify(iService, times(1)).updateIngredient(id, updated);
     }
 
     @Test
     void returns404WhenTryingToReplaceNonExistentIngredient() {
-        Ingredient ingredient = new Ingredient("Updated Ingredient", 1.0, 1.0, 1.0);
+        Long id = 1L;
+        Ingredient updated = new Ingredient("Updated Ingredient", 1.0, 1.0, 1.0);
 
-        doThrow(new NoSuchElementException("Ingredient not found"))
-                .when(iService)
-                .updateIngredient(eq(1L), any(Ingredient.class));
+        when(iService.getIngredientById(id)).thenThrow(new NoSuchElementException("not found"));
 
-        ResponseEntity<Long> result = ingredientController.updateIngredient(
-                1L,
-                ingredient
-        );
+        ResponseEntity<Long> result = ingredientController.updateIngredient(id, updated);
 
         assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
         assertNull(result.getBody());
 
-        verify(iService, times(1)).updateIngredient(eq(1L), any(Ingredient.class));
+        verify(iService, times(1)).getIngredientById(id);
+        
+        verify(iService, never()).updateIngredient(anyLong(), any(Ingredient.class));
     }
 
     @Test
