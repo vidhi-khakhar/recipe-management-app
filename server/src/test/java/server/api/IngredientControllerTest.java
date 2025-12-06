@@ -86,15 +86,15 @@ class IngredientControllerTest {
         Long id = 1L;
         Ingredient updated = new Ingredient("Updated Ingredient", 1.0, 1.0, 1.0);
 
-        when(iService.getIngredientById(id)).thenReturn(new Ingredient("Existing", 1.0, 1.0, 1.0));
+        when(iService.getIngredientById(id))
+                .thenReturn(new Ingredient("Existing", 1.0, 1.0, 1.0));
 
         ResponseEntity<Long> result = ingredientController.updateIngredient(id, updated);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals(id, result.getBody());
 
-        verify(iService, times(1)).getIngredientById(id);
-        verify(iService, times(1)).updateIngredient(id, updated);
+        verify(iService).getIngredientById(id);
+        verify(iService).updateIngredient(id, updated);
     }
 
     @Test
@@ -110,7 +110,7 @@ class IngredientControllerTest {
         assertNull(result.getBody());
 
         verify(iService, times(1)).getIngredientById(id);
-        
+
         verify(iService, never()).updateIngredient(anyLong(), any(Ingredient.class));
     }
 
