@@ -5,16 +5,13 @@ import commons.Recipe;
 import commons.RecipeIngredient;
 import commons.Unit;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-import java.util.List;
-
-public class AddIngredientCtrl {
+public class AddRecipeIngredientCtrl {
     private Recipe recipe;
     private RecipeIngredient recipeIngredient;
 
@@ -48,7 +45,7 @@ public class AddIngredientCtrl {
     public void initialize() {
         // Test ingredient, lacking all global ingredients
         ingredientChoiceBox.getItems().addAll(
-                new Ingredient("Varza", 100, 11, 12, "en"));
+                new Ingredient("Varza", 100, 11, 12));
         ingredientChoiceBox.setValue(ingredientChoiceBox.getItems().get(0));
 
         unitTypeChoiceBox.getItems().addAll("Formal", "Informal");

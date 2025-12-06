@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="419.0" prefWidth="600.0" stylesheets="@FoodPal.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AddRecipeIngredientCtrl">
+   <children>
+      <HBox alignment="CENTER" fillHeight="false" prefHeight="123.0" prefWidth="600.0" stylesheets="@FoodPal.css" AnchorPane.bottomAnchor="313.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="123.0" prefWidth="673.0" styleClass="header" stylesheets="@FoodPal.css" text="Add Ingredient" textAlignment="CENTER" textFill="WHITE" HBox.hgrow="ALWAYS">
+               <font>
+                  <Font size="39.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER" layoutY="104.0" prefHeight="80.0" prefWidth="600.0" AnchorPane.bottomAnchor="220.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="105.0">
+         <children>
+            <Label prefHeight="50.0" prefWidth="200.0" styleClass="headerlabel" stylesheets="@FoodPal.css" text="Select Ingredient" textFill="WHITE" HBox.hgrow="ALWAYS">
+               <HBox.margin>
+                  <Insets right="40.0" />
+               </HBox.margin>
+            </Label>
+            <ChoiceBox fx:id="ingredientChoiceBox" prefHeight="50.0" prefWidth="200.0" styleClass="centerbox" stylesheets="@FoodPal.css" HBox.hgrow="ALWAYS">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </ChoiceBox>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER" layoutY="184.0" prefHeight="80.0" prefWidth="600.0" AnchorPane.bottomAnchor="180.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="185.0">
+         <children>
+            <Label prefHeight="50.0" prefWidth="200.0" styleClass="headerlabel" stylesheets="@FoodPal.css" text="Select Unit Type" textFill="WHITE" HBox.hgrow="ALWAYS">
+               <HBox.margin>
+                  <Insets right="40.0" />
+               </HBox.margin>
+            </Label>
+            <ChoiceBox fx:id="unitTypeChoiceBox" prefHeight="50.0" prefWidth="200.0" styleClass="centerbox" stylesheets="@FoodPal.css" />
+         </children>
+      </HBox>
+      <HBox alignment="CENTER" layoutY="264.0" prefHeight="80.0" prefWidth="600.0" AnchorPane.bottomAnchor="120.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="265.0">
+         <children>
+            <Label prefHeight="50.0" prefWidth="200.0" styleClass="headerlabel" stylesheets="@FoodPal.css" text="Enter Amount" textFill="WHITE" HBox.hgrow="ALWAYS">
+               <HBox.margin>
+                  <Insets left="25.0" right="40.0" />
+               </HBox.margin>
+            </Label>
+            <TextField fx:id="amountTextField" prefHeight="50.0" prefWidth="150.0" styleClass="searchbar" stylesheets="@FoodPal.css">
+               <HBox.margin>
+                  <Insets right="10.0" />
+               </HBox.margin>
+            </TextField>
+            <ChoiceBox fx:id="unitChoiceBox" prefHeight="55.0" prefWidth="50.0" styleClass="centerbox" stylesheets="@FoodPal.css">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </ChoiceBox>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER" layoutY="339.0" prefHeight="80.0" prefWidth="613.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="330.0">
+         <children>
+            <Button fx:id="saveButton" mnemonicParsing="false" onAction="#saveButtonClicked" prefHeight="50.0" prefWidth="148.0" text="Save" HBox.hgrow="ALWAYS">
+               <font>
+                  <Font size="18.0" />
+               </font>
+               <HBox.margin>
+                  <Insets right="50.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#cancelButtonClicked" prefHeight="50.0" prefWidth="148.0" text="Cancel" HBox.hgrow="ALWAYS">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Button>
+         </children>
+      </HBox>
+   </children>
+</AnchorPane>
