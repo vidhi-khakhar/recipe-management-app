@@ -1,10 +1,12 @@
 package server.service;
 
 import commons.Ingredient;
+import commons.Recipe;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import server.database.IngredientRepository;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
@@ -30,20 +32,28 @@ public class IngredientService {
     }
 
     /**
-     * updates the ingredient and recalculates kcal per 100g
-     *
-     * @param name
-     * @param proteinPer100g
-     * @param fatPer100g
-     * @param carbsPer100g
-     * @return an Ingredient with an updated kcalPer100g
+     * Reads all ingredients.
+     * @return list of all ingredients in database
      */
-    public Ingredient updateIngredientKcal(Long id, String name, double proteinPer100g, double fatPer100g, double carbsPer100g) {
-        double newKcalPer100g = 4 * proteinPer100g + 4 * carbsPer100g + 9 * fatPer100g;
-        Ingredient ingredient = ingredientRepository.findById(id).orElseThrow(() -> new NoSuchElementException ("Ingredient not found"));
-        ingredient.setKcalPer100g(newKcalPer100g);
-        return ingredientRepository.save(ingredient);
+    public List<Ingredient> getAllIngredients() {
+        return ingredientRepository.findAll();
     }
+
+//    /**
+//     * updates the ingredient and recalculates kcal per 100g
+//     *
+//     * @param name
+//     * @param proteinPer100g
+//     * @param fatPer100g
+//     * @param carbsPer100g
+//     * @return an Ingredient with an updated kcalPer100g
+//     */
+//    public Ingredient updateIngredientKcal(Long id, String name, double proteinPer100g, double fatPer100g, double carbsPer100g) {
+//        double newKcalPer100g = 4 * proteinPer100g + 4 * carbsPer100g + 9 * fatPer100g;
+//        Ingredient ingredient = ingredientRepository.findById(id).orElseThrow(() -> new NoSuchElementException ("Ingredient not found"));
+//        ingredient.setKcalPer100g(newKcalPer100g);
+//        return ingredientRepository.save(ingredient);
+//    }
 
     /**
      * creates an ingredient in the repo
