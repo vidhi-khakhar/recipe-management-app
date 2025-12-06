@@ -15,6 +15,7 @@
  */
 package client.scenes;
 
+import client.utils.RecipeServerUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -24,12 +25,12 @@ import java.io.PrintStream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MainCtrlTest {
-
+    private RecipeServerUtils recipeServerUtils;
     private MainCtrl sut;
 
     @BeforeEach
     public void setup() {
-        sut = new MainCtrl();
+        sut = new MainCtrl(recipeServerUtils);
     }
 
     @Test
