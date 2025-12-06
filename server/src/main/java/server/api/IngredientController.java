@@ -3,6 +3,8 @@ package server.api;
 import commons.Ingredient;
 import java.util.List;
 import java.util.NoSuchElementException;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.service.IngredientService;
@@ -47,11 +49,10 @@ public class IngredientController {
      */
     @PostMapping
     public ResponseEntity<Long> createIngredient(@RequestBody Ingredient ingredient){
-        if(ingredient == null){
-            throw new IllegalArgumentException();
-        }
+        validateIngredient(ingredient);
+
         this.iService.createIngredient(ingredient);
-        return ResponseEntity.ok(ingredient.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(ingredient.getId());
     }
 
     /**
@@ -89,12 +90,16 @@ public class IngredientController {
             @PathVariable Long id,
             @RequestBody Ingredient ingredient
     ){
+        validateIngredient(ingredient);
+
       try{
-          this.iService.updateIngredient(id, ingredient);
-          return ResponseEntity.ok(id);
+          iService.getIngredientById(id);
       }catch (NoSuchElementException e){
           return ResponseEntity.notFound().build();
       }
+
+      iService.updateIngredient(id, ingredient);
+      return ResponseEntity.ok(ingredient.getId());
     }
 
     /**
