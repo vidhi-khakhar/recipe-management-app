@@ -17,14 +17,40 @@ public class IngredientController {
     }
 
     /**
+     * Method that checks that the ingredient passed a parameter is valid.
+     * @param ingredient the ingredient to validate
+     */
+    private static void validateIngredient(Ingredient ingredient) {
+        if (ingredient == null) {
+            throw new IllegalArgumentException("Ingredient cannot be null");
+        }
+
+        String name = ingredient.getName();
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Ingredient name cannot be null or blank");
+        }
+        if (ingredient.getProteinPer100g() < 0) {
+            throw new IllegalArgumentException("Protein cannot be negative");
+        }
+        if (ingredient.getFatPer100g() < 0) {
+            throw new IllegalArgumentException("Fat cannot be negative");
+        }
+        if (ingredient.getCarbsPer100g() < 0) {
+            throw new IllegalArgumentException("Carbs cannot be negative");
+        }
+    }
+
+    /**
      * Defines endpoint for creating ingredients in the repository
      * @param ingredient the ingredient specified in the POST request to add to the repo
      * @return the id of the entity added
      */
     @PostMapping
-    public ResponseEntity<Long> create(@RequestBody Ingredient ingredient){
+    public ResponseEntity<Long> createIngredient(@RequestBody Ingredient ingredient){
+        if(ingredient == null){
+            throw new IllegalArgumentException();
+        }
         this.iService.createIngredient(ingredient);
-
         return ResponseEntity.ok(ingredient.getId());
     }
 
