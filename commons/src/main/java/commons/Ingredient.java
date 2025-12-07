@@ -175,5 +175,8 @@ public class Ingredient {
         this.kcalPer100g = kcalPer100g;
     }
 
-
+    @Override
+    public String toString() {
+        return name;
+    }
 }

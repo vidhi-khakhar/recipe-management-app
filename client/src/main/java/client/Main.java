@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import client.scenes.AddButtonCtrl;
+import client.scenes.AddRecipeIngredientCtrl;
 import com.google.inject.Injector;
 
 import client.scenes.MainCtrl;
@@ -55,6 +56,10 @@ public class Main extends Application {
     var recipeAddScene = new Scene(recipeAddInterface.getValue());
     var recipeAddCtrl = recipeAddInterface.getKey(); // The instance of the controller
 
+    // Load AddRecipeIngredientScene
+    var recipeIngredientInterface = FXML.load(AddRecipeIngredientCtrl.class, "client", "scenes", "AddRecipeIngredientScene.fxml");
+    var recipeIngredientScene = new Scene(recipeIngredientInterface.getValue());
+    var recipeIngredientCtrl = recipeIngredientInterface.getKey();
 
     // add stylesheets if needed
     String cssPath = getClass().getResource("/client/scenes/FoodPal.css").toExternalForm();
@@ -64,6 +69,7 @@ public class Main extends Application {
     mainUserInterfaceScene.getStylesheets().add(cssPath);
     nutritionScene.getStylesheets().add(cssPathNutri);
     recipeAddScene.getStylesheets().add(cssPathRecipe);
+    recipeIngredientScene.getStylesheets().add(cssPath);
 
     primaryStage.setMinWidth(600);
     primaryStage.setMinHeight(500);
@@ -77,7 +83,7 @@ public class Main extends Application {
 
     // pass both scenes into controller
     var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-    mainCtrl.initScenes(primaryStage, mainUserInterfaceScene, nutritionScene, recipeAddScene);
+    mainCtrl.initScenes(primaryStage, mainUserInterfaceScene, nutritionScene, recipeAddScene, recipeIngredientScene, recipeIngredientCtrl);
 
     System.out.println("Window opened with width: " + primaryStage.getWidth() +
                 " and height: " + primaryStage.getHeight());

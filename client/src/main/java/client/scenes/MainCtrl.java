@@ -18,16 +18,23 @@ package client.scenes;
 import client.utils.RecipeServerUtils;
 import com.google.inject.Inject;
 import commons.Recipe;
-import commons.RecipeCollection;
+import commons.RecipeIngredient;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
-import javafx.fxml.FXML;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,22 +42,30 @@ public class MainCtrl {
     private Stage primaryStage;
     private Scene nutritionScene;
     private Scene recipeAddScene;
+    private Scene addRecipeIngredientScene;
+    private AddRecipeIngredientCtrl addRecipeIngredientCtrl;
 
     private final RecipeServerUtils recipeServerUtils;
     private final ObservableList<Recipe> recipesObservableList = FXCollections.observableArrayList();
 
     /**
      * Initializes the scenes
-     * @param primaryStage the main stage
-     * @param mainUserInterfaceScene the main UI scene
-     * @param nutritionScene the nutrition scene
-     * @param recipeAddScene the add recipe scene
+     *
+     * @param primaryStage             the main stage
+     * @param mainUserInterfaceScene   the main UI scene
+     * @param nutritionScene           the nutrition scene
+     * @param recipeAddScene           the add recipe scene
+     * @param addRecipeIngredientScene the add ingredient to recipe scene
+     * @param addRecipeIngredientCtrl  the add ingredient to recipe controller
      */
-    // Changed to initScenes since initialize has a different purpose
-    public void initScenes(Stage primaryStage, Scene mainUserInterfaceScene, Scene nutritionScene, Scene recipeAddScene) {
+    public void initScenes(Stage primaryStage, Scene mainUserInterfaceScene, Scene nutritionScene,
+                           Scene recipeAddScene, Scene addRecipeIngredientScene, AddRecipeIngredientCtrl addRecipeIngredientCtrl) {
         this.primaryStage = primaryStage;
         this.nutritionScene = nutritionScene; // store it for later
         this.recipeAddScene = recipeAddScene; // store it for later
+        this.addRecipeIngredientScene = addRecipeIngredientScene;
+        this.addRecipeIngredientCtrl = addRecipeIngredientCtrl;
+
         primaryStage.show();
     }
 
@@ -240,21 +255,72 @@ public class MainCtrl {
     }
 
     /**
-     * This is a placeholder method for further development
-     * Method prints out a message when the button is clicked
+     * Adds an ingredient to a recipe.
      */
     @FXML
-    private void ingredientAddButtonClicked() {
-        System.out.println("User wants to add an ingredient.");
+    private void ingredientAddButtonClicked() throws IOException {
+        Recipe selectedRecipe = sidebarList.getSelectionModel().getSelectedItem();
+        if (selectedRecipe == null) {
+            System.out.println("No recipe selected!");
+            return;
+        }
+
+        addRecipeIngredientCtrl.setRecipe(selectedRecipe);
+        showAddRecipeIngredientWindow();
+
+        RecipeIngredient newIngredient = addRecipeIngredientCtrl.getRecipeIngredient();
+        if (newIngredient != null) {
+            addRecipeIngredientToUI(newIngredient);
+        }
+    }
+
+    private void addRecipeIngredientToUI(RecipeIngredient recipeIngredient) {
+        // To create a new row
+        HBox ingredientItem = new HBox();
+        ingredientItem.setAlignment(Pos.CENTER_LEFT);
+        ingredientItem.setSpacing(8.0);
+        ingredientItem.getStyleClass().add("recipe-item");
+
+
+        Label itemLabel = new Label(recipeIngredient.toString());
+        itemLabel.setStyle("-fx-padding: 0 0 0 9;"); // <Insets left="9.0">
+
+
+        // To throw the buttons to the right
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        // Edit button
+        Button editButton = new Button("edit");
+        editButton.setOnAction(event -> {
+            try {
+                editIngredientButtonClicked(event);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        // Remove button
+        Button removeButton = new Button("remove");
+        removeButton.setOnAction(this::ingredientRemoveButtonClicked);
+
+        // Put it all into HBox
+        ingredientItem.getChildren().addAll(itemLabel, spacer, editButton, removeButton);
+
+        // Put the HBox (the row) in the ingredientList
+        ingredientList.getChildren().add(ingredientItem);
     }
 
     /**
-     * This is a placeholder method for further development
-     * Method prints out a message when the button is clicked
+     * Removes an ingredient from a recipe.
      */
     @FXML
-    private void ingredientRemoveButtonClicked() {
-        System.out.println("User wants to remove an ingredient.");
+    private void ingredientRemoveButtonClicked(ActionEvent event) {
+        Button removeButton = (Button) event.getSource();           // To identify the button of which ingredient was clicked
+        HBox ingredientToRemove = (HBox) removeButton.getParent();  // To delete the whole row
+        ingredientList.getChildren().remove(ingredientToRemove);
+
+        System.out.println("Removed ingredient.");
     }
 
     /**
@@ -276,12 +342,25 @@ public class MainCtrl {
     }
 
     /**
-     * This is a placeholder method for further development
-     * Method prints out a message when the button is clicked
+     * Edit an ingredient of a selected recipe.
      */
     @FXML
-    private void editIngredientButtonClicked() {
-        System.out.println("Editing selected item...");
+    private void editIngredientButtonClicked(ActionEvent event) throws IOException {
+        Button editButton = (Button) event.getSource();
+        HBox ingredientToEdit = (HBox) editButton.getParent();
+        Label ingredientLabel = (Label) ingredientToEdit.getChildren().get(0);
+
+        Recipe selectedRecipe = sidebarList.getSelectionModel().getSelectedItem();
+        if (selectedRecipe == null) {
+            System.out.println("No recipe selected!");
+            return;
+        }
+
+        addRecipeIngredientCtrl.setRecipe(selectedRecipe);
+        showAddRecipeIngredientWindow();
+        ingredientLabel.setText(addRecipeIngredientCtrl.getRecipeIngredient().toString());
+
+        System.out.println("Edited ingredient.");
     }
 
     /**
@@ -320,6 +399,25 @@ public class MainCtrl {
     @FXML
     private void addPreparationStep(String step) {
         System.out.println("Added preparation step: " + step);
+    }
+
+    /**
+     * Opens the add ingredient to recipe popup window.
+     */
+    @FXML
+    void showAddRecipeIngredientWindow() {
+        if (addRecipeIngredientScene == null) {
+            System.err.println("AddRecipeIngredientScene not initialized!");
+            return;
+        }
+
+        Stage secondaryStage = new Stage();
+        secondaryStage.setTitle("Add Ingredient to Recipe");
+        secondaryStage.setScene(addRecipeIngredientScene);
+        secondaryStage.setMaxWidth(600);
+        secondaryStage.setMaxHeight(430);
+        secondaryStage.initOwner(primaryStage);
+        secondaryStage.showAndWait();
     }
 
     /**
