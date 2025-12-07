@@ -69,6 +69,7 @@ public class Main extends Application {
     mainUserInterfaceScene.getStylesheets().add(cssPath);
     nutritionScene.getStylesheets().add(cssPathNutri);
     recipeAddScene.getStylesheets().add(cssPathRecipe);
+    recipeIngredientScene.getStylesheets().add(cssPath);
 
     primaryStage.setMinWidth(600);
     primaryStage.setMinHeight(500);

@@ -415,7 +415,7 @@ public class MainCtrl {
         secondaryStage.setTitle("Add Ingredient to Recipe");
         secondaryStage.setScene(addRecipeIngredientScene);
         secondaryStage.setMaxWidth(600);
-        secondaryStage.setMaxHeight(420);
+        secondaryStage.setMaxHeight(430);
         secondaryStage.initOwner(primaryStage);
         secondaryStage.showAndWait();
     }
