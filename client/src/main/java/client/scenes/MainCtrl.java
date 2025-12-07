@@ -43,6 +43,7 @@ public class MainCtrl {
     private Scene nutritionScene;
     private Scene recipeAddScene;
     private Scene addRecipeIngredientScene;
+    private AddRecipeIngredientCtrl addRecipeIngredientCtrl;
 
     private final RecipeServerUtils recipeServerUtils;
     private final ObservableList<Recipe> recipesObservableList = FXCollections.observableArrayList();
@@ -55,13 +56,16 @@ public class MainCtrl {
      * @param nutritionScene           the nutrition scene
      * @param recipeAddScene           the add recipe scene
      * @param addRecipeIngredientScene the add ingredient to recipe scene
+     * @param addRecipeIngredientCtrl  the add ingredient to recipe controller
      */
     public void initScenes(Stage primaryStage, Scene mainUserInterfaceScene, Scene nutritionScene,
-                           Scene recipeAddScene, Scene addRecipeIngredientScene) {
+                           Scene recipeAddScene, Scene addRecipeIngredientScene, AddRecipeIngredientCtrl addRecipeIngredientCtrl) {
         this.primaryStage = primaryStage;
         this.nutritionScene = nutritionScene; // store it for later
         this.recipeAddScene = recipeAddScene; // store it for later
         this.addRecipeIngredientScene = addRecipeIngredientScene;
+        this.addRecipeIngredientCtrl = addRecipeIngredientCtrl;
+
         primaryStage.show();
     }
 
@@ -261,19 +265,10 @@ public class MainCtrl {
             return;
         }
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("AddRecipeIngredientScene.fxml"));
-        Parent root = loader.load();
-        AddRecipeIngredientCtrl controller = loader.getController();
-        controller.setRecipe(selectedRecipe);
+        addRecipeIngredientCtrl.setRecipe(selectedRecipe);
+        showAddRecipeIngredientWindow();
 
-        Scene scene = new Scene(root);
-        Stage secondaryStage = new Stage();
-        secondaryStage.setTitle("Add Ingredient");
-        secondaryStage.setScene(scene);
-        secondaryStage.initOwner(primaryStage);
-        secondaryStage.showAndWait();
-
-        RecipeIngredient newIngredient = controller.getRecipeIngredient();
+        RecipeIngredient newIngredient = addRecipeIngredientCtrl.getRecipeIngredient();
         if (newIngredient != null) {
             addRecipeIngredientToUI(newIngredient);
         }
@@ -318,12 +313,11 @@ public class MainCtrl {
 
     /**
      * Removes an ingredient from a recipe.
-     * Method also prints out a message when the button is clicked.
      */
     @FXML
     private void ingredientRemoveButtonClicked(ActionEvent event) {
-        Button removeButton = (Button) event.getSource(); // To identify the button of which ingredient was clicked
-        HBox ingredientToRemove = (HBox) removeButton.getParent(); // To delete the whole row
+        Button removeButton = (Button) event.getSource();           // To identify the button of which ingredient was clicked
+        HBox ingredientToRemove = (HBox) removeButton.getParent();  // To delete the whole row
         ingredientList.getChildren().remove(ingredientToRemove);
 
         System.out.println("Removed ingredient.");
@@ -348,8 +342,7 @@ public class MainCtrl {
     }
 
     /**
-     * This is a placeholder method for further development
-     * Method prints out a message when the button is clicked
+     * Edit an ingredient of a selected recipe.
      */
     @FXML
     private void editIngredientButtonClicked(ActionEvent event) throws IOException {
@@ -363,19 +356,9 @@ public class MainCtrl {
             return;
         }
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("AddRecipeIngredientScene.fxml"));
-        Parent root = loader.load();
-        AddRecipeIngredientCtrl controller = loader.getController();
-        controller.setRecipe(selectedRecipe);
-
-        Scene scene = new Scene(root);
-        Stage secondaryStage = new Stage();
-        secondaryStage.setTitle("Edit Ingredient");
-        secondaryStage.setScene(scene);
-        secondaryStage.initOwner(primaryStage);
-        secondaryStage.showAndWait();
-
-        ingredientLabel.setText(controller.getRecipeIngredient().toString());
+        addRecipeIngredientCtrl.setRecipe(selectedRecipe);
+        showAddRecipeIngredientWindow();
+        ingredientLabel.setText(addRecipeIngredientCtrl.getRecipeIngredient().toString());
 
         System.out.println("Edited ingredient.");
     }
@@ -416,6 +399,25 @@ public class MainCtrl {
     @FXML
     private void addPreparationStep(String step) {
         System.out.println("Added preparation step: " + step);
+    }
+
+    /**
+     * Opens the add ingredient to recipe popup window.
+     */
+    @FXML
+    void showAddRecipeIngredientWindow() {
+        if (addRecipeIngredientScene == null) {
+            System.err.println("AddRecipeIngredientScene not initialized!");
+            return;
+        }
+
+        Stage secondaryStage = new Stage();
+        secondaryStage.setTitle("Add Ingredient to Recipe");
+        secondaryStage.setScene(addRecipeIngredientScene);
+        secondaryStage.setMaxWidth(600);
+        secondaryStage.setMaxHeight(420);
+        secondaryStage.initOwner(primaryStage);
+        secondaryStage.showAndWait();
     }
 
     /**
