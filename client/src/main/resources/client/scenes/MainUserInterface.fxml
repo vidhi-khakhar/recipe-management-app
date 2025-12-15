@@ -64,7 +64,7 @@
                         <HBox prefHeight="43.0" prefWidth="639.0" styleClass="titlelablebox" VBox.vgrow="NEVER">
                            <children>
                               <Label fx:id="titleRecipeLabel" styleClass="h2" text="titleLabel" />
-                              <Button fx:id="editRecipeTitleButton" mnemonicParsing="false" onAction="#handleClick" prefHeight="31.0" prefWidth="63.0" styleClass="roundbutton" text="edit">
+                              <Button fx:id="editRecipeTitleButton" mnemonicParsing="false" onAction="#editRecipeTitleButtonClicked" prefHeight="31.0" prefWidth="63.0" styleClass="roundbutton" text="edit">
                                  <HBox.margin>
                                     <Insets bottom="5.0" left="5.0" />
                                  </HBox.margin></Button>
