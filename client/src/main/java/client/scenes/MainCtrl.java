@@ -49,6 +49,8 @@ public class MainCtrl {
     private Scene nutritionScene;
     private Scene recipeAddScene;
     private Scene addRecipeIngredientScene;
+    private Scene editTitleScene;
+
     private AddRecipeIngredientCtrl addRecipeIngredientCtrl;
 
     private final RecipeServerUtils recipeServerUtils;
@@ -66,12 +68,14 @@ public class MainCtrl {
      * @param addRecipeIngredientCtrl  the add ingredient to recipe controller
      */
     public void initScenes(Stage primaryStage, Scene mainUserInterfaceScene, Scene nutritionScene,
-                           Scene recipeAddScene, Scene addRecipeIngredientScene, AddRecipeIngredientCtrl addRecipeIngredientCtrl) {
+                           Scene recipeAddScene, Scene addRecipeIngredientScene, AddRecipeIngredientCtrl addRecipeIngredientCtrl,
+                           Scene editTitleScene) {
         this.primaryStage = primaryStage;
         this.nutritionScene = nutritionScene; // store it for later
         this.recipeAddScene = recipeAddScene; // store it for later
         this.addRecipeIngredientScene = addRecipeIngredientScene;
         this.addRecipeIngredientCtrl = addRecipeIngredientCtrl;
+        this.editTitleScene = editTitleScene;
 
         primaryStage.show();
     }
@@ -495,15 +499,6 @@ public class MainCtrl {
 
 
     /**
-     * This is a placeholder method for further development
-     * Method prints out a message when the button is clicked
-     */
-    @FXML
-    private void editRecipeTitleButtonClicked() {
-        System.out.println("Editing recipe title...");
-    }
-
-    /**
      * This is a placeholder a helper method for further list management
      * Method prints out a message when the button is clicked
      * @param ingredient the ingredient to be added
@@ -569,6 +564,40 @@ public class MainCtrl {
         recipeAddStage.setResizable(false);
 
         recipeAddStage.show();
+    }
+
+    /**
+     * Shows edit title of recipe window.
+     */
+    @FXML
+    void showEditRecipeTitleScene() {
+        if (editTitleScene == null) {
+            System.err.println("Scene not initialized!");
+            return;
+        }
+
+        Stage editTitleStage = new Stage();
+        editTitleStage.setTitle("Edit Recipe Title");
+        editTitleStage.setScene(editTitleScene);
+        editTitleStage.initOwner(primaryStage);
+
+        editTitleStage.show();
+    }
+
+    /**
+     * Returns selected recipe.
+     * @return selected Recipe instance
+     */
+    public Recipe getSelectedRecipe() {
+        return sidebarList.getSelectionModel().getSelectedItem();
+    }
+
+    /**
+     * Updates the title of the recipe according to user input.
+     */
+    @FXML
+    void editRecipeTitleButtonClicked() {
+        showEditRecipeTitleScene();
     }
 
     @FXML
