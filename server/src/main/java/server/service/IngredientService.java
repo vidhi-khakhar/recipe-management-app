@@ -58,9 +58,10 @@ public class IngredientService {
     /**
      * creates an ingredient in the repo
      * @param ingredient
+     * @return Ingredient
      */
-    public void createIngredient(Ingredient ingredient) {
-        ingredientRepository.save(ingredient);
+    public Ingredient createIngredient(Ingredient ingredient) {
+        return ingredientRepository.save(ingredient);
     }
 
     /**

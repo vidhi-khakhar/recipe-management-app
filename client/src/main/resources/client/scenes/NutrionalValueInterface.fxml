@@ -92,7 +92,85 @@
                      <children>
                         <StackPane prefHeight="337.0" prefWidth="316.0" VBox.vgrow="ALWAYS">
                            <children>
-                              <AnchorPane fx:id="noIngredientPane" prefHeight="200.0" prefWidth="200.0">
+                              <AnchorPane fx:id="addIngredientPane" prefHeight="200.0" prefWidth="200.0">
+                                 <children>
+                                    <VBox prefHeight="335.0" prefWidth="324.0">
+                                       <children>
+                                          <HBox prefHeight="100.0" prefWidth="200.0">
+                                             <children>
+                                                <Label prefWidth="49.0" text="Name: " wrapText="true">
+                                                   <HBox.margin>
+                                                      <Insets left="10.0" top="25.0" />
+                                                   </HBox.margin></Label>
+                                                <TextField fx:id="newIngName" prefWidth="120.0" scaleX="2.0">
+                                                   <HBox.margin>
+                                                      <Insets left="60.0" top="25.0" />
+                                                   </HBox.margin>
+                                                </TextField>
+                                             </children>
+                                          </HBox>
+                                          <HBox layoutX="10.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0">
+                                             <children>
+                                                <Label prefWidth="110.0" text="Protein: " wrapText="true">
+                                                   <HBox.margin>
+                                                      <Insets left="10.0" top="25.0" />
+                                                   </HBox.margin>
+                                                </Label>
+                                                <TextField fx:id="newIngProteins" prefWidth="80.0">
+                                                   <HBox.margin>
+                                                      <Insets left="10.0" top="25.0" />
+                                                   </HBox.margin>
+                                                </TextField>
+                                                <Label text="Per100g">
+                                                   <padding>
+                                                      <Insets left="30.0" top="25.0" />
+                                                   </padding>
+                                                </Label>
+                                             </children>
+                                          </HBox>
+                                          <HBox layoutX="10.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0">
+                                             <children>
+                                                <Label prefWidth="110.0" text="Fat: " wrapText="true">
+                                                   <HBox.margin>
+                                                      <Insets left="10.0" top="25.0" />
+                                                   </HBox.margin>
+                                                </Label>
+                                                <TextField fx:id="newIngFats" prefWidth="80.0">
+                                                   <HBox.margin>
+                                                      <Insets left="10.0" top="25.0" />
+                                                   </HBox.margin>
+                                                </TextField>
+                                                <Label text="Per100g">
+                                                   <padding>
+                                                      <Insets left="30.0" top="25.0" />
+                                                   </padding>
+                                                </Label>
+                                             </children>
+                                          </HBox>
+                                          <HBox layoutX="10.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0">
+                                             <children>
+                                                <Label prefWidth="110.0" text="Carbohydrates: " wrapText="true">
+                                                   <HBox.margin>
+                                                      <Insets left="10.0" top="25.0" />
+                                                   </HBox.margin>
+                                                </Label>
+                                                <TextField fx:id="newIngCarbs" prefWidth="80.0">
+                                                   <HBox.margin>
+                                                      <Insets left="10.0" top="25.0" />
+                                                   </HBox.margin>
+                                                </TextField>
+                                                <Label text="Per100g">
+                                                   <padding>
+                                                      <Insets left="30.0" top="25.0" />
+                                                   </padding>
+                                                </Label>
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </AnchorPane>
+                              <AnchorPane fx:id="noIngredientPane" prefHeight="200.0" prefWidth="200.0" visible="false">
                                  <children>
                                     <VBox AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
                                         <children>

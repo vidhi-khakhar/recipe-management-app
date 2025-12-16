@@ -1,5 +1,6 @@
 package client.scenes;
 
+import com.google.inject.Inject;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
@@ -11,7 +12,18 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 
+import client.utils.IngredientServerUtils;
+import commons.Ingredient;
+import jakarta.ws.rs.ProcessingException;
+
 public class NutritionalValueCtrl {
+
+    private final IngredientServerUtils ingredientServerUtils;
+
+    @Inject
+    public NutritionalValueCtrl(IngredientServerUtils ingredientServerUtils) {
+        this.ingredientServerUtils = ingredientServerUtils;
+    }
     // Buttons
     @FXML private Button addIngredientButton;
     @FXML private Button removeIngredientButton;
@@ -30,13 +42,20 @@ public class NutritionalValueCtrl {
     @FXML private StackPane stackPane;
     @FXML private Pane noIngredientPane;
     @FXML private Pane ingredientDetailsPane;
+    @FXML private Pane addIngredientPane;
 
     // Labels inside noIngredientPane
     @FXML private Label noIngredientTitle;
     @FXML private Label noIngredientSubtitle;
 
     // Sidebar
-    @FXML private ListView<?> sidebarList;
+    @FXML private ListView<Ingredient> sidebarList;
+
+    //Text fields inside addIngredientPane
+    @FXML private TextField newIngName;
+    @FXML private TextField newIngProteins;
+    @FXML private TextField newIngFats;
+    @FXML private TextField newIngCarbs;
 
     @FXML
     public void initialize() {
@@ -64,8 +83,10 @@ public class NutritionalValueCtrl {
         if (!hasItems || !hasSelection) {
             noIngredientPane.setVisible(true);
             ingredientDetailsPane.setVisible(false);
+            addIngredientPane.setVisible(false);
         } else {
             noIngredientPane.setVisible(false);
+            addIngredientPane.setVisible(false);
             ingredientDetailsPane.setVisible(true);
         }
     }
@@ -80,10 +101,55 @@ public class NutritionalValueCtrl {
         }, noIngredientPane.widthProperty(), noIngredientPane.heightProperty()));
     }
 
-
     @FXML
     void addIngredient() {
-        System.out.println("User wants to add an ingredient.");
+        if(!addIngredientPane.isVisible()) {
+            noIngredientPane.setVisible(false);
+            ingredientDetailsPane.setVisible(false);
+            addIngredientPane.setVisible(true);
+        }else{
+
+            try {
+                String name = newIngName.getText().trim();
+                double protein = Double.parseDouble(newIngProteins.getText().trim());
+                double carb = Double.parseDouble(newIngCarbs.getText().trim());
+                double fat = Double.parseDouble(newIngFats.getText().trim());
+
+                if (name.isEmpty()) {
+                    throw new IllegalArgumentException("Name cannot be empty");
+                }
+
+                if (protein < 0 || carb < 0 || fat < 0) {
+                    throw new IllegalArgumentException("Protein, Carbohydrates or fats cannot be negative");
+                }
+
+                Ingredient ingredient = new Ingredient(name, protein, carb, fat);
+
+                Long id = ingredientServerUtils.createIngredient(ingredient);
+
+                sidebarList.getItems().add(ingredient);
+                sidebarList.getSelectionModel().select(ingredient);
+
+                newIngName.clear();
+                newIngProteins.clear();
+                newIngFats.clear();
+                newIngCarbs.clear();
+
+                addIngredientPane.setVisible(false);
+                ingredientDetailsPane.setVisible(true);
+
+            }catch(NumberFormatException e) {
+                System.err.println("Please enter valid numbers for protein, carbs and fat.");
+            }catch(IllegalArgumentException e) {
+                System.err.println(e.getMessage());
+            }catch(jakarta.ws.rs.ProcessingException e) {
+                System.err.println("Server error while making ingredient: " + e.getMessage());
+            }
+
+
+
+        }
+
     }
 
     @FXML
