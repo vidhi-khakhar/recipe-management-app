@@ -35,9 +35,14 @@ public class EditTitleCtrl {
 
                 try{
                     recipe.setTitle(query);
+                    recipeServerUtils.replaceRecipe(recipe.getRecipeId(), recipe);
 
                     title.clear();
                     statusLabel.setText("Title has been edited!");
+
+                    mainCtrl.refreshSidebarList();
+                    mainCtrl.updateTitleLabel(query);
+
                     statusLabel.setStyle("-fx-text-fill: green;");
 
                 } catch (Exception e) {
