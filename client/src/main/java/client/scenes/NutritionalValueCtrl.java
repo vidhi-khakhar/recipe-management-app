@@ -34,7 +34,7 @@ public class NutritionalValueCtrl {
     @FXML private TextField proteinValue;
 
     // Labels
-    @FXML private Label kcalValue;
+    @FXML private Label kcalValueLabel;
     @FXML private Label RecipeUsageValueLabel;
 
     // Center Pane & StackPane
@@ -66,8 +66,11 @@ public class NutritionalValueCtrl {
         // Initially show/hide panes based on list selection
         updateStackPaneVisibility();
 
+        disableDetails();
+
         // Listen for selection changes
         sidebarList.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            showIngredientDetails(newSelection);
             updateStackPaneVisibility();
         });
 
@@ -84,7 +87,7 @@ public class NutritionalValueCtrl {
         boolean hasSelection = sidebarList.getSelectionModel().getSelectedItem() != null;
         boolean hasItems = !sidebarList.getItems().isEmpty();
 
-        if (!hasItems || !hasSelection) {
+        if (!hasItems) {
             noIngredientPane.setVisible(true);
             ingredientDetailsPane.setVisible(false);
             addIngredientPane.setVisible(false);
@@ -92,7 +95,48 @@ public class NutritionalValueCtrl {
             noIngredientPane.setVisible(false);
             addIngredientPane.setVisible(false);
             ingredientDetailsPane.setVisible(true);
+            confirmButton.setVisible(false);
+            cancelButton.setVisible(false);
         }
+    }
+
+    private void disableDetails(){
+        ingredientName.setDisable(true);
+        fatValue.setDisable(true);
+        proteinValue.setDisable(true);
+        carbValue.setDisable(true);
+        sidebarList.setDisable(false);
+        addIngredientButton.setDisable(false);
+        removeIngredientButton.setDisable(false);
+    }
+
+    private void enableDetails(){
+        ingredientName.setDisable(false);
+        fatValue.setDisable(false);
+        proteinValue.setDisable(false);
+        carbValue.setDisable(false);
+        sidebarList.setDisable(true);
+        addIngredientButton.setDisable(true);
+        removeIngredientButton.setDisable(true);
+    }
+
+    private void showIngredientDetails(Ingredient ingredient) {
+        if(ingredient == null){
+            ingredientName.clear();
+            proteinValue.clear();
+            fatValue.clear();
+            carbValue.clear();
+            kcalValueLabel.setText("0");
+            RecipeUsageValueLabel.setText("Used in X recipes");
+            return;
+        }
+
+        ingredientName.setText(ingredient.getName());
+        proteinValue.setText(Double.toString(ingredient.getProteinPer100g()));
+        fatValue.setText(Double.toString(ingredient.getFatPer100g()));
+        carbValue.setText(Double.toString(ingredient.getCarbsPer100g()));
+        kcalValueLabel.setText(Double.toString(ingredient.getKcalPer100g()));
+
     }
 
     // Dynamic font sizing.
@@ -128,35 +172,32 @@ public class NutritionalValueCtrl {
                 double fat = Double.parseDouble(newIngFats.getText().trim());
 
                 if (name.isEmpty()) {
-                    throw new IllegalArgumentException("Name cannot be empty");
+                    showError("Error", "Name cannot be empty");
+                }else if (protein < 0 || carb < 0 || fat < 0) {
+                    showError("Error", "Protein, Carbohydrates or fats cannot be negative");
+                }else{
+                    Ingredient ingredient = new Ingredient(name, protein, carb, fat);
+
+                    Long id = ingredientServerUtils.createIngredient(ingredient);
+                    ingredient.setId(id);
+
+                    sidebarList.getItems().add(ingredient);
+                    sidebarList.getSelectionModel().select(ingredient);
+
+                    newIngName.clear();
+                    newIngProteins.clear();
+                    newIngFats.clear();
+                    newIngCarbs.clear();
+
+                    updateStackPaneVisibility();
                 }
-
-                if (protein < 0 || carb < 0 || fat < 0) {
-                    throw new IllegalArgumentException("Protein, Carbohydrates or fats cannot be negative");
-                }
-
-                Ingredient ingredient = new Ingredient(name, protein, carb, fat);
-
-                Long id = ingredientServerUtils.createIngredient(ingredient);
-                ingredient.setId(id);
-
-                sidebarList.getItems().add(ingredient);
-                sidebarList.getSelectionModel().select(ingredient);
-
-                newIngName.clear();
-                newIngProteins.clear();
-                newIngFats.clear();
-                newIngCarbs.clear();
-
-                addIngredientPane.setVisible(false);
-                ingredientDetailsPane.setVisible(true);
 
             }catch(NumberFormatException e) {
-                System.err.println("Please enter valid numbers for protein, carbs and fat.");
+                showError("Wrong format","Please enter valid numbers for protein, carbs and fat.");
             }catch(IllegalArgumentException e) {
-                System.err.println(e.getMessage());
+                showError("Error", e.getMessage());
             }catch(jakarta.ws.rs.ProcessingException e) {
-                System.err.println("Server error while making ingredient: " + e.getMessage());
+                showError("Server error while making ingredient: ", e.getMessage());
             }
 
 
@@ -197,7 +238,71 @@ public class NutritionalValueCtrl {
 
     @FXML
     void editIngredient() {
-        
+        Ingredient selected = sidebarList.getSelectionModel().getSelectedItem();
+        showIngredientDetails(selected);
+        if (selected == null) {
+            showError("No ingredient selected", "Select an ingredient to edit");
+        }
+
+        enableDetails();
+        editIngredientButton.setVisible(false);
+        confirmButton.setVisible(true);
+        cancelButton.setVisible(true);
+    }
+
+    @FXML
+    void confirmEdit(){
+        Ingredient selected = sidebarList.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showError("No ingredient selected", "Select an ingredient to edit");
+            return;
+        }
+
+        try {
+            String name = ingredientName.getText().trim();
+            double protein = Double.parseDouble(proteinValue.getText().trim());
+            double carb = Double.parseDouble(carbValue.getText().trim());
+            double fat = Double.parseDouble(fatValue.getText().trim());
+
+            if (name.isEmpty()) {
+                throw new IllegalArgumentException("Name cannot be empty");
+            }
+            if (protein < 0 || carb < 0 || fat < 0) {
+                throw new IllegalArgumentException("Protein, Carbohydrates or fats cannot be negative");
+            }
+
+            Ingredient updated = new Ingredient(name, protein, fat, carb);
+            updated.setId(selected.getId());
+
+            ingredientServerUtils.replaceIngredient(selected.getId(), updated);
+
+            int index = sidebarList.getItems().indexOf(selected);
+            sidebarList.getItems().set(index, updated);
+            sidebarList.getSelectionModel().select(updated);
+
+            showIngredientDetails(updated);
+
+            disableDetails();
+            confirmButton.setVisible(false);
+            cancelButton.setVisible(false);
+            editIngredientButton.setVisible(true);
+        }catch(NumberFormatException e) {
+            showError("Invalid input", "Please enetr valid inputs for macronutrients");
+        }catch(IllegalArgumentException e) {
+            showError("Invalid Ingredient", e.getMessage());
+        }catch(ProcessingException e) {
+            showError("Error deleting ingredient", "Server error" + e.getMessage());
+        }
+    }
+
+    @FXML
+    void cancelEdit(){
+        Ingredient selected = sidebarList.getSelectionModel().getSelectedItem();
+        showIngredientDetails(selected);
+        disableDetails();
+        confirmButton.setVisible(false);
+        cancelButton.setVisible(false);
+        editIngredientButton.setVisible(true);
     }
 
 

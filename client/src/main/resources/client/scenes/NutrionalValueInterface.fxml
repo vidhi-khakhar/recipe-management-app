@@ -269,30 +269,30 @@
                                                       <Insets bottom="2.0" left="2.0" right="5.0" top="8.0" />
                                                    </HBox.margin>
                                                 </Label>
-                                                <Label fx:id="kcalValueLabel" layoutX="12.0" layoutY="18.0" prefHeight="18.0" prefWidth="189.0">
+                                                <Label fx:id="kcalValueLabel" layoutX="12.0" layoutY="18.0" prefHeight="18.0" prefWidth="120.0">
                                                    <HBox.margin>
-                                                      <Insets left="5.0" right="10.0" top="8.0" />
+                                                      <Insets left="40.0" right="10.0" top="8.0" />
                                                    </HBox.margin>
                                                 </Label>
                                              </children>
                                           </HBox>
                                           <HBox layoutX="10.0" layoutY="119.0" prefHeight="54.0" prefWidth="318.0">
                                              <children>
-                                                <Label fx:id="RecipeUsageValueLabel" prefHeight="29.0" text="Used in X Recipes" textAlignment="CENTER">
+                                                <Label fx:id="RecipeUsageValueLabel" minWidth="140.0" prefHeight="29.0" text="Used in X Recipes" textAlignment="CENTER">
                                                    <HBox.margin>
-                                                      <Insets bottom="20.0" left="100.0" right="100.0" top="20.0" />
+                                                      <Insets bottom="20.0" left="90.0" right="90.0" top="20.0" />
                                                    </HBox.margin>
                                                 </Label>
                                              </children>
                                           </HBox>
                                           <HBox prefHeight="60.0" prefWidth="200.0">
                                              <children>
-                                                <Button fx:id="cancelButton" minWidth="100.0" mnemonicParsing="false" prefWidth="70.0" text="Cancel">
+                                                <Button fx:id="cancelButton" minWidth="100.0" mnemonicParsing="false" onAction="#cancelEdit" prefWidth="70.0" text="Cancel">
                                                    <HBox.margin>
                                                       <Insets left="45.0" top="10.0" />
                                                    </HBox.margin>
                                                 </Button>
-                                                <Button fx:id="confirmButton" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Confirm">
+                                                <Button fx:id="confirmButton" minWidth="100.0" mnemonicParsing="false" onAction="#confirmEdit" prefWidth="100.0" text="Confirm">
                                                    <HBox.margin>
                                                       <Insets left="5.0" top="10.0" />
                                                    </HBox.margin>
