@@ -78,8 +78,9 @@ public class IngredientService {
         ingredientToUpdate.setProteinPer100g(updatedIngredient.getProteinPer100g());
         ingredientToUpdate.setFatPer100g(updatedIngredient.getFatPer100g());
         ingredientToUpdate.setCarbsPer100g(updatedIngredient.getCarbsPer100g());
-//        ingredientToUpdate.setKcalPer100g(updateIngredientKcal(id, updatedIngredient.getName(),
-//                updatedIngredient.getProteinPer100g(), updatedIngredient.getFatPer100g(), updatedIngredient.getCarbsPer100g()));
+        double newKcal = Ingredient.calculatingKcal(updatedIngredient.getProteinPer100g(),
+                updatedIngredient.getFatPer100g(), updatedIngredient.getCarbsPer100g());
+        ingredientToUpdate.setKcalPer100g(newKcal);
 
         ingredientRepository.save(ingredientToUpdate);
     }
