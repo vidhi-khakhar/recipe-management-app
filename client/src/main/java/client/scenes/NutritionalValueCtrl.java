@@ -66,6 +66,15 @@ public class NutritionalValueCtrl {
     @FXML private Button confirmButton;
     @FXML private Button cancelButton;
 
+    /**
+     * This method initializes the NutritionalValueUI controller
+     *
+     * This method is automatically called by FXML loader after
+     * the controller's root element has been completely processed.
+     * It loads the ingredients from the server and places them on the
+     * sideBar. It selects the corresponding pane depending on the amount
+     * of Ingredients in the app.
+     */
     @FXML
     public void initialize() {
         // Initially show/hide panes based on list selection
@@ -90,6 +99,10 @@ public class NutritionalValueCtrl {
         loadIngredientsFromServer();
     }
 
+    /**
+     * Closes the nutritional value window.
+     * @param event The event that activated the method.
+     */
     @FXML
     public void closeWindow(ActionEvent event) {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -98,6 +111,10 @@ public class NutritionalValueCtrl {
         stage.close();
     }
 
+    /**
+     * Loads all the ingredients from the server into the UI.
+     * It places them in the sideBarList.
+     */
     private void loadIngredientsFromServer(){
         try{
             var ingredients = ingredientServerUtils.getAllIngredients();
@@ -122,6 +139,10 @@ public class NutritionalValueCtrl {
         }
     }
 
+    /**
+     * It sets the panes depending on the amount of ingredients that are in the database.
+     *
+     */
     private void updateStackPaneVisibility() {
         boolean hasSelection = sidebarList.getSelectionModel().getSelectedItem() != null;
         boolean hasItems = !sidebarList.getItems().isEmpty();
@@ -139,6 +160,12 @@ public class NutritionalValueCtrl {
         }
     }
 
+    /**
+     * It sets the corresponding pane and shows the details of the ingredient that is selected.
+     * It makes the TextFields accessible for the user and makes visible and
+     * accessible the edit, add and remove buttons. It also sets to normal the status of the
+     * remove button if it was in the add ingredient mode.
+     */
     private void defaultMode(){
         updateStackPaneVisibility();
         showIngredientDetails(sidebarList.getSelectionModel().getSelectedItem());
@@ -159,19 +186,28 @@ public class NutritionalValueCtrl {
         confirmButton.setVisible(false);
     }
 
+    /**
+     * It it actioned when the user wants to add an ingredient.
+     *
+     * It makes all panes invisibles except the addIngredientPane
+     * and changes the remove button function to the defaultMode method
+     * and the text of button to a back arrow.
+     */
     private void addMode(){
         noIngredientPane.setVisible(false);
         ingredientDetailsPane.setVisible(false);
         addIngredientPane.setVisible(true);
         sidebarList.setDisable(true);
-        removeIngredientButton.setOnAction(event -> back());
+        removeIngredientButton.setOnAction(event -> defaultMode());
         removeIngredientButton.setText("<--");
     }
 
-    private void back(){
-        defaultMode();
-    }
-
+    /**
+     * It's activated when the suer wants to edit an ingredient
+     *
+     * All buttons except the close button are disabled and a confirm and cancel button appear.
+     * The edit button disapears
+     */
     private void editMode(){
         ingredientName.setDisable(false);
         fatValue.setDisable(false);
@@ -186,6 +222,10 @@ public class NutritionalValueCtrl {
         cancelButton.setVisible(true);
     }
 
+    /**
+     * Shows the values of the selected ingredient in the corresponding fields.
+     * @param ingredient the ingredient that is selected
+     */
     private void showIngredientDetails(Ingredient ingredient) {
         if(ingredient == null){
             ingredientName.clear();
@@ -217,6 +257,11 @@ public class NutritionalValueCtrl {
         }, noIngredientPane.widthProperty(), noIngredientPane.heightProperty()));
     }
 
+    /**
+     * A method that creates an error alert with a heading and content
+     * @param header The header of the error
+     * @param content the content of the error
+     */
     private void showError(String header, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
@@ -225,6 +270,10 @@ public class NutritionalValueCtrl {
         alert.showAndWait();
     }
 
+    /**
+     * When the add button is pressed for a second time after entering the values in the boxes
+     * it creates a new ingredient and also updates the sideBar with the new ingredient.
+     */
     @FXML
     void addIngredient() {
         if(!addIngredientPane.isVisible()) {
@@ -255,7 +304,7 @@ public class NutritionalValueCtrl {
                     newIngFats.clear();
                     newIngCarbs.clear();
 
-                    updateStackPaneVisibility();
+                    defaultMode();
                 }
 
             }catch(NumberFormatException e) {
@@ -272,6 +321,10 @@ public class NutritionalValueCtrl {
 
     }
 
+    /**
+     * It removes the selected ingredient from the database and from the sideBar.
+     * Before deleting it asks the user for confirmation.
+     */
     @FXML
     void removeIngredient() {
         Ingredient selected =  sidebarList.getSelectionModel().getSelectedItem();
@@ -302,6 +355,9 @@ public class NutritionalValueCtrl {
         }
     }
 
+    /**
+     * It enters edit mode and shows the details of the selected ingredient.
+     */
     @FXML
     void editIngredient() {
         Ingredient selected = sidebarList.getSelectionModel().getSelectedItem();
@@ -313,6 +369,10 @@ public class NutritionalValueCtrl {
         editMode();
     }
 
+    /**
+     * When the user presses confirm the new values for the ingredient replace the old values.
+     * If the name is changed it will also update it in the sideBar
+     */
     @FXML
     void confirmEdit(){
         Ingredient selected = sidebarList.getSelectionModel().getSelectedItem();
@@ -356,6 +416,9 @@ public class NutritionalValueCtrl {
         }
     }
 
+    /**
+     * When the user presses cancel, the user gets out of the editing mode to the default mode.
+     */
     @FXML
     void cancelEdit(){
         Ingredient selected = sidebarList.getSelectionModel().getSelectedItem();
@@ -365,6 +428,10 @@ public class NutritionalValueCtrl {
     }
 
 
+    /**
+     * This method updates the usageLabel to the one from the ingredient that is selected.
+     * @param ingredient The ingredient to count in recipes
+     */
     private void updateUsageLabel(Ingredient ingredient) {
         if (ingredient == null || ingredient.getId() == null) {
             RecipeUsageValueLabel.setText("Used in 0 recipes");
