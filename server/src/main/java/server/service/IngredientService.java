@@ -4,6 +4,7 @@ import commons.Ingredient;
 import commons.Recipe;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import server.RecipeRepository;
 import server.database.IngredientRepository;
 
 import java.util.List;
@@ -17,6 +18,9 @@ public class IngredientService {
 
     @Autowired
     private IngredientRepository ingredientRepository;
+
+    @Autowired
+    private RecipeRepository recipeRepository;
 
     /**
      * gets the ingredient by it's id
@@ -95,5 +99,14 @@ public class IngredientService {
         } else {
             throw new NoSuchElementException("Ingredient with id " + id + " not found.");
         }
+    }
+
+    /**
+     * Returns how many recipes uses this ingredient
+     * @param ingredientId the id of the ingredient
+     * @return the number of recipes
+     */
+    public long getUsageCount(Long ingredientId) {
+        return ingredientRepository.countByIngredientId(ingredientId);
     }
 }
