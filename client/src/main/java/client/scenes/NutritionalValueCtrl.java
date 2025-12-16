@@ -71,7 +71,7 @@ public class NutritionalValueCtrl {
         // Initially show/hide panes based on list selection
         updateStackPaneVisibility();
 
-        disableDetails();
+        defaultMode();
 
         // Listen for selection changes
         sidebarList.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
@@ -94,7 +94,7 @@ public class NutritionalValueCtrl {
     public void closeWindow(ActionEvent event) {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
-        disableDetails();
+        defaultMode();
         stage.close();
     }
 
@@ -139,17 +139,40 @@ public class NutritionalValueCtrl {
         }
     }
 
-    private void disableDetails(){
+    private void defaultMode(){
+        updateStackPaneVisibility();
+        showIngredientDetails(sidebarList.getSelectionModel().getSelectedItem());
+
         ingredientName.setDisable(true);
         fatValue.setDisable(true);
         proteinValue.setDisable(true);
         carbValue.setDisable(true);
         sidebarList.setDisable(false);
+
         addIngredientButton.setDisable(false);
         removeIngredientButton.setDisable(false);
+        removeIngredientButton.setOnAction(event -> removeIngredient());
+        removeIngredientButton.setText("-");
+
+        editIngredientButton.setVisible(true);
+        cancelButton.setVisible(false);
+        confirmButton.setVisible(false);
     }
 
-    private void enableDetails(){
+    private void addMode(){
+        noIngredientPane.setVisible(false);
+        ingredientDetailsPane.setVisible(false);
+        addIngredientPane.setVisible(true);
+        sidebarList.setDisable(true);
+        removeIngredientButton.setOnAction(event -> back());
+        removeIngredientButton.setText("<--");
+    }
+
+    private void back(){
+        defaultMode();
+    }
+
+    private void editMode(){
         ingredientName.setDisable(false);
         fatValue.setDisable(false);
         proteinValue.setDisable(false);
@@ -157,6 +180,10 @@ public class NutritionalValueCtrl {
         sidebarList.setDisable(true);
         addIngredientButton.setDisable(true);
         removeIngredientButton.setDisable(true);
+
+        editIngredientButton.setVisible(false);
+        confirmButton.setVisible(true);
+        cancelButton.setVisible(true);
     }
 
     private void showIngredientDetails(Ingredient ingredient) {
@@ -201,9 +228,7 @@ public class NutritionalValueCtrl {
     @FXML
     void addIngredient() {
         if(!addIngredientPane.isVisible()) {
-            noIngredientPane.setVisible(false);
-            ingredientDetailsPane.setVisible(false);
-            addIngredientPane.setVisible(true);
+            addMode();
         }else{
 
             try {
@@ -285,10 +310,7 @@ public class NutritionalValueCtrl {
             showError("No ingredient selected", "Select an ingredient to edit");
         }
 
-        enableDetails();
-        editIngredientButton.setVisible(false);
-        confirmButton.setVisible(true);
-        cancelButton.setVisible(true);
+        editMode();
     }
 
     @FXML
@@ -323,10 +345,8 @@ public class NutritionalValueCtrl {
 
             showIngredientDetails(updated);
 
-            disableDetails();
-            confirmButton.setVisible(false);
-            cancelButton.setVisible(false);
-            editIngredientButton.setVisible(true);
+            defaultMode();
+
         }catch(NumberFormatException e) {
             showError("Invalid input", "Please enetr valid inputs for macronutrients");
         }catch(IllegalArgumentException e) {
@@ -340,10 +360,8 @@ public class NutritionalValueCtrl {
     void cancelEdit(){
         Ingredient selected = sidebarList.getSelectionModel().getSelectedItem();
         showIngredientDetails(selected);
-        disableDetails();
-        confirmButton.setVisible(false);
-        cancelButton.setVisible(false);
-        editIngredientButton.setVisible(true);
+
+        defaultMode();
     }
 
 

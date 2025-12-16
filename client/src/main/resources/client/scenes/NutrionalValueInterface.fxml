@@ -56,7 +56,7 @@
                               <Insets right="5.0" />
                            </HBox.margin>
                         </Button>
-                        <Button fx:id="removeIngredientButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#removeIngredient" prefHeight="23.0" prefWidth="43.0" text="-" HBox.hgrow="ALWAYS">
+                        <Button fx:id="removeIngredientButton" alignment="CENTER" contentDisplay="CENTER" minWidth="65.0" mnemonicParsing="false" onAction="#removeIngredient" prefHeight="23.0" prefWidth="43.0" text="-" HBox.hgrow="ALWAYS">
                            <font>
                               <Font size="17.0" />
                            </font>
