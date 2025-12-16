@@ -81,6 +81,32 @@ public class NutritionalValueCtrl {
 
         bindLabelFontSize(noIngredientTitle, 70);  
         bindLabelFontSize(noIngredientSubtitle, 80);
+
+        loadIngredientsFromServer();
+    }
+
+    private void loadIngredientsFromServer(){
+        try{
+            var ingredients = ingredientServerUtils.getAllIngredients();
+
+            sidebarList.getItems().setAll(ingredients);
+
+            if(!ingredients.isEmpty()){
+                Ingredient first = ingredients.get(0);
+                sidebarList.getSelectionModel().select(first);
+                showIngredientDetails(first);
+            }else{
+                showIngredientDetails(null);
+            }
+
+            updateStackPaneVisibility();
+        }catch(ProcessingException e){
+            showError("Error loading ingredients",
+                    "could not load ingredients from the server" + e.getMessage());
+            sidebarList.getItems().clear();
+            showIngredientDetails(null);
+            updateStackPaneVisibility();
+        }
     }
 
     private void updateStackPaneVisibility() {
