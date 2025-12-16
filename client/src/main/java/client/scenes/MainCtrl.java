@@ -485,6 +485,14 @@ public class MainCtrl {
         showEditRecipeTitleScene();
     }
 
+    public void refreshSidebarList() {
+        sidebarList.refresh();
+    }
+
+    public void updateTitleLabel(String title) {
+        titleRecipeLabel.setText(title);
+    }
+
     @FXML
     private ListView<Recipe> sidebarList;
 
