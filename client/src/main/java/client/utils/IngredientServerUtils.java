@@ -182,7 +182,7 @@ public class IngredientServerUtils {
     public long getIngredientUsageCount(Long ingredientId) throws ProcessingException, NoSuchElementException {
         try(Response response = CLIENT.target(SERVER + "api/v1/ingredients/" + ingredientId + "/usage" )
             .request(APPLICATION_JSON)
-                    .get(){
+                    .get()){
             if (response.getStatus() == HTTP_OK) {
 
                 return response.readEntity(Long.class);
@@ -198,7 +198,7 @@ public class IngredientServerUtils {
 
         }catch (ProcessingException e ){
 
-            throw new ProcessingException("Network error getting ingredient usage: " + e.getMessage(), e)
+            throw new ProcessingException("Network error getting ingredient usage: " + e.getMessage(), e);
         }
     }
 
