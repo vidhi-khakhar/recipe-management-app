@@ -106,7 +106,7 @@ public class IngredientService {
      * @param ingredientId the id of the ingredient
      * @return the number of recipes
      */
-    public long getUsageCount(Long ingredientId) {
-        return ingredientRepository.countByIngredientId(ingredientId);
-    }
+//    public long getUsageCount(Long ingredientId) {
+//        return ingredientRepository.countByIngredientId(ingredientId);
+//    }
 }

@@ -3,7 +3,9 @@ package client.scenes;
 import com.google.inject.Inject;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.Pane;
@@ -12,8 +14,10 @@ import javafx.scene.text.Font;
 import client.utils.IngredientServerUtils;
 import commons.Ingredient;
 import jakarta.ws.rs.ProcessingException;
+import javafx.stage.Stage;
 
 import java.util.NoSuchElementException;
+
 
 public class NutritionalValueCtrl {
 
@@ -26,6 +30,7 @@ public class NutritionalValueCtrl {
     // Buttons
     @FXML private Button addIngredientButton;
     @FXML private Button removeIngredientButton;
+    @FXML private Button closeButton;
 
     // TextFields
     @FXML private TextField ingredientName;
@@ -83,6 +88,14 @@ public class NutritionalValueCtrl {
         bindLabelFontSize(noIngredientSubtitle, 80);
 
         loadIngredientsFromServer();
+    }
+
+    @FXML
+    public void closeWindow(ActionEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+        disableDetails();
+        stage.close();
     }
 
     private void loadIngredientsFromServer(){
