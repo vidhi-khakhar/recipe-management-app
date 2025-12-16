@@ -122,11 +122,26 @@ public class MainCtrl {
      */
     private void loadRecipesFromDatabase() {
         try {
+            // Save the currently selected recipe before clearing
+            Recipe selectedRecipe = sidebarList.getSelectionModel().getSelectedItem();
+            
             // Stores the recipes from the database in a list
             List<Recipe> recipesFromDb = recipeServerUtils.getAllRecipes();
 
+            // Clear existing recipes
+            recipesObservableList.clear();
             // Adds the recipes from the recipesFromDb list and adds it to the observable list
             recipesObservableList.addAll(recipesFromDb);
+
+            // Reselect previously selected recipe (if there was any)
+            if (selectedRecipe != null) {
+                for (Recipe recipe : recipesFromDb) {
+                    if (recipe.getRecipeId().equals(selectedRecipe.getRecipeId())) {
+                        sidebarList.getSelectionModel().select(recipe);
+                        break;
+                    }
+                }
+            }
         } catch (Exception e) {
             System.out.println("Failed to load recipes: " + e.getMessage());
         }
@@ -246,12 +261,11 @@ public class MainCtrl {
     }
 
     /**
-     * This is a placeholder method for further development
-     * Method prints out a message when the button is clicked
+     * Refreshes the recipe list by loading all recipes from the database
      */
     @FXML
     private void refreshButtonClicked() {
-        System.out.println("Refreshing button clicked!");
+        loadRecipesFromDatabase();
     }
 
     /**

@@ -41,7 +41,7 @@
                         </Label>
                         <HBox alignment="BOTTOM_RIGHT" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                            <children>
-                              <Button fx:id="refreshButton" mnemonicParsing="false" onAction="#handleClick" styleClass="roundbutton" text="R" HBox.hgrow="ALWAYS">
+                              <Button fx:id="refreshButton" mnemonicParsing="false" onAction="#refreshButtonClicked" styleClass="roundbutton" text="R" HBox.hgrow="ALWAYS">
                                  <HBox.margin>
                                     <Insets bottom="5.0" right="5.0" />
                                  </HBox.margin>
