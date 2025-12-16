@@ -452,8 +452,7 @@ public class MainCtrl {
         recipeAddStage.setTitle("Add Recipe");
         recipeAddStage.setScene(recipeAddScene);
         recipeAddStage.initOwner(primaryStage);
-
-        
+        recipeAddStage.setResizable(false);
 
         recipeAddStage.show();
     }

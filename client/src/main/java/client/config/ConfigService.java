@@ -1,0 +1,74 @@
+package client.config;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Locale;
+
+public class ConfigService {
+
+    private final ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT); // Makes the list readable
+    private final File configFile;
+
+    /**
+     * Creates a ConfigService that reads from and writes to the given file path.
+     * @param path the location of the configuration file
+     */
+    public ConfigService(String path) {
+        this.configFile = new File(path);
+    }
+
+    /**
+     * Loads the configuration from disk, or creates a default one if no file exists.
+     * @return the loaded or newly created Config
+     * @throws IOException if reading the file fails
+     */
+    public Config load() throws IOException {
+        if (!configFile.exists()) {
+            return createDefault();
+        }
+
+        String json = FileUtils.readFileToString(
+                configFile,
+                StandardCharsets.UTF_8
+        );
+
+        return mapper.readValue(json, Config.class);
+    }
+
+    /**
+     * Saves the given Config object to disk as a JSON file.
+     * @param config the configuration to persist
+     * @throws IOException if writing the file fails
+     */
+    public void save(Config config) throws IOException {
+        String json = mapper.writeValueAsString(config);
+
+        FileUtils.writeStringToFile(
+                configFile,
+                json,
+                StandardCharsets.UTF_8
+        );
+    }
+
+    /**
+     * This method initializes all required client-specific settings with default data
+     * @return a fully initialized default Config object
+     * @throws IOException if the configuration cannot be written to the file system
+     */
+    private Config createDefault() throws IOException {
+        Config config = new Config();
+        config.setServerUrl("http://localhost:8080"); // This is the Server URL
+        config.setFavoriteRecipeIds(new ArrayList<>()); // Empty list for the favorites
+        config.setLanguage(Locale.ENGLISH); // Default language is English
+        config.setShoppingListIds(new ArrayList<>()); // Empty list for the shopping list
+
+        save(config);
+        return config;
+    }
+}

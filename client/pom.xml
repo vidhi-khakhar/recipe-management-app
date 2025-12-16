@@ -17,7 +17,13 @@
 	</properties>
 
 	<dependencies>
-		<dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.15.1</version>
+        </dependency>
+
+        <dependency>
 			<groupId>csep</groupId>
 			<artifactId>commons</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
@@ -90,6 +96,12 @@
             <artifactId>mockito-junit-jupiter</artifactId>
             <version>5.17.0</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
+            <version>10.1.48</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
