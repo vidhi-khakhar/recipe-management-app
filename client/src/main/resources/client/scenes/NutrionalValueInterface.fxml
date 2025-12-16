@@ -1,19 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.String?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@NutritionalValue.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.NutritionalValueCtrl">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@NutritionalValue.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.NutritionalValueCtrl">
    <children>
       <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
@@ -92,7 +85,7 @@
                      <children>
                         <StackPane prefHeight="337.0" prefWidth="316.0" VBox.vgrow="ALWAYS">
                            <children>
-                              <AnchorPane fx:id="addIngredientPane" prefHeight="200.0" prefWidth="200.0">
+                              <AnchorPane fx:id="addIngredientPane" prefHeight="200.0" prefWidth="200.0" visible="false">
                                  <children>
                                     <VBox prefHeight="335.0" prefWidth="324.0">
                                        <children>
@@ -206,7 +199,7 @@
                                     </VBox>
                                  </children>
                               </AnchorPane>
-                              <AnchorPane fx:id="ingredientDetailsPane" prefHeight="200.0" prefWidth="200.0" visible="false">
+                              <AnchorPane fx:id="ingredientDetailsPane" prefHeight="200.0" prefWidth="200.0">
                                  <children>
                                     <VBox prefHeight="334.0" prefWidth="318.0">
                                        <children>
@@ -229,45 +222,42 @@
                                           </HBox>
                                           <HBox layoutX="10.0" layoutY="10.0" prefHeight="54.0" prefWidth="318.0">
                                              <children>
-                                                <Label text="Protein:">
+                                                <Label prefWidth="150.0" text="Protein:">
                                                    <HBox.margin>
                                                       <Insets bottom="2.0" left="2.0" right="5.0" top="8.0" />
                                                    </HBox.margin>
                                                 </Label>
-                                                <HBox prefHeight="54.0" prefWidth="46.0" />
-                                                <TextField fx:id="proteinValue" onKeyReleased="#updateIngredientProtein" prefHeight="26.0" prefWidth="206.0" promptText="0" style="-fx-background-color: #ffffff; -fx-border-color: BLACK;">
+                                                <TextField fx:id="proteinValue">
                                                    <HBox.margin>
-                                                      <Insets bottom="5.0" left="5.0" right="10.0" top="5.0" />
+                                                      <Insets top="5.0" />
                                                    </HBox.margin>
                                                 </TextField>
                                              </children>
                                           </HBox>
                                           <HBox layoutX="10.0" layoutY="64.0" prefHeight="54.0" prefWidth="318.0">
                                              <children>
-                                                <Label text="Fat:">
+                                                <Label prefWidth="150.0" text="Fat:">
                                                    <HBox.margin>
                                                       <Insets bottom="2.0" left="2.0" right="5.0" top="8.0" />
                                                    </HBox.margin>
                                                 </Label>
-                                                <HBox prefHeight="54.0" prefWidth="73.0" />
-                                                <TextField fx:id="fatValue" onKeyReleased="#updateIngredientFat" prefHeight="26.0" prefWidth="206.0" promptText="0" style="-fx-background-color: #ffffff; -fx-border-color: BLACK;">
+                                                <TextField fx:id="fatValue">
                                                    <HBox.margin>
-                                                      <Insets right="10.0" top="5.0" />
+                                                      <Insets top="5.0" />
                                                    </HBox.margin>
                                                 </TextField>
                                              </children>
                                           </HBox>
                                           <HBox layoutX="10.0" layoutY="119.0" prefHeight="54.0" prefWidth="318.0">
                                              <children>
-                                                <Label text="Carbohydrates:">
+                                                <Label prefWidth="150.0" text="Carbohydrates:">
                                                    <HBox.margin>
                                                       <Insets bottom="2.0" left="2.0" right="5.0" top="8.0" />
                                                    </HBox.margin>
                                                 </Label>
-                                                <HBox prefHeight="54.0" prefWidth="14.0" />
-                                                <TextField fx:id="carbValue" onKeyReleased="#updateIngredientCarbs" prefHeight="26.0" prefWidth="206.0" promptText="0" style="-fx-background-color: #ffffff; -fx-border-color: BLACK;">
+                                                <TextField fx:id="carbValue">
                                                    <HBox.margin>
-                                                      <Insets right="10.0" top="5.0" />
+                                                      <Insets top="5.0" />
                                                    </HBox.margin>
                                                 </TextField>
                                              </children>
@@ -288,11 +278,30 @@
                                           </HBox>
                                           <HBox layoutX="10.0" layoutY="119.0" prefHeight="54.0" prefWidth="318.0">
                                              <children>
-                                                <Label fx:id="RecipeUsageValueLabel" text="Used in X Recipes" textAlignment="CENTER">
+                                                <Label fx:id="RecipeUsageValueLabel" prefHeight="29.0" text="Used in X Recipes" textAlignment="CENTER">
                                                    <HBox.margin>
                                                       <Insets bottom="20.0" left="100.0" right="100.0" top="20.0" />
                                                    </HBox.margin>
                                                 </Label>
+                                             </children>
+                                          </HBox>
+                                          <HBox prefHeight="60.0" prefWidth="200.0">
+                                             <children>
+                                                <Button fx:id="cancelButton" minWidth="100.0" mnemonicParsing="false" prefWidth="70.0" text="Cancel">
+                                                   <HBox.margin>
+                                                      <Insets left="45.0" top="10.0" />
+                                                   </HBox.margin>
+                                                </Button>
+                                                <Button fx:id="confirmButton" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Confirm">
+                                                   <HBox.margin>
+                                                      <Insets left="5.0" top="10.0" />
+                                                   </HBox.margin>
+                                                </Button>
+                                                <Button fx:id="editIngredientButton" mnemonicParsing="false" onAction="#editIngredient" text="Edit">
+                                                   <HBox.margin>
+                                                      <Insets top="10.0" />
+                                                   </HBox.margin>
+                                                </Button>
                                              </children>
                                           </HBox>
                                        </children>

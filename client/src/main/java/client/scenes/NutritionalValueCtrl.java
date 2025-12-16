@@ -4,10 +4,7 @@ import com.google.inject.Inject;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
@@ -15,6 +12,8 @@ import javafx.scene.text.Font;
 import client.utils.IngredientServerUtils;
 import commons.Ingredient;
 import jakarta.ws.rs.ProcessingException;
+
+import java.util.NoSuchElementException;
 
 public class NutritionalValueCtrl {
 
@@ -56,6 +55,11 @@ public class NutritionalValueCtrl {
     @FXML private TextField newIngProteins;
     @FXML private TextField newIngFats;
     @FXML private TextField newIngCarbs;
+
+    //Edit Ingredient buttons
+    @FXML private Button editIngredientButton;
+    @FXML private Button confirmButton;
+    @FXML private Button cancelButton;
 
     @FXML
     public void initialize() {
@@ -101,6 +105,14 @@ public class NutritionalValueCtrl {
         }, noIngredientPane.widthProperty(), noIngredientPane.heightProperty()));
     }
 
+    private void showError(String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
     @FXML
     void addIngredient() {
         if(!addIngredientPane.isVisible()) {
@@ -126,6 +138,7 @@ public class NutritionalValueCtrl {
                 Ingredient ingredient = new Ingredient(name, protein, carb, fat);
 
                 Long id = ingredientServerUtils.createIngredient(ingredient);
+                ingredient.setId(id);
 
                 sidebarList.getItems().add(ingredient);
                 sidebarList.getSelectionModel().select(ingredient);
@@ -154,8 +167,39 @@ public class NutritionalValueCtrl {
 
     @FXML
     void removeIngredient() {
-        System.out.println("User wants to remove an ingredient.");
+        Ingredient selected =  sidebarList.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showError("No ingredient selected", "Select an ingredient to remove");
+        }
+
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Delete Ingredient");
+        confirm.setHeaderText("Are you sure you want to delete " + selected.getName() + "?");
+        confirm.setContentText("This will remove the ingredient from the database");
+        var result = confirm.showAndWait();
+
+        if(result.isEmpty() || result.get() != ButtonType.OK) {
+            return;
+        }
+
+        try {
+            ingredientServerUtils.deleteIngredient(selected.getId());
+            sidebarList.getItems().remove(selected);
+            updateStackPaneVisibility();
+        } catch (NoSuchElementException e){
+            showError("Ingredient not found on server", "It seems the ingredient was already removed");
+            sidebarList.getItems().remove(selected);
+            updateStackPaneVisibility();
+        } catch (ProcessingException e) {
+            showError("Error deleting Ingredient", "Server error" + e.getMessage());
+        }
     }
+
+    @FXML
+    void editIngredient() {
+        
+    }
+
 
     @FXML
     void updateIngredientName() {
