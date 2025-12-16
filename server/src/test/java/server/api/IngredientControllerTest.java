@@ -26,7 +26,12 @@ class IngredientControllerTest {
 
     @Test
     void createsIngredientAndReturnsNewUUID() {
-        var result = ingredientController.createIngredient(new Ingredient("test", 1.0, 1.0, 1.0));
+        Ingredient ingredient = new Ingredient("test", 1.0, 1.0, 1.0);
+        ingredient.setId(10L);
+
+        when(iService.createIngredient(same(ingredient))).thenReturn(ingredient);
+
+        var result = ingredientController.createIngredient(ingredient);
 
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertNotNull(result);
@@ -35,7 +40,11 @@ class IngredientControllerTest {
     @Test
     void createsIngredientAndExists() {
         Ingredient ing = new Ingredient("test", 1.0, 1.0, 1.0);
+        ing.setId(10L);
+
+        when(iService.createIngredient(same(ing))).thenReturn(ing);
         ingredientController.createIngredient(ing);
+
         verify(iService).createIngredient(same(ing));
     }
 
