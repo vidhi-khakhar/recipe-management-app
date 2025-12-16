@@ -8,6 +8,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
+/**
+ * Note: This class has borrowed heavily from
+ *       AddButtonCtrl, so credit to Simon de Graauw.
+ */
 public class EditTitleCtrl {
     private final MainCtrl mainCtrl;
     private final RecipeServerUtils recipeServerUtils;
@@ -55,16 +59,16 @@ public class EditTitleCtrl {
 
     /**
      * Checks whether the given input suffices the criteria
-     * Also makes sure the first letter is a capital
-     * @param query the given recipe name by the user
+     * Ensures first letter is capitalized
+     * @param title the given recipe name by the user
      */
-    private boolean recipeValidation(String query) {
-        if (query.length() > 20) {
+    private boolean recipeValidation(String title) {
+        if (title.length() > 20) {
             statusLabel.setText("The name is longer than 20 characters.");
             statusLabel.setStyle("-fx-text-fill: red;");
             return false;
         }
-        if (query.matches(".*[\\*\"'\\`@].*")) {
+        if (title.matches(".*[\\*\"'\\`@].*")) {
             statusLabel.setText("The name contains illegal characters.");
             statusLabel.setStyle("-fx-text-fill: red;");
             return false;
