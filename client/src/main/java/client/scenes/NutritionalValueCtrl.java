@@ -153,7 +153,7 @@ public class NutritionalValueCtrl {
             fatValue.clear();
             carbValue.clear();
             kcalValueLabel.setText("0");
-            RecipeUsageValueLabel.setText("Used in X recipes");
+            RecipeUsageValueLabel.setText("Used in 0 recipes");
             return;
         }
 
@@ -162,6 +162,8 @@ public class NutritionalValueCtrl {
         fatValue.setText(Double.toString(ingredient.getFatPer100g()));
         carbValue.setText(Double.toString(ingredient.getCarbsPer100g()));
         kcalValueLabel.setText(Double.toString(ingredient.getKcalPer100g()));
+
+        updateUsageLabel(ingredient);
 
     }
 
@@ -329,6 +331,23 @@ public class NutritionalValueCtrl {
         confirmButton.setVisible(false);
         cancelButton.setVisible(false);
         editIngredientButton.setVisible(true);
+    }
+
+
+    private void updateUsageLabel(Ingredient ingredient) {
+        if (ingredient == null || ingredient.getId() == null) {
+            RecipeUsageValueLabel.setText("Used in 0 recipes");
+            return;
+        }
+
+        try {
+            long usage = ingredientServerUtils.getIngredientUsageCount(ingredient.getId());
+            RecipeUsageValueLabel.setText("Used in " + usage + " recipes");
+        }catch(NoSuchElementException e) {
+            RecipeUsageValueLabel.setText("Used in 0 recipes");
+        }catch(ProcessingException e) {
+            RecipeUsageValueLabel.setText("Used in ? recipes");
+        }
     }
 
 
