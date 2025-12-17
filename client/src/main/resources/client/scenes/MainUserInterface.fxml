@@ -61,15 +61,24 @@
                <children>
                   <VBox prefHeight="200.0" prefWidth="100.0" styleClass="centerbox" VBox.vgrow="ALWAYS">
                      <children>
+
                         <HBox prefHeight="43.0" prefWidth="639.0" styleClass="titlelablebox" VBox.vgrow="NEVER">
                            <children>
                               <Label fx:id="titleRecipeLabel" styleClass="h2" text="titleLabel" />
                               <Button fx:id="editRecipeTitleButton" mnemonicParsing="false" onAction="#handleClick" prefHeight="31.0" prefWidth="63.0" styleClass="roundbutton" text="edit">
                                  <HBox.margin>
                                     <Insets bottom="5.0" left="5.0" />
-                                 </HBox.margin></Button>
+                                 </HBox.margin>
+                              </Button>
+                               <Region HBox.hgrow="ALWAYS" />
+                               <Button fx:id="CloneRecipeButton" mnemonicParsing="false" onAction="#handleClick" prefHeight="31.0" prefWidth="70" styleClass="roundbutton" text="clone">
+                                   <HBox.margin>
+                                       <Insets bottom="5.0" left="5.0" />
+                                   </HBox.margin>
+                               </Button>
                            </children>
                         </HBox>
+
                         <VBox prefHeight="231.0" prefWidth="639.0" VBox.vgrow="ALWAYS">
                            <children>
                               <Label styleClass="h3" text="Ingredients:" />
