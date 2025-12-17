@@ -71,7 +71,7 @@
                                  </HBox.margin>
                               </Button>
                                <Region HBox.hgrow="ALWAYS" />
-                               <Button fx:id="CloneRecipeButton" mnemonicParsing="false" onAction="#handleClick" prefHeight="31.0" prefWidth="70" styleClass="roundbutton" text="clone">
+                               <Button fx:id="cloneRecipeButton" mnemonicParsing="false" onAction="#cloneRecipe" prefHeight="31.0" prefWidth="70" styleClass="clonebutton" text="clone">
                                    <HBox.margin>
                                        <Insets bottom="5.0" left="5.0" />
                                    </HBox.margin>

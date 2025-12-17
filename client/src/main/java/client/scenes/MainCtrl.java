@@ -35,6 +35,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.SQLOutput;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,6 +46,8 @@ public class MainCtrl {
     private Scene recipeAddScene;
     private Scene addRecipeIngredientScene;
     private AddRecipeIngredientCtrl addRecipeIngredientCtrl;
+    private Long currentRecipeId;
+
 
     private final RecipeServerUtils recipeServerUtils;
     private final ObservableList<Recipe> recipesObservableList = FXCollections.observableArrayList();
@@ -137,7 +141,10 @@ public class MainCtrl {
      * @param recipe the recipe that is selected
      */
     private void onRecipeSelected(Recipe recipe) {
+        this.currentRecipeId = recipe.getRecipeId();
+
         titleRecipeLabel.setText(recipe.getTitle());
+
         //TODO showIngredients(recipe);
         //TODO showInstructions(recipe);
     }
@@ -458,6 +465,42 @@ public class MainCtrl {
         recipeAddStage.show();
     }
 
+    /**
+     * Clone's the selected recipe, copying the name and adding (Clone) behind it
+     */
+    @FXML
+    void cloneRecipe() {
+
+        if (this.currentRecipeId == null) {
+            System.out.println("No Recipe selected!");
+            return;
+        }
+
+        try {
+            Recipe original = recipeServerUtils.getRecipe(currentRecipeId);
+
+            Recipe newRecipe = new Recipe(
+                    original.getTitle() + " (Clone)",
+                    original.getLanguage()
+            );
+
+            newRecipe.setServings(original.getServings());
+            newRecipe.setInstructions(new ArrayList<>(original.getInstructions()));
+            newRecipe.setIngredients(new ArrayList<>(original.getIngredients()));
+
+            Long newId = recipeServerUtils.createRecipe(newRecipe);
+            newRecipe.setRecipeId(newId);
+
+            recipesObservableList.add(newRecipe);
+
+            System.out.println("It worked! Cloned recipe ID: " + newId);
+
+        } catch (Exception e) {
+            System.err.println("Clone failed: " + e.getMessage());
+        }
+
+    }
+
     @FXML
     private ListView<Recipe> sidebarList;
 
@@ -505,5 +548,8 @@ public class MainCtrl {
 
     @FXML
     private Label titleRecipeLabel;
+
+    @FXML
+    private Button cloneRecipeButton;
 
 }
