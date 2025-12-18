@@ -27,13 +27,13 @@ import jakarta.ws.rs.client.ClientBuilder;
 
 public class ServerUtils {
 
-	private static final String SERVER = ConfigService.getConfig().getServerUrl(); // The server url from the config.json
+	private static final String server = ConfigService.getConfig().getServerUrl(); // The server url from the config.json
 
 
 	public boolean isServerAvailable() {
 		try {
 			ClientBuilder.newClient(new ClientConfig()) //
-					.target(SERVER) //
+					.target(server) //
 					.request(APPLICATION_JSON) //
 					.get();
 		} catch (ProcessingException e) {

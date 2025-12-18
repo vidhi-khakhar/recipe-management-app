@@ -27,6 +27,13 @@ public class ConfigService {
         this.configFile = new File(path);
     }
 
+    /**
+     * Returns the singleton instance of ConfigService.
+     * Initializes the service on first access and loads the configuration.
+     * Throws a runtime exception if loading the config fails.
+     *
+     * @return the shared ConfigService instance
+     */
     public static ConfigService getInstance() {
         if(instance == null){
             instance = new ConfigService(configPath);

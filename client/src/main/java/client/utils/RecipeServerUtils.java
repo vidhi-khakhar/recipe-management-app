@@ -21,7 +21,7 @@ public class RecipeServerUtils {
     private static final int HTTP_CREATED = 201;
     private static final int HTTP_NOT_FOUND = 404;
 
-    private static final String SERVER = ConfigService.getConfig().getServerUrl(); // The server url from the config.json
+    private static final String server = ConfigService.getConfig().getServerUrl(); // The server url from the config.json
 
     private final Client client;
     private final String serverUrl;
@@ -30,7 +30,7 @@ public class RecipeServerUtils {
      * Default constructor with default values
      */
     public RecipeServerUtils() {
-        this(ClientBuilder.newClient(new ClientConfig()), SERVER);
+        this(ClientBuilder.newClient(new ClientConfig()), server);
     }
 
     /**
