@@ -15,12 +15,36 @@ public class ConfigService {
     private final ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT); // Makes the list readable
     private final File configFile;
 
+    private static ConfigService instance;
+    private static Config config;
+    private static String configPath = "client/config.json";
+
     /**
      * Creates a ConfigService that reads from and writes to the given file path.
      * @param path the location of the configuration file
      */
     public ConfigService(String path) {
         this.configFile = new File(path);
+    }
+
+    public static ConfigService getInstance() {
+        if(instance == null){
+            instance = new ConfigService(configPath);
+            try{
+                config = instance.load();
+            }catch(IOException e){
+                throw new RuntimeException("Failed to load config", e);
+            }
+        }
+        return instance;
+    }
+
+    public static Config getConfig() {
+        return getInstance() != null ? config : null;
+    }
+
+    public static void setConfigPath(String path) {
+        configPath = path;
     }
 
     /**

@@ -2,6 +2,7 @@ package client.utils;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
+import client.config.ConfigService;
 import commons.Ingredient;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.Client;
@@ -21,7 +22,7 @@ public class IngredientServerUtils {
     private static final int HTTP_CREATED = 201;
     private static final int HTTP_NOT_FOUND = 404;
 
-    private static final String SERVER = "http://localhost:8080/";
+    private static final String SERVER = ConfigService.getConfig().getServerUrl(); // The server url from the config.json
 
     private static final Client CLIENT = ClientBuilder.newClient(
             new ClientConfig()

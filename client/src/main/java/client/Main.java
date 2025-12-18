@@ -57,9 +57,9 @@ public class Main extends Application {
         }
     }
 
-    // Loading the config
-    ConfigService configService = new ConfigService(configPath);
-    Config config = configService.load();
+    ConfigService.setConfigPath(configPath);
+
+    Config config = ConfigService.getConfig();
 
     System.out.println("Using server: " + config.getServerUrl()); // Feedback to see which server (url) we are using
 
