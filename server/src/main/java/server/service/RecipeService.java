@@ -33,6 +33,10 @@ public class RecipeService {
         recipeRepository.save(recipe);
     }
 
+    public void cloneRecipe(Recipe recipe) {
+        recipeRepository.save(recipe);
+    }
+
     /**
      * Finds recipe by id, if it exists.
      * @param id the id of the recipe to be found
