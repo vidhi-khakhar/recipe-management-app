@@ -15,9 +15,13 @@
  */
 package client.scenes;
 
-import client.RecipeFormatter;
-import client.utils.RecipeServerUtils;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+
 import com.google.inject.Inject;
+
+import client.utils.RecipeServerUtils;
 import commons.Recipe;
 import commons.RecipeIngredient;
 import javafx.collections.FXCollections;
@@ -26,7 +30,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -48,6 +59,7 @@ public class MainCtrl {
 
     private final RecipeServerUtils recipeServerUtils;
     private final ObservableList<Recipe> recipesObservableList = FXCollections.observableArrayList();
+    private Recipe selectedRecipe;
 
     /**
      * Initializes the scenes
@@ -128,6 +140,11 @@ public class MainCtrl {
 
             // Adds the recipes from the recipesFromDb list and adds it to the observable list
             recipesObservableList.addAll(recipesFromDb);
+
+            // Select the first recipe if available
+            if (!recipesObservableList.isEmpty()) {
+            sidebarList.getSelectionModel().selectFirst();
+        }
         } catch (Exception e) {
             System.out.println("Failed to load recipes: " + e.getMessage());
         }
@@ -138,9 +155,10 @@ public class MainCtrl {
      * @param recipe the recipe that is selected
      */
     private void onRecipeSelected(Recipe recipe) {
+        this.selectedRecipe = recipe;
         titleRecipeLabel.setText(recipe.getTitle());
+        showInstructions(recipe);
         //TODO showIngredients(recipe);
-        //TODO showInstructions(recipe);
     }
 
     /**
@@ -150,6 +168,7 @@ public class MainCtrl {
     public void addRecipe(Recipe recipe) {
         // adds the recipe object to the list!
         recipesObservableList.add(recipe);
+        sidebarList.getSelectionModel().select(recipe);
     }
 
     /**
@@ -324,24 +343,139 @@ public class MainCtrl {
         System.out.println("Removed ingredient.");
     }
 
+    // ALL INSTRUCTION / PREPARATION STEP METHODS BELOW HERE:
+
+    /**
+     * Displays the instructions of a recipe in the UI.
+     * @param recipe the recipe whose instructions are to be displayed
+     */
+    private void showInstructions(Recipe recipe) {
+        preparationList.getChildren().clear();
+
+        List<String> steps = recipe.getInstructions();
+
+        for (int i = 0; i < steps.size(); i++) {
+            HBox row = createExecutionStepRow(i, steps.get(i),false);
+            preparationList.getChildren().add(row);
+        }
+    }
+
     /**
      * This is a placeholder method for further development
      * Method prints out a message when the button is clicked.
      */
     @FXML
     private void preparationAddButtonClicked() {
-        System.out.println("User wants to add a preparation.");
+        if (selectedRecipe == null) return;
+
+        // Add empty step to recipe
+        selectedRecipe.getInstructions().add("");
+
+        int newIndex = selectedRecipe.getInstructions().size() - 1;
+        HBox row = createExecutionStepRow(newIndex, "", true); // editable
+        preparationList.getChildren().add(row);
     }
 
     /**
-     * This is a placeholder method for further development
-     * Method prints out a message when the button is clicked
+     * Creates a row for a preparation step.
+     * @param index       the index of the step
+     * @param initialText the initial text of the step
+     * @param editable    whether the step is initially editable
      */
-    @FXML
-    private void preparationRemoveButtonClicked() {
-        System.out.println("User wants to remove a preparation.");
+    private HBox createExecutionStepRow(int index, String initialText, boolean startEditable) {
+        // Create a new HBox (a preparation step)
+        // [ 1. ][ Label(text) ][ ✏ ][ ✖ ] when not editing
+        // [ 1. ][ TextField ][ ✔ ][ ✖ ] when editing
+        HBox row = new HBox(10);
+        row.setAlignment(Pos.CENTER_LEFT);
+
+        //index 
+        Label indexLabel = new Label((index + 1) + ".");
+        indexLabel.setMinWidth(30);
+
+        Label textLabel = new Label(initialText);
+        textLabel.setPrefWidth(400);
+
+        TextField textField = new TextField(initialText);
+        textField.setPrefWidth(400);
+
+        Button editSaveButton = new Button();
+        Button deleteButton = new Button("✖");
+
+      
+        final Runnable[] switchToEdit = new Runnable[1];
+        final Runnable[] saveStep = new Runnable[1];
+
+        saveStep[0] = () -> {
+        String text = textField.getText().trim();
+        if (text.isEmpty()) return;
+
+        selectedRecipe.getInstructions().set(index, text);
+        textLabel.setText(text);
+
+    
+        try {
+            recipeServerUtils.replaceRecipe(selectedRecipe.getRecipeId(), selectedRecipe);
+        } catch (Exception e) {
+            System.err.println("Failed to save recipe: " + e.getMessage());
+        }
+
+        editSaveButton.setText("✏");
+        row.getChildren().setAll(indexLabel, textLabel, editSaveButton, deleteButton);
+
+        editSaveButton.setOnAction(e -> switchToEdit[0].run());
+    };
+
+        switchToEdit[0] = () -> {
+            textField.setText(textLabel.getText());
+            editSaveButton.setText("✔");
+            row.getChildren().setAll(indexLabel, textField, editSaveButton, deleteButton);
+            textField.requestFocus();
+            textField.selectAll();
+
+            textField.setOnAction(ev -> saveStep[0].run());
+
+            editSaveButton.setOnAction(e -> saveStep[0].run());
+        };
+
+        if (startEditable) {
+            switchToEdit[0].run();
+        } else {
+            editSaveButton.setText("✏");
+            editSaveButton.setOnAction(e -> switchToEdit[0].run());
+            row.getChildren().addAll(indexLabel, textLabel, editSaveButton, deleteButton);
+        }
+
+        deleteButton.setOnAction(e -> handleDeleteStep(index));
+
+        return row;
     }
 
+    /**
+     * Handles the deletion of a preparation step.
+     * @param index the index of the step to be deleted
+     */
+    private void handleDeleteStep(int index) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Delete Step");
+        alert.setHeaderText("Delete this preparation step?");
+
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            selectedRecipe.getInstructions().remove(index);
+
+            try {
+                recipeServerUtils.replaceRecipe(selectedRecipe.getRecipeId(), selectedRecipe);
+            } catch (Exception e) {
+                System.err.println("Failed to save recipe after deleting step: " + e.getMessage());
+            }
+
+            showInstructions(selectedRecipe);
+        }
+    }
+
+    
     /**
      * Edit an ingredient of a selected recipe.
      */
@@ -364,14 +498,7 @@ public class MainCtrl {
         System.out.println("Edited ingredient.");
     }
 
-    /**
-     * This is a placeholder method for further development
-     * Method prints out a message when the button is clicked
-     */
-    @FXML
-    private void editPreparationButtonClicked() {
-        System.out.println("Editing selected item...");
-    }
+
 
     /**
      * This is a placeholder method for further development
@@ -392,15 +519,7 @@ public class MainCtrl {
         System.out.println("Added ingredient: " + ingredient);
     }
 
-    /**
-     * This is a placeholder a helper method for further list management
-     * Method prints out a message when the button is clicked
-     * @param step the step to be added
-     */
-    @FXML
-    private void addPreparationStep(String step) {
-        System.out.println("Added preparation step: " + step);
-    }
+    
 
     /**
      * Opens the add ingredient to recipe popup window.
@@ -466,9 +585,6 @@ public class MainCtrl {
     private Button addIngredientButton;
 
     @FXML
-    private Button addPreparationButton;
-
-    @FXML
     private Button addRecipeButton;
 
     @FXML
@@ -482,9 +598,6 @@ public class MainCtrl {
 
     @FXML
     private Label itemLabel;
-
-    @FXML
-    private VBox preparationList;
 
     @FXML
     private Button refreshButton;
