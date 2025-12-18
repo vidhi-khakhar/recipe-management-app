@@ -586,6 +586,8 @@ public class MainCtrl {
     @FXML
     void cloneRecipe() {
 
+        currentRecipeId = selectedRecipe.getRecipeId();
+
         if (this.currentRecipeId == null) {
             System.out.println("No Recipe selected!");
             return;
@@ -667,7 +669,11 @@ public class MainCtrl {
     private VBox preparationList;
 
     @FXML
-    private Button addStepButton;   
+    private Button addStepButton;
+
+    @FXML
+    private Button cloneRecipeButton;
+
 
 
 }
