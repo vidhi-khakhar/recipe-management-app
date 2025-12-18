@@ -147,16 +147,10 @@ public class MainCtrl {
 
             // Reselect previously selected recipe (if there was any)
             if (selectedRecipe != null) {
-                for (Recipe recipe : recipesFromDb) {
-                    if (
-                        recipe
-                            .getRecipeId()
-                            .equals(selectedRecipe.getRecipeId())
-                    ) {
-                        sidebarList.getSelectionModel().select(recipe);
-                        break;
-                    }
-                }
+                try {
+                    Recipe fetched = recipeServerUtils.getRecipe(selectedRecipe.getRecipeId());
+                    sidebarList.getSelectionModel().select(fetched);
+                } catch (Exception e) {}
             }
         } catch (Exception e) {
             System.out.println("Failed to load recipes: " + e.getMessage());
