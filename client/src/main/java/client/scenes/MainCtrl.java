@@ -445,6 +445,10 @@ public class MainCtrl {
         return row;
     }
 
+    /**
+     * Handles the deletion of a preparation step.
+     * @param index the index of the step to be deleted
+     */
     private void handleDeleteStep(int index) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Delete Step");
