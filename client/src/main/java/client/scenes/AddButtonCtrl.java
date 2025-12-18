@@ -1,26 +1,14 @@
 package client.scenes;
 
-import client.utils.RecipeServerUtils;
 import com.google.inject.Inject;
-import commons.Recipe;
-import commons.RecipeCollection;
-import javafx.beans.binding.Bindings;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.text.Font;
 
+import client.utils.RecipeServerUtils;
+import commons.Recipe;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 public class AddButtonCtrl {
     private final MainCtrl mainCtrl;
@@ -74,6 +62,9 @@ public class AddButtonCtrl {
                     recipeInput.clear();
                     statusLabel.setText("Recipe added!");
                     statusLabel.setStyle("-fx-text-fill: green;");
+
+                    Stage stage = (Stage) recipeAddButton.getScene().getWindow();
+                    stage.close();
 
                 } catch (Exception e) {
                     statusLabel.setText("Something went wrong during adding recipe.");
