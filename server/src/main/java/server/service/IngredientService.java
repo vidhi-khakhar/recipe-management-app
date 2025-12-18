@@ -101,12 +101,5 @@ public class IngredientService {
         }
     }
 
-    /**
-     * Returns how many recipes uses this ingredient
-     * @param ingredientId the id of the ingredient
-     * @return the number of recipes
-     */
-//    public long getUsageCount(Long ingredientId) {
-//        return ingredientRepository.countByIngredientId(ingredientId);
-//    }
+
 }

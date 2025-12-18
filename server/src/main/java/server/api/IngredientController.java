@@ -117,14 +117,6 @@ public class IngredientController {
         }
     }
 
-//    @GetMapping("/{id}/usage")
-//    public ResponseEntity<Long> getIngredientUsage(@PathVariable Long id){
-//        try {
-//            long count = iService.getUsageCount(id);
-//            return ResponseEntity.ok(count);
-//        }catch(NoSuchElementException e){
-//            return ResponseEntity.notFound().build();
-//        }
-//    }
+
 
 }
