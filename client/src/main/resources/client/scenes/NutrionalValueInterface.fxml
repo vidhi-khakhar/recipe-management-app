@@ -86,19 +86,19 @@
                      <children>
                         <StackPane prefHeight="337.0" prefWidth="316.0" VBox.vgrow="ALWAYS">
                            <children>
-                              <AnchorPane fx:id="addIngredientPane" prefHeight="200.0" prefWidth="200.0" visible="false">
+                              <AnchorPane fx:id="addIngredientPane" prefHeight="200.0" prefWidth="200.0">
                                  <children>
                                     <VBox prefHeight="335.0" prefWidth="324.0">
                                        <children>
                                           <HBox prefHeight="100.0" prefWidth="200.0">
                                              <children>
-                                                <Label prefWidth="49.0" text="Name: " wrapText="true">
+                                                <Label prefWidth="70.0" text="Name: " wrapText="true">
                                                    <HBox.margin>
                                                       <Insets left="10.0" top="25.0" />
                                                    </HBox.margin></Label>
-                                                <TextField fx:id="newIngName" prefWidth="120.0" scaleX="2.0">
+                                                <TextField fx:id="newIngName" prefWidth="240.0">
                                                    <HBox.margin>
-                                                      <Insets left="60.0" top="25.0" />
+                                                      <Insets right="25.0" top="25.0" />
                                                    </HBox.margin>
                                                 </TextField>
                                              </children>
@@ -200,7 +200,7 @@
                                     </VBox>
                                  </children>
                               </AnchorPane>
-                              <AnchorPane fx:id="ingredientDetailsPane" prefHeight="200.0" prefWidth="200.0">
+                              <AnchorPane fx:id="ingredientDetailsPane" prefHeight="200.0" prefWidth="200.0" visible="false">
                                  <children>
                                     <VBox prefHeight="334.0" prefWidth="318.0">
                                        <children>
