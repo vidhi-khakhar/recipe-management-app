@@ -181,7 +181,7 @@ public class IngredientServerUtils {
     }
 
     public long getIngredientUsageCount(Long ingredientId) throws ProcessingException, NoSuchElementException {
-        try(Response response = CLIENT.target(SERVER + "api/v1/ingredients/" + ingredientId + "/usage" )
+        try(Response response = CLIENT.target(server + "api/v1/ingredients/" + ingredientId + "/usage" )
             .request(APPLICATION_JSON)
                     .get()){
             if (response.getStatus() == HTTP_OK) {
