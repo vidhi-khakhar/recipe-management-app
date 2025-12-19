@@ -2,7 +2,6 @@ package client.utils;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
-import com.google.inject.Inject;
 import commons.Recipe;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.*;
@@ -10,7 +9,6 @@ import jakarta.ws.rs.core.*;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.glassfish.jersey.client.ClientConfig;
-import client.config.ConfigService;
 
 /**
  * Utility class for communicating with the backend to manage recipes.
@@ -21,7 +19,7 @@ public class RecipeServerUtils {
     private static final int HTTP_CREATED = 201;
     private static final int HTTP_NOT_FOUND = 404;
 
-    private static final String server = ConfigService.getConfig().getServerUrl(); // The server url from the config.json
+    private static final String DEFAULT_SERVER = "http://localhost:8080/";
 
     private final Client client;
     private final String serverUrl;
@@ -30,7 +28,7 @@ public class RecipeServerUtils {
      * Default constructor with default values
      */
     public RecipeServerUtils() {
-        this(ClientBuilder.newClient(new ClientConfig()), server);
+        this(ClientBuilder.newClient(new ClientConfig()), DEFAULT_SERVER);
     }
 
     /**
