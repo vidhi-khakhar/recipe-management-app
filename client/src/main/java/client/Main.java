@@ -20,6 +20,8 @@ import static com.google.inject.Guice.createInjector;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import client.config.Config;
+import client.config.ConfigService;
 import client.scenes.AddButtonCtrl;
 import client.scenes.AddRecipeIngredientCtrl;
 import com.google.inject.Injector;
@@ -43,6 +45,23 @@ public class Main extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+
+    // Filepath for the config.json
+    String configPath = "client/config.json";
+
+    // Check whether the user has entered their own directory for the config file
+    var args = getParameters().getRaw();
+    for (int i = 0; i < args.size(); i++) {
+        if ("--cfg".equals(args.get(i)) && i + 1 < args.size()) {
+            configPath = args.get(i + 1);
+        }
+    }
+
+    ConfigService.setConfigPath(configPath);
+
+    Config config = ConfigService.getConfig();
+
+    System.out.println("Using server: " + config.getServerUrl()); // Feedback to see which server (url) we are using
 
     var mainUserInterface = FXML.load(MainCtrl.class, "client", "scenes", "MainUserInterface.fxml");
     var mainUserInterfaceScene = new Scene(mainUserInterface.getValue());

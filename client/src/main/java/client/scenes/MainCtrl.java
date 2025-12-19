@@ -51,20 +51,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-import java.io.IOException;
-import java.sql.SQLOutput;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 public class MainCtrl {
     private Stage primaryStage;
     private Scene nutritionScene;
     private Scene recipeAddScene;
     private Scene addRecipeIngredientScene;
     private AddRecipeIngredientCtrl addRecipeIngredientCtrl;
-    private Long currentRecipeId;
-
 
     private final RecipeServerUtils recipeServerUtils;
     private final ObservableList<Recipe> recipesObservableList = FXCollections.observableArrayList();
@@ -581,48 +573,9 @@ public class MainCtrl {
         recipeAddStage.setTitle("Add Recipe");
         recipeAddStage.setScene(recipeAddScene);
         recipeAddStage.initOwner(primaryStage);
-
-        
+        recipeAddStage.setResizable(false);
 
         recipeAddStage.show();
-    }
-
-    /**
-     * Clone's the selected recipe, copying the name and adding (Clone) behind it
-     */
-    @FXML
-    void cloneRecipe() {
-
-        currentRecipeId = selectedRecipe.getRecipeId();
-
-        if (this.currentRecipeId == null) {
-            System.out.println("No Recipe selected!");
-            return;
-        }
-
-        try {
-            Recipe original = recipeServerUtils.getRecipe(currentRecipeId);
-
-            Recipe newRecipe = new Recipe(
-                    original.getTitle() + " (Clone)",
-                    original.getLanguage()
-            );
-
-            newRecipe.setServings(original.getServings());
-            newRecipe.setInstructions(new ArrayList<>(original.getInstructions()));
-            newRecipe.setIngredients(new ArrayList<>(original.getIngredients()));
-
-            Long newId = recipeServerUtils.createRecipe(newRecipe);
-            newRecipe.setRecipeId(newId);
-
-            recipesObservableList.add(newRecipe);
-
-            System.out.println("It worked! Cloned recipe ID: " + newId);
-
-        } catch (Exception e) {
-            System.err.println("Clone failed: " + e.getMessage());
-        }
-
     }
 
     @FXML
@@ -676,11 +629,7 @@ public class MainCtrl {
     private VBox preparationList;
 
     @FXML
-    private Button addStepButton;
-
-    @FXML
-    private Button cloneRecipeButton;
-
+    private Button addStepButton;   
 
     @FXML
     private void downloadButtonClicked() throws IOException {

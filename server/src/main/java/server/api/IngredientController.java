@@ -51,8 +51,8 @@ public class IngredientController {
     public ResponseEntity<Long> createIngredient(@RequestBody Ingredient ingredient){
         validateIngredient(ingredient);
 
-        this.iService.createIngredient(ingredient);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ingredient.getId());
+        Ingredient saved = iService.createIngredient(ingredient);
+        return ResponseEntity.status(201).body(saved.getId());
     }
 
     /**
@@ -116,5 +116,7 @@ public class IngredientController {
             return ResponseEntity.notFound().build();
         }
     }
+
+
 
 }
