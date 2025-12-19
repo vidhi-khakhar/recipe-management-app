@@ -93,8 +93,7 @@ public class Main extends Application {
     primaryStage.setMinWidth(600);
     primaryStage.setMinHeight(500);
 
-    Font.loadFont(getClass().getResourceAsStream("/client/CascadiaCode-VariableFont_wght.ttf"), 12);
-
+    Font.loadFont(getClass().getResourceAsStream("/client/scenes/CascadiaCode-VariableFont_wght.ttf"), 12);
 
     primaryStage.setScene(mainUserInterfaceScene);
     primaryStage.setTitle("FoodPal");

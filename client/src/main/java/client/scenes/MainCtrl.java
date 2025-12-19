@@ -16,6 +16,7 @@
 package client.scenes;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -569,6 +570,44 @@ public class MainCtrl {
         recipeAddStage.setResizable(false);
 
         recipeAddStage.show();
+    }
+
+    /**
+     * Clone's the selected recipe, copying the name and adding (Clone) behind it
+     */
+    @FXML
+    void cloneRecipe() {
+
+        Long currentRecipeId = selectedRecipe.getRecipeId();
+
+        if (currentRecipeId == null) {
+            System.out.println("No Recipe selected!");
+            return;
+        }
+
+        try {
+            Recipe original = recipeServerUtils.getRecipe(currentRecipeId);
+
+            Recipe newRecipe = new Recipe(
+                    original.getTitle() + " (Clone)",
+                    original.getLanguage()
+            );
+
+            newRecipe.setServings(original.getServings());
+            newRecipe.setInstructions(new ArrayList<>(original.getInstructions()));
+            newRecipe.setIngredients(new ArrayList<>(original.getIngredients()));
+
+            Long newId = recipeServerUtils.createRecipe(newRecipe);
+            newRecipe.setRecipeId(newId);
+
+            recipesObservableList.add(newRecipe);
+
+            System.out.println("It worked! Cloned recipe ID: " + newId);
+
+        } catch (Exception e) {
+            System.err.println("Clone failed: " + e.getMessage());
+        }
+
     }
 
     @FXML
