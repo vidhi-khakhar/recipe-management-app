@@ -4,6 +4,7 @@ import commons.Ingredient;
 import commons.Recipe;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import server.RecipeRepository;
 import server.database.IngredientRepository;
 
 import java.util.List;
@@ -17,6 +18,9 @@ public class IngredientService {
 
     @Autowired
     private IngredientRepository ingredientRepository;
+
+    @Autowired
+    private RecipeRepository recipeRepository;
 
     /**
      * gets the ingredient by it's id
@@ -58,9 +62,10 @@ public class IngredientService {
     /**
      * creates an ingredient in the repo
      * @param ingredient
+     * @return Ingredient
      */
-    public void createIngredient(Ingredient ingredient) {
-        ingredientRepository.save(ingredient);
+    public Ingredient createIngredient(Ingredient ingredient) {
+        return ingredientRepository.save(ingredient);
     }
 
     /**
@@ -77,8 +82,9 @@ public class IngredientService {
         ingredientToUpdate.setProteinPer100g(updatedIngredient.getProteinPer100g());
         ingredientToUpdate.setFatPer100g(updatedIngredient.getFatPer100g());
         ingredientToUpdate.setCarbsPer100g(updatedIngredient.getCarbsPer100g());
-//        ingredientToUpdate.setKcalPer100g(updateIngredientKcal(id, updatedIngredient.getName(),
-//                updatedIngredient.getProteinPer100g(), updatedIngredient.getFatPer100g(), updatedIngredient.getCarbsPer100g()));
+        double newKcal = Ingredient.calculatingKcal(updatedIngredient.getProteinPer100g(),
+                updatedIngredient.getFatPer100g(), updatedIngredient.getCarbsPer100g());
+        ingredientToUpdate.setKcalPer100g(newKcal);
 
         ingredientRepository.save(ingredientToUpdate);
     }
@@ -94,4 +100,6 @@ public class IngredientService {
             throw new NoSuchElementException("Ingredient with id " + id + " not found.");
         }
     }
+
+
 }
