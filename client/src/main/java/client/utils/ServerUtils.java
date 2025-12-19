@@ -19,6 +19,7 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.net.ConnectException;
 
+import client.config.ConfigService;
 import org.glassfish.jersey.client.ClientConfig;
 
 import jakarta.ws.rs.ProcessingException;
@@ -26,13 +27,13 @@ import jakarta.ws.rs.client.ClientBuilder;
 
 public class ServerUtils {
 
-	private static final String SERVER = "http://localhost:8080/";
+	private static final String server = ConfigService.getConfig().getServerUrl(); // The server url from the config.json
 
 
 	public boolean isServerAvailable() {
 		try {
 			ClientBuilder.newClient(new ClientConfig()) //
-					.target(SERVER) //
+					.target(server) //
 					.request(APPLICATION_JSON) //
 					.get();
 		} catch (ProcessingException e) {
