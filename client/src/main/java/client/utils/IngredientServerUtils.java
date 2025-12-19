@@ -36,7 +36,7 @@ public class IngredientServerUtils {
      */
     public Long createIngredient(Ingredient ingredient) throws ProcessingException {
         try
-            (Response response = CLIENT.target(server + "api/v1/ingredients")
+            (Response response = CLIENT.target(server + "/api/v1/ingredients")
                     .request(APPLICATION_JSON)
                     .post(Entity.json(ingredient)))
         {
@@ -63,7 +63,7 @@ public class IngredientServerUtils {
      * @throws ProcessingException if there's a network error or server error
      */
     public List<Ingredient> getAllIngredients() throws ProcessingException {
-        try (Response response = CLIENT.target(server + "api/v1/ingredients")
+        try (Response response = CLIENT.target(server + "/api/v1/ingredients")
                 .request(APPLICATION_JSON)
                 .get()) {
 
@@ -85,7 +85,7 @@ public class IngredientServerUtils {
      */
     public Ingredient getIngredient(Long id)
             throws ProcessingException, NoSuchElementException {
-        try (Response response = CLIENT.target(server + "api/v1/ingredients/" + id)
+        try (Response response = CLIENT.target(server + "/api/v1/ingredients/" + id)
                     .request(APPLICATION_JSON)
                     .get())
         {
@@ -120,7 +120,7 @@ public class IngredientServerUtils {
      */
     public boolean replaceIngredient(Long id, Ingredient ingredient)
             throws ProcessingException, NoSuchElementException {
-        try (Response response = CLIENT.target(server + "api/v1/ingredients/" + id)
+        try (Response response = CLIENT.target(server + "/api/v1/ingredients/" + id)
                     .request(APPLICATION_JSON)
                     .put(Entity.json(ingredient)))
         {
@@ -155,7 +155,7 @@ public class IngredientServerUtils {
     public boolean deleteIngredient(Long id)
             throws ProcessingException, NoSuchElementException {
         try
-            (Response response = CLIENT.target(server + "api/v1/ingredients/" + id)
+            (Response response = CLIENT.target(server + "/api/v1/ingredients/" + id)
                     .request(APPLICATION_JSON)
                     .delete())
         {
@@ -181,7 +181,7 @@ public class IngredientServerUtils {
     }
 
     public long getIngredientUsageCount(Long ingredientId) throws ProcessingException, NoSuchElementException {
-        try(Response response = CLIENT.target(server + "api/v1/ingredients/" + ingredientId + "/usage" )
+        try(Response response = CLIENT.target(server + "/api/v1/ingredients/" + ingredientId + "/usage" )
             .request(APPLICATION_JSON)
                     .get()){
             if (response.getStatus() == HTTP_OK) {

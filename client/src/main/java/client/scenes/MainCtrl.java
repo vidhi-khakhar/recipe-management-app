@@ -16,6 +16,7 @@
 package client.scenes;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -609,6 +610,11 @@ public class MainCtrl {
     }
 
     @FXML
+    void cloneRecipe() {
+        // TODO: Implement clone recipe
+    }
+
+    @FXML
     private ListView<Recipe> sidebarList;
 
     @FXML
@@ -659,7 +665,7 @@ public class MainCtrl {
     private VBox preparationList;
 
     @FXML
-    private Button addStepButton;   
+    private Button addStepButton;
 
 
 }
