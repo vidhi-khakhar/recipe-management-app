@@ -180,6 +180,29 @@ public class IngredientServerUtils {
         }
     }
 
+    public long getIngredientUsageCount(Long ingredientId) throws ProcessingException, NoSuchElementException {
+        try(Response response = CLIENT.target(server + "api/v1/ingredients/" + ingredientId + "/usage" )
+            .request(APPLICATION_JSON)
+                    .get()){
+            if (response.getStatus() == HTTP_OK) {
+
+                return response.readEntity(Long.class);
+
+            }else if (response.getStatus() == HTTP_NOT_FOUND) {
+
+                throw new NoSuchElementException("Ingredient with id " + ingredientId + " not found");
+
+            }else{
+
+                throw new ProcessingException("Failed to get ingredient usage, HTTP " + response.getStatus());
+            }
+
+        }catch (ProcessingException e ){
+
+            throw new ProcessingException("Network error getting ingredient usage: " + e.getMessage(), e);
+        }
+    }
+
 
 
 }

@@ -122,6 +122,10 @@ public class Ingredient {
             return ingredientId;
     }
 
+    public void setId(Long ingredientId) {
+        this.ingredientId = ingredientId;
+    }
+
 
     public String getName() {
         return name;
