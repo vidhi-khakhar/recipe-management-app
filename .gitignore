@@ -6,6 +6,8 @@ build/
 !**/src/test/**/build/
 
 */.gitignore
+client/client/
+config.json
 
 **/target/*
 **/*.mv.db
