@@ -3,6 +3,7 @@ package client.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import commons.Ingredient;
+import commons.Unit;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,7 +70,7 @@ public class ShoppingList implements Serializable {
      * @param unit The unit of measurement
      * @param sourceRecipeName The name of the recipe this item came from
      */
-    public void addItem(Ingredient ingredient, double amount, String unit, String sourceRecipeName) {
+    public void addItem(Ingredient ingredient, double amount, Unit unit, String sourceRecipeName) {
         if (ingredient != null) {
             shoppingItems.add(new ShoppingItem(ingredient, amount, unit, sourceRecipeName));
         }
@@ -81,7 +82,7 @@ public class ShoppingList implements Serializable {
      */
     public void addManualItem(Ingredient ingredient) {
         if (ingredient != null) {
-            shoppingItems.add(new ShoppingItem(ingredient, 0.0, "", null));
+            shoppingItems.add(new ShoppingItem(ingredient, 0.0, Unit.G, null));
         }
     }
 
@@ -92,7 +93,7 @@ public class ShoppingList implements Serializable {
      */
     public void addRecipeItem(Ingredient ingredient, String sourceRecipeName) {
         if (ingredient != null) {
-            shoppingItems.add(new ShoppingItem(ingredient, 0.0, "", sourceRecipeName));
+            shoppingItems.add(new ShoppingItem(ingredient, 0.0, Unit.G, sourceRecipeName));
         }
     }
 

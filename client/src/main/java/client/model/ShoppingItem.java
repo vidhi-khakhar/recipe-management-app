@@ -2,6 +2,7 @@ package client.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import commons.Ingredient;
+import commons.Unit;
 import java.io.Serializable;
 
 /**
@@ -14,7 +15,7 @@ public class ShoppingItem implements Serializable {
     private Ingredient ingredient;
     private String sourceRecipeName;
     private double amount;
-    private String unit;
+    private Unit unit;
 
     /**
      * Default constructor
@@ -30,7 +31,7 @@ public class ShoppingItem implements Serializable {
         this.ingredient = ingredient;
         this.sourceRecipeName = sourceRecipeName;
         this.amount = 0.0;
-        this.unit = "";
+        this.unit = Unit.G; // Default unit
     }
 
     /**
@@ -40,7 +41,7 @@ public class ShoppingItem implements Serializable {
      * @param unit unit to set
      * @param sourceRecipeName name of the recipe this item came from (can be null)
      */
-    public ShoppingItem(Ingredient ingredient, double amount, String unit, String sourceRecipeName) {
+    public ShoppingItem(Ingredient ingredient, double amount, Unit unit, String sourceRecipeName) {
         this.ingredient = ingredient;
         this.amount = amount;
         this.unit = unit;
@@ -75,7 +76,7 @@ public class ShoppingItem implements Serializable {
      * Get unit
      * @return unit
      */
-    public String getUnit() {
+    public Unit getUnit() {
         return unit;
     }
 
@@ -83,7 +84,7 @@ public class ShoppingItem implements Serializable {
      * Set unit
      * @param unit unit to set
      */
-    public void setUnit(String unit) {
+    public void setUnit(Unit unit) {
         this.unit = unit;
     }
 
