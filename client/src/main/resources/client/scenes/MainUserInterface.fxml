@@ -74,7 +74,7 @@
                         <HBox prefHeight="43.0" prefWidth="639.0" styleClass="titlelablebox" VBox.vgrow="NEVER">
                            <children>
                               <Label fx:id="titleRecipeLabel" styleClass="h2" text="titleLabel" />
-                              <Button fx:id="editRecipeTitleButton" mnemonicParsing="false" onAction="#handleClick" prefHeight="31.0" prefWidth="63.0" styleClass="roundbutton" text="edit">
+                              <Button fx:id="editRecipeTitleButton" mnemonicParsing="false" onAction="#editRecipeTitleButtonClicked" prefHeight="31.0" prefWidth="63.0" styleClass="roundbutton" text="edit">
                                  <HBox.margin>
                                     <Insets bottom="5.0" left="5.0" />
                                  </HBox.margin>
@@ -134,6 +134,15 @@
                                  <VBox.margin>
                                     <Insets top="3.0" />
                                  </VBox.margin></Button>
+                           </children>
+                        </VBox>
+                        <VBox prefHeight="40.0" prefWidth="324.0">
+                           <children>
+                              <Button fx:id="downloadButton" alignment="TOP_CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#downloadButtonClicked" text="Download">
+                                 <VBox.margin>
+                                    <Insets left="480.0" />
+                                 </VBox.margin>
+                              </Button>
                            </children>
                         </VBox>
                      </children>

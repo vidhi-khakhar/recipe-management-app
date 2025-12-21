@@ -15,14 +15,9 @@
  */
 package client.scenes;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import com.google.inject.Inject;
-
+import client.RecipeFormatter;
 import client.utils.RecipeServerUtils;
+import com.google.inject.Inject;
 import commons.Recipe;
 import commons.RecipeIngredient;
 import javafx.collections.FXCollections;
@@ -31,25 +26,28 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class MainCtrl {
     private Stage primaryStage;
     private Scene nutritionScene;
     private Scene recipeAddScene;
     private Scene addRecipeIngredientScene;
+    private Scene editTitleScene;
+
     private AddRecipeIngredientCtrl addRecipeIngredientCtrl;
 
     private final RecipeServerUtils recipeServerUtils;
@@ -66,17 +64,15 @@ public class MainCtrl {
      * @param addRecipeIngredientScene the add ingredient to recipe scene
      * @param addRecipeIngredientCtrl  the add ingredient to recipe controller
      */
-    public void initScenes(Stage primaryStage,
-                           Scene mainUserInterfaceScene,
-                           Scene nutritionScene,
-                           Scene recipeAddScene,
-                           Scene addRecipeIngredientScene,
-                           AddRecipeIngredientCtrl addRecipeIngredientCtrl) {
+    public void initScenes(Stage primaryStage, Scene mainUserInterfaceScene, Scene nutritionScene,
+                           Scene recipeAddScene, Scene addRecipeIngredientScene, AddRecipeIngredientCtrl addRecipeIngredientCtrl,
+                           Scene editTitleScene) {
         this.primaryStage = primaryStage;
         this.nutritionScene = nutritionScene; // store it for later
         this.recipeAddScene = recipeAddScene; // store it for later
         this.addRecipeIngredientScene = addRecipeIngredientScene;
         this.addRecipeIngredientCtrl = addRecipeIngredientCtrl;
+        this.editTitleScene = editTitleScene;
 
         primaryStage.show();
     }
@@ -525,15 +521,6 @@ public class MainCtrl {
     }
 
     /**
-     * This is a placeholder method for further development
-     * Method prints out a message when the button is clicked
-     */
-    @FXML
-    private void editRecipeTitleButtonClicked() {
-        System.out.println("Editing recipe title...");
-    }
-
-    /**
      * This is a placeholder a helper method for further list management
      * Method prints out a message when the button is clicked
      * @param ingredient the ingredient to be added
@@ -638,6 +625,49 @@ public class MainCtrl {
 
     }
 
+    /**
+     * Shows edit title of recipe window.
+     */
+    @FXML
+    void showEditRecipeTitleScene() {
+        if (editTitleScene == null) {
+            System.err.println("Scene not initialized!");
+            return;
+        }
+
+        Stage editTitleStage = new Stage();
+        editTitleStage.setTitle("Edit Recipe Title");
+        editTitleStage.setScene(editTitleScene);
+        editTitleStage.initOwner(primaryStage);
+        editTitleStage.setResizable(false);
+
+        editTitleStage.show();
+    }
+
+    /**
+     * Returns selected recipe.
+     * @return selected Recipe instance
+     */
+    public Recipe getSelectedRecipe() {
+        return sidebarList.getSelectionModel().getSelectedItem();
+    }
+
+    /**
+     * Updates the title of the recipe according to user input.
+     */
+    @FXML
+    void editRecipeTitleButtonClicked() {
+        showEditRecipeTitleScene();
+    }
+
+    public void refreshSidebarList() {
+        sidebarList.refresh();
+    }
+
+    public void updateTitleLabel(String title) {
+        titleRecipeLabel.setText(title);
+    }
+
     @FXML
     private ListView<Recipe> sidebarList;
 
@@ -680,8 +710,8 @@ public class MainCtrl {
     @FXML
     private Label titleRecipeLabel;
 
-    // INSTRUCTIONS:
-
+    @FXML
+    private Button downloadButton;
     @FXML
     private ScrollPane prepScrollPane;
 
@@ -691,5 +721,35 @@ public class MainCtrl {
     @FXML
     private Button addStepButton;
 
+    @FXML
+    private void downloadButtonClicked() throws IOException {
+        Recipe selectedRecipe = (Recipe) sidebarList.getSelectionModel().getSelectedItem();
+        if (selectedRecipe == null) {
+            System.out.println("Please select a recipe.");
+            return;
+        }
+
+        saveRecipe(selectedRecipe);
+    }
+
+    /**
+     * Saves a recipe in chosen path.
+     * @param recipe recipe to be saved
+     */
+    private void saveRecipe(Recipe recipe) throws IOException {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save recipe");
+        fileChooser.setInitialFileName(recipe.getTitle() + ".txt");
+
+        File file = fileChooser.showSaveDialog(primaryStage);
+        if (file != null) {
+            try {
+                String text = (new RecipeFormatter(recipe)).formatPlaintext();
+                FileUtils.writeStringToFile(file, text);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 }
