@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import client.RecipeFormatter;
 import com.google.inject.Inject;
 
 import client.utils.RecipeServerUtils;
@@ -43,7 +44,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.apache.commons.io.FileUtils;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 
 public class MainCtrl {
     private Stage primaryStage;
@@ -680,8 +687,8 @@ public class MainCtrl {
     @FXML
     private Label titleRecipeLabel;
 
-    // INSTRUCTIONS:
-
+    @FXML
+    private Button downloadButton;
     @FXML
     private ScrollPane prepScrollPane;
 
@@ -691,5 +698,35 @@ public class MainCtrl {
     @FXML
     private Button addStepButton;
 
+    @FXML
+    private void downloadButtonClicked() throws IOException {
+        Recipe selectedRecipe = (Recipe) sidebarList.getSelectionModel().getSelectedItem();
+        if (selectedRecipe == null) {
+            System.out.println("Please select a recipe.");
+            return;
+        }
+
+        saveRecipe(selectedRecipe);
+    }
+
+    /**
+     * Saves a recipe in chosen path.
+     * @param recipe recipe to be saved
+     */
+    private void saveRecipe(Recipe recipe) throws IOException {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save recipe");
+        fileChooser.setInitialFileName(recipe.getTitle() + ".txt");
+
+        File file = fileChooser.showSaveDialog(primaryStage);
+        if (file != null) {
+            try {
+                String text = (new RecipeFormatter(recipe)).formatPlaintext();
+                FileUtils.writeStringToFile(file, text);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 }
