@@ -63,12 +63,25 @@ public class ShoppingList implements Serializable {
     }
 
     /**
+     * Add a shopping item with amount and unit
+     * @param ingredient The ingredient to add
+     * @param amount The amount of the ingredient
+     * @param unit The unit of measurement
+     * @param sourceRecipeName The name of the recipe this item came from
+     */
+    public void addItem(Ingredient ingredient, double amount, String unit, String sourceRecipeName) {
+        if (ingredient != null) {
+            shoppingItems.add(new ShoppingItem(ingredient, amount, unit, sourceRecipeName));
+        }
+    }
+
+    /**
      * Add a manually added item to the list
      * @param ingredient The ingredient to add
      */
     public void addManualItem(Ingredient ingredient) {
         if (ingredient != null) {
-            shoppingItems.add(new ShoppingItem(ingredient, null));
+            shoppingItems.add(new ShoppingItem(ingredient, 0.0, "", null));
         }
     }
 
@@ -79,7 +92,7 @@ public class ShoppingList implements Serializable {
      */
     public void addRecipeItem(Ingredient ingredient, String sourceRecipeName) {
         if (ingredient != null) {
-            shoppingItems.add(new ShoppingItem(ingredient, sourceRecipeName));
+            shoppingItems.add(new ShoppingItem(ingredient, 0.0, "", sourceRecipeName));
         }
     }
 
@@ -117,6 +130,30 @@ public class ShoppingList implements Serializable {
             }
         }
         return false;
+    }
+
+    /**
+     * Remove all shopping items with the given ingredient name
+     * @param ingredientName The name of the ingredient to remove
+     * @return number of items removed
+     */
+    public int removeAllItems(String ingredientName) {
+        if (ingredientName == null) {
+            return 0;
+        }
+
+        int removedCount = 0;
+        for (int i = shoppingItems.size() - 1; i >= 0; i--) {
+            ShoppingItem item = shoppingItems.get(i);
+            if (
+                item.getIngredient() != null &&
+                ingredientName.equals(item.getIngredient().getName())
+            ) {
+                shoppingItems.remove(i);
+                removedCount++;
+            }
+        }
+        return removedCount;
     }
 
     /**

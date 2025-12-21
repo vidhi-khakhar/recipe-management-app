@@ -13,6 +13,8 @@ public class ShoppingItem implements Serializable {
 
     private Ingredient ingredient;
     private String sourceRecipeName;
+    private double amount;
+    private String unit;
 
     /**
      * Default constructor
@@ -27,6 +29,22 @@ public class ShoppingItem implements Serializable {
     public ShoppingItem(Ingredient ingredient, String sourceRecipeName) {
         this.ingredient = ingredient;
         this.sourceRecipeName = sourceRecipeName;
+        this.amount = 0.0;
+        this.unit = "";
+    }
+
+    /**
+     * Constructor with ingredient, amount and unit
+     * @param ingredient ingredient to set
+     * @param amount amount to set
+     * @param unit unit to set
+     * @param sourceRecipeName name of the recipe this item came from (can be null)
+     */
+    public ShoppingItem(Ingredient ingredient, double amount, String unit, String sourceRecipeName) {
+        this.ingredient = ingredient;
+        this.amount = amount;
+        this.unit = unit;
+        this.sourceRecipeName = sourceRecipeName;
     }
 
     /**
@@ -35,6 +53,38 @@ public class ShoppingItem implements Serializable {
      */
     public Ingredient getIngredient() {
         return ingredient;
+    }
+
+    /**
+     * Get amount
+     * @return amount
+     */
+    public double getAmount() {
+        return amount;
+    }
+
+    /**
+     * Set amount
+     * @param amount amount to set
+     */
+    public void setAmount(double amount) {
+        this.amount = amount;
+    }
+
+    /**
+     * Get unit
+     * @return unit
+     */
+    public String getUnit() {
+        return unit;
+    }
+
+    /**
+     * Set unit
+     * @param unit unit to set
+     */
+    public void setUnit(String unit) {
+        this.unit = unit;
     }
 
     /**
@@ -63,6 +113,9 @@ public class ShoppingItem implements Serializable {
 
     @Override
     public String toString() {
-        return ingredient != null ? ingredient.toString() : "null";
+        if (ingredient != null) {
+            return String.format("%s (%.1f %s)", ingredient.getName(), amount, unit);
+        }
+        return "null";
     }
 }
