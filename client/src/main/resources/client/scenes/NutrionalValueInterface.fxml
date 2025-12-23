@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@NutritionalValue.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.NutritionalValueCtrl">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@NutritionalValue.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.NutritionalValueCtrl">
    <children>
       <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
@@ -27,7 +34,6 @@
                      </children>
                   </HBox>
                   <HBox prefHeight="63.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
-                  <Button fx:id="closeButton" mnemonicParsing="false" onAction="#closeWindow" text="X" />
                </children>
             </HBox>
          </top>
@@ -86,7 +92,7 @@
                      <children>
                         <StackPane prefHeight="337.0" prefWidth="316.0" VBox.vgrow="ALWAYS">
                            <children>
-                              <AnchorPane fx:id="addIngredientPane" prefHeight="200.0" prefWidth="200.0">
+                              <AnchorPane fx:id="addIngredientPane" prefHeight="200.0" prefWidth="200.0" visible="false">
                                  <children>
                                     <VBox prefHeight="335.0" prefWidth="324.0">
                                        <children>
@@ -164,7 +170,7 @@
                                     </VBox>
                                  </children>
                               </AnchorPane>
-                              <AnchorPane fx:id="noIngredientPane" prefHeight="200.0" prefWidth="200.0" visible="false">
+                              <AnchorPane fx:id="noIngredientPane" prefHeight="200.0" prefWidth="200.0">
                                  <children>
                                     <VBox AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
                                         <children>
@@ -186,8 +192,11 @@
                                                       </HBox>
                                                       <HBox prefHeight="100.0" prefWidth="200.0">
                                                          <children>
-                                                            <HBox prefHeight="79.0" prefWidth="10.0" HBox.hgrow="ALWAYS" />
-                                                            <Label fx:id="noIngredientSubtitle" alignment="CENTER" contentDisplay="CENTER" text="Please select an ingredient to view its nutritional values." textAlignment="CENTER" HBox.hgrow="ALWAYS" />
+                                                            <HBox prefHeight="79.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                                                            <Label fx:id="noIngredientSubtitle" alignment="CENTER" contentDisplay="CENTER" text="Please select an ingredient to view its nutritional values." textAlignment="CENTER" HBox.hgrow="ALWAYS">
+                                                               <HBox.margin>
+                                                                  <Insets left="2.0" right="2.0" />
+                                                               </HBox.margin></Label>
                                                             <HBox layoutX="10.0" layoutY="10.0" prefHeight="79.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
                                                          </children>
                                                       </HBox>
