@@ -35,27 +35,29 @@ public class IngredientServerUtils {
      * @throws ProcessingException if there's a network error or server error
      */
     public Long createIngredient(Ingredient ingredient) throws ProcessingException {
-        try
-            (Response response = CLIENT.target(server + "/api/v1/ingredients")
-                    .request(APPLICATION_JSON)
-                    .post(Entity.json(ingredient)))
-        {
-            if (
-                    response.getStatus() == HTTP_OK ||
-                            response.getStatus() == HTTP_CREATED
-            ) {
-                return response.readEntity(Long.class);
+        try (Response response = CLIENT.target(server + "/api/v1/ingredients")
+                .request(APPLICATION_JSON)
+                .post(Entity.json(ingredient))) {
+
+            if (response.getStatus() == HTTP_OK || response.getStatus() == HTTP_CREATED) {
+
+                Long id = response.readEntity(Long.class); // ✅ read ONCE
+                System.out.println("Ingredient created with ID: " + id);
+                return id;
+
             } else {
                 throw new ProcessingException(
                         "Failed to create ingredient, HTTP " + response.getStatus()
                 );
             }
+
         } catch (ProcessingException e) {
             throw new ProcessingException(
                     "Network error creating ingredient: " + e.getMessage(), e
             );
         }
     }
+
 
     /**
      * Retrieves all ingredients from the server.
