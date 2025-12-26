@@ -33,6 +33,7 @@ public class NutritionalValueCtrl {
         this.ingredientServerUtils = ingredientServerUtils;
     }
     // Buttons
+    @FXML private Button addIngredientModeButton;
     @FXML private Button addIngredientButton;
     @FXML private Button removeIngredientButton;
     @FXML private Button closeButton;
@@ -199,12 +200,12 @@ public class NutritionalValueCtrl {
      * and the text of button to a back arrow.
      */
     private void addMode(){
+        if (!addIngredientPane.isVisible()) {
         noIngredientPane.setVisible(false);
         ingredientDetailsPane.setVisible(false);
         addIngredientPane.setVisible(true);
         sidebarList.setDisable(true);
-        removeIngredientButton.setOnAction(event -> defaultMode());
-        removeIngredientButton.setText("<--");
+        }
     }
 
     /**
@@ -336,6 +337,10 @@ public class NutritionalValueCtrl {
      */
     @FXML
     void removeIngredient() {
+        if (!addIngredientPane.isVisible()) {
+            return;
+        }
+
         Ingredient selected =  sidebarList.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showError("No ingredient selected", "Select an ingredient to remove");
@@ -382,8 +387,8 @@ public class NutritionalValueCtrl {
      * When the user presses confirm the new values for the ingredient replace the old values.
      * If the name is changed it will also update it in the sideBar
      */
-    @FXML
-    void confirmEdit(){
+   @FXML
+    void confirmEdit() {
         Ingredient selected = sidebarList.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showError("No ingredient selected", "Select an ingredient to edit");
@@ -400,30 +405,33 @@ public class NutritionalValueCtrl {
                 throw new IllegalArgumentException("Name cannot be empty");
             }
             if (protein < 0 || carb < 0 || fat < 0) {
-                throw new IllegalArgumentException("Protein, Carbohydrates or fats cannot be negative");
+                throw new IllegalArgumentException("Protein, carbohydrates or fats cannot be negative");
             }
 
-            Ingredient updated = new Ingredient(name, protein, fat, carb);
-            updated.setId(selected.getId());
+            selected.setName(name);
+            selected.setProteinPer100g(protein);
+            selected.setCarbsPer100g(carb);
+            selected.setFatPer100g(fat);
 
-            ingredientServerUtils.replaceIngredient(selected.getId(), updated);
+            ingredientServerUtils.replaceIngredient(selected.getId(), selected);
 
-            int index = sidebarList.getItems().indexOf(selected);
-            sidebarList.getItems().set(index, updated);
-            sidebarList.getSelectionModel().select(updated);
+            sidebarList.refresh();
 
-            showIngredientDetails(updated);
+            sidebarList.getSelectionModel().select(selected);
+
+            showIngredientDetails(selected);
 
             defaultMode();
 
-        }catch(NumberFormatException e) {
-            showError("Invalid input", "Please enetr valid inputs for macronutrients");
-        }catch(IllegalArgumentException e) {
-            showError("Invalid Ingredient", e.getMessage());
-        }catch(ProcessingException e) {
-            showError("Error deleting ingredient", "Server error" + e.getMessage());
+        } catch (NumberFormatException e) {
+            showError("Invalid input", "Please enter valid numbers");
+        } catch (IllegalArgumentException e) {
+            showError("Invalid ingredient", e.getMessage());
+        } catch (ProcessingException e) {
+            showError("Error editing ingredient", e.getMessage());
         }
     }
+
 
     /**
      * When the user presses cancel, the user gets out of the editing mode to the default mode.
@@ -484,4 +492,5 @@ public class NutritionalValueCtrl {
         Ingredient selected = sidebarList.getSelectionModel().getSelectedItem();
         System.out.println("Selected ingredient: " + selected.getId());
     }
+
 }
