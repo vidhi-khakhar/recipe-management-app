@@ -1,10 +1,15 @@
 package commons;
 
 
-import jakarta.persistence.*;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-
 import java.util.Objects;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 
 
 /**
@@ -112,9 +117,18 @@ public class Ingredient {
      * Uses reflection to compare all fields of this object with the other object.
      */
     @Override
-    public boolean equals(Object anotherIngredient) {
-        return EqualsBuilder.reflectionEquals(this,anotherIngredient);
-    }
+public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Ingredient)) return false;
+    Ingredient other = (Ingredient) o;
+    return ingredientId != null && ingredientId.equals(other.ingredientId);
+}
+
+@Override
+public int hashCode() {
+    return ingredientId != null ? ingredientId.hashCode() : 0;
+}
+
 
 
 

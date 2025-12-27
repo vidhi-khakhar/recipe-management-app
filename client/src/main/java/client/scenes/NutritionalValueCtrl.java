@@ -1,22 +1,27 @@
 package client.scenes;
 
+import java.util.NoSuchElementException;
+
 import com.google.inject.Inject;
+
+import client.utils.IngredientServerUtils;
+import commons.Ingredient;
+import jakarta.ws.rs.ProcessingException;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.*;
-import javafx.scene.layout.StackPane;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
-
-import client.utils.IngredientServerUtils;
-import commons.Ingredient;
-import jakarta.ws.rs.ProcessingException;
 import javafx.stage.Stage;
-
-import java.util.NoSuchElementException;
 
 
 public class NutritionalValueCtrl {
@@ -28,6 +33,7 @@ public class NutritionalValueCtrl {
         this.ingredientServerUtils = ingredientServerUtils;
     }
     // Buttons
+    @FXML private Button addIngredientModeButton;
     @FXML private Button addIngredientButton;
     @FXML private Button removeIngredientButton;
     @FXML private Button closeButton;
@@ -194,12 +200,12 @@ public class NutritionalValueCtrl {
      * and the text of button to a back arrow.
      */
     private void addMode(){
+        if (!addIngredientPane.isVisible()) {
         noIngredientPane.setVisible(false);
         ingredientDetailsPane.setVisible(false);
         addIngredientPane.setVisible(true);
         sidebarList.setDisable(true);
-        removeIngredientButton.setOnAction(event -> defaultMode());
-        removeIngredientButton.setText("<--");
+        }
     }
 
     /**
@@ -274,52 +280,56 @@ public class NutritionalValueCtrl {
      * When the add button is pressed for a second time after entering the values in the boxes
      * it creates a new ingredient and also updates the sideBar with the new ingredient.
      */
-    @FXML
+   @FXML
     void addIngredient() {
-        if(!addIngredientPane.isVisible()) {
+        if (!addIngredientPane.isVisible()) {
             addMode();
-        }else{
-
-            try {
-                String name = newIngName.getText().trim();
-                double protein = Double.parseDouble(newIngProteins.getText().trim());
-                double carb = Double.parseDouble(newIngCarbs.getText().trim());
-                double fat = Double.parseDouble(newIngFats.getText().trim());
-
-                if (name.isEmpty()) {
-                    showError("Error", "Name cannot be empty");
-                }else if (protein < 0 || carb < 0 || fat < 0) {
-                    showError("Error", "Protein, Carbohydrates or fats cannot be negative");
-                }else{
-                    Ingredient ingredient = new Ingredient(name, protein, carb, fat);
-
-                    Long id = ingredientServerUtils.createIngredient(ingredient);
-                    ingredient.setId(id);
-
-                    sidebarList.getItems().add(ingredient);
-                    sidebarList.getSelectionModel().select(ingredient);
-
-                    newIngName.clear();
-                    newIngProteins.clear();
-                    newIngFats.clear();
-                    newIngCarbs.clear();
-
-                    defaultMode();
-                }
-
-            }catch(NumberFormatException e) {
-                showError("Wrong format","Please enter valid numbers for protein, carbs and fat.");
-            }catch(IllegalArgumentException e) {
-                showError("Error", e.getMessage());
-            }catch(jakarta.ws.rs.ProcessingException e) {
-                showError("Server error while making ingredient: ", e.getMessage());
-            }
-
-
-
+            return;
         }
 
+        try {
+            String name = newIngName.getText().trim();
+            double protein = Double.parseDouble(newIngProteins.getText().trim());
+            double carb = Double.parseDouble(newIngCarbs.getText().trim());
+            double fat = Double.parseDouble(newIngFats.getText().trim());
+
+            if (name.isEmpty()) {
+                showError("Error", "Name cannot be empty");
+                return;
+            }
+            if (protein < 0 || carb < 0 || fat < 0) {
+                showError("Error", "Protein, Carbohydrates or fats cannot be negative");
+                return;
+            }
+
+            Ingredient toCreate = new Ingredient(name, protein, fat, carb);
+            System.out.println("Creating ingredient: " + toCreate.getName());
+
+            Long id = ingredientServerUtils.createIngredient(toCreate);
+            System.out.println("Created ingredient with ID: CTRL " + id);
+            toCreate.setId(id);
+
+            System.out.println("Saved ingredient ID: " + toCreate.getId());
+
+            sidebarList.getItems().add(toCreate);
+            sidebarList.getSelectionModel().select(toCreate);
+
+            newIngName.clear();
+            newIngProteins.clear();
+            newIngFats.clear();
+            newIngCarbs.clear();
+
+            defaultMode();
+
+        } catch (NumberFormatException e) {
+            showError("Wrong format", "Please enter valid numbers for protein, carbs and fat.");
+        } catch (IllegalArgumentException e) {
+            showError("Error", e.getMessage());
+        } catch (ProcessingException e) {
+            showError("Server error while making ingredient", e.getMessage());
+        }
     }
+
 
     /**
      * It removes the selected ingredient from the database and from the sideBar.
@@ -327,6 +337,10 @@ public class NutritionalValueCtrl {
      */
     @FXML
     void removeIngredient() {
+        if (!addIngredientPane.isVisible()) {
+            return;
+        }
+
         Ingredient selected =  sidebarList.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showError("No ingredient selected", "Select an ingredient to remove");
@@ -373,8 +387,8 @@ public class NutritionalValueCtrl {
      * When the user presses confirm the new values for the ingredient replace the old values.
      * If the name is changed it will also update it in the sideBar
      */
-    @FXML
-    void confirmEdit(){
+   @FXML
+    void confirmEdit() {
         Ingredient selected = sidebarList.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showError("No ingredient selected", "Select an ingredient to edit");
@@ -391,30 +405,33 @@ public class NutritionalValueCtrl {
                 throw new IllegalArgumentException("Name cannot be empty");
             }
             if (protein < 0 || carb < 0 || fat < 0) {
-                throw new IllegalArgumentException("Protein, Carbohydrates or fats cannot be negative");
+                throw new IllegalArgumentException("Protein, carbohydrates or fats cannot be negative");
             }
 
-            Ingredient updated = new Ingredient(name, protein, fat, carb);
-            updated.setId(selected.getId());
+            selected.setName(name);
+            selected.setProteinPer100g(protein);
+            selected.setCarbsPer100g(carb);
+            selected.setFatPer100g(fat);
 
-            ingredientServerUtils.replaceIngredient(selected.getId(), updated);
+            ingredientServerUtils.replaceIngredient(selected.getId(), selected);
 
-            int index = sidebarList.getItems().indexOf(selected);
-            sidebarList.getItems().set(index, updated);
-            sidebarList.getSelectionModel().select(updated);
+            sidebarList.refresh();
 
-            showIngredientDetails(updated);
+            sidebarList.getSelectionModel().select(selected);
+
+            showIngredientDetails(selected);
 
             defaultMode();
 
-        }catch(NumberFormatException e) {
-            showError("Invalid input", "Please enetr valid inputs for macronutrients");
-        }catch(IllegalArgumentException e) {
-            showError("Invalid Ingredient", e.getMessage());
-        }catch(ProcessingException e) {
-            showError("Error deleting ingredient", "Server error" + e.getMessage());
+        } catch (NumberFormatException e) {
+            showError("Invalid input", "Please enter valid numbers");
+        } catch (IllegalArgumentException e) {
+            showError("Invalid ingredient", e.getMessage());
+        } catch (ProcessingException e) {
+            showError("Error editing ingredient", e.getMessage());
         }
     }
+
 
     /**
      * When the user presses cancel, the user gets out of the editing mode to the default mode.
@@ -468,4 +485,12 @@ public class NutritionalValueCtrl {
     void updateIngredientCarbs() {
         System.out.println("User wants to update ingredient carbs.");
     }
+
+
+    @FXML
+    void seeSelectedIngredient() {
+        Ingredient selected = sidebarList.getSelectionModel().getSelectedItem();
+        System.out.println("Selected ingredient: " + selected.getId());
+    }
+
 }
