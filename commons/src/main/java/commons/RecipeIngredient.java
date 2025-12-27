@@ -169,6 +169,23 @@ public class RecipeIngredient {
 
         return sb.toString();
     }
+
+    /**
+     * Checks if recipeIngredient is formal.
+     * @return true if recipeIngredient is formal
+     *         false otherwise
+     */
+    public boolean isFormal() {
+        return this.informal == null;
+    }
+
+    public void setIngredient(Ingredient ingredient) {
+        this.ingredient = ingredient;
+    }
+
+    public void setRecipe(Recipe recipe) {
+        this.recipe = recipe;
+    }
 }
 
 
