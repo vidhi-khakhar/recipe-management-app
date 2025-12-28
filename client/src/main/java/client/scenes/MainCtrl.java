@@ -147,8 +147,8 @@ public class MainCtrl {
             Recipe previouslySelected =
                     sidebarList.getSelectionModel().getSelectedItem();
 
-            List<Recipe> recipesFromDb = recipeServerUtils.getAllRecipes();
-            recipesObservableList.setAll(recipesFromDb);
+            List<Recipe> recipesFromDB = recipeServerUtils.getAllRecipes();
+            recipesObservableList.setAll(recipesFromDB);
 
             updateRecipeStackPane();
 
