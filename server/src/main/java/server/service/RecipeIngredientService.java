@@ -1,5 +1,7 @@
 package server.service;
 
+import commons.Ingredient;
+import commons.Recipe;
 import commons.RecipeIngredient;
 import commons.RecipeIngredientKey;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +17,27 @@ import java.util.Objects;
 @Service
 public class RecipeIngredientService {
     private final RecipeIngredientRepository recipeIngredientRepo;
+    private final RecipeRepository recipeRepo;
+    private final IngredientRepository ingredientRepo;
 
     public RecipeIngredientService(
-            RecipeIngredientRepository recipeIngredientRepo) {
+            RecipeIngredientRepository recipeIngredientRepo,
+            RecipeRepository recipeRepo,
+            IngredientRepository ingredientRepo) {
         this.recipeIngredientRepo = recipeIngredientRepo;
+        this.recipeRepo = recipeRepo;
+        this.ingredientRepo = ingredientRepo;
     }
 
     public RecipeIngredient createRecipeIngredient(RecipeIngredient recipeIngredient) {
+        Ingredient ingredientFromDb = ingredientRepo.findById(recipeIngredient.getIngredient().getId())
+                .orElseThrow(() -> new RuntimeException("Ingredient not found"));
+        Recipe recipeFromDb = recipeRepo.findById(recipeIngredient.getRecipe().getRecipeId())
+                .orElseThrow(() -> new RuntimeException("Recipe not found"));
+
+        recipeIngredient.setIngredient(ingredientFromDb);
+        recipeIngredient.setRecipe(recipeFromDb);
+
         return recipeIngredientRepo.save(recipeIngredient);
     }
 
@@ -37,6 +53,12 @@ public class RecipeIngredientService {
 
     public List<RecipeIngredient> getAllRecipeIngredients() {
         return recipeIngredientRepo.findAll();
+    }
+
+    public List<RecipeIngredient> getRecipeIngredients(Long recipeId) {
+        return getAllRecipeIngredients().stream()
+                .filter(ri -> ri.getId().getRecipeId().equals(recipeId))
+                .toList();
     }
 
     public void updateRecipeIngredient(RecipeIngredientKey id, RecipeIngredient updated) {

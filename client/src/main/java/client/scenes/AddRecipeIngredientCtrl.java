@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.utils.IngredientServerUtils;
+import client.utils.RecipeServerUtils;
 import commons.Ingredient;
 import commons.Recipe;
 import commons.RecipeIngredient;
@@ -17,6 +18,7 @@ public class AddRecipeIngredientCtrl {
     private RecipeIngredient recipeIngredient;
 
     private final IngredientServerUtils ingredientServerUtils = new IngredientServerUtils();
+    private final RecipeServerUtils recipeServerUtils = new RecipeServerUtils();
 
     // UI Elements
     @FXML
@@ -46,9 +48,9 @@ public class AddRecipeIngredientCtrl {
      */
     @FXML
     public void initialize() {
-        // Test ingredient, lacking all global ingredients
         ingredientChoiceBox.getItems().addAll(
                 ingredientServerUtils.getAllIngredients());
+
         if (!ingredientServerUtils.getAllIngredients().isEmpty()) {
             ingredientChoiceBox.setValue(ingredientChoiceBox.getItems().get(0));
         }
@@ -100,7 +102,7 @@ public class AddRecipeIngredientCtrl {
                     ingredient, informal);
         }
 
-        System.out.println("User saved ingredient to recipe.");
+        recipeServerUtils.createRecipeIngredient(recipeIngredient);
         closeWindow();
     }
 

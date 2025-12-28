@@ -95,6 +95,7 @@ public class RecipeController {
         }
     }
 
+    // RECIPE INGREDIENT ENDPOINTS
     /**
      * Defines endpoint for creating recipeIngredients in the database
      * @param recipeIngredient the ingredient to be added to recipe
@@ -108,8 +109,16 @@ public class RecipeController {
     }
 
     /**
-     * Defines endpoint for getting all recipeIngredient from the database
+     * Defines endpoint for getting all recipeIngredients for a recipe.
      * @return all the saved recipeIngredients
+     */
+    @GetMapping("/{recipe_id}/ingredients")
+    public ResponseEntity<List<RecipeIngredient>> getRecipeIngredients(@PathVariable Long recipe_id) {
+        return ResponseEntity.ok(this.recipeIngService.getRecipeIngredients(recipe_id));
+    }
+
+    /**
+     * Defines enpoint for getting all recipeIngredients from database.
      */
     @GetMapping("/ingredients")
     public ResponseEntity<List<RecipeIngredient>> getAllRecipeIngredients() {
@@ -117,7 +126,7 @@ public class RecipeController {
     }
 
     /**
-     * Defines endpoint for deleting a recipeIngredient from the database
+     * Defines endpoint for deleting a recipeIngredient from the database.
      * @param recipe_id the id of the recipe
      * @param ingredient_id the id of the ingredient
      * @return the id of the deleted recipeIngredient
@@ -137,11 +146,11 @@ public class RecipeController {
     }
 
     /**
-     * Defines endpoint for updating an ingredient inside a recipe
+     * Defines endpoint for updating an ingredient inside a recipe.
      * @param recipe_id the id of the recipe
      * @param ingredient_id the id of the ingredient
      * @param recipeIngredient the recipeIngredient to update with
-     * @return id of the recipe that was updated, or 404 if not found
+     * @return id of the recipeIngredient that was updated
      */
     @PutMapping("/ingredients/{recipe_id}/{ingredient_id}")
     public ResponseEntity<RecipeIngredientKey> updateRecipeIngredient(
