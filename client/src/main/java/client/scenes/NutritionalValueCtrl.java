@@ -9,9 +9,7 @@ import commons.Ingredient;
 import jakarta.ws.rs.ProcessingException;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -21,7 +19,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
-import javafx.stage.Stage;
 
 
 public class NutritionalValueCtrl {
@@ -36,8 +33,7 @@ public class NutritionalValueCtrl {
     @FXML private Button addIngredientModeButton;
     @FXML private Button addIngredientButton;
     @FXML private Button removeIngredientButton;
-    @FXML private Button closeButton;
-
+    
     // TextFields
     @FXML private TextField ingredientName;
     @FXML private TextField carbValue;
@@ -103,18 +99,6 @@ public class NutritionalValueCtrl {
         bindLabelFontSize(noIngredientSubtitle, 80);
 
         loadIngredientsFromServer();
-    }
-
-    /**
-     * Closes the nutritional value window.
-     * @param event The event that activated the method.
-     */
-    @FXML
-    public void closeWindow(ActionEvent event) {
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-        defaultMode();
-        stage.close();
     }
 
     /**

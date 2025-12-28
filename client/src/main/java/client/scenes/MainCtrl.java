@@ -15,9 +15,18 @@
  */
 package client.scenes;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.commons.io.FileUtils;
+
+import com.google.inject.Inject;
+
 import client.RecipeFormatter;
 import client.utils.RecipeServerUtils;
-import com.google.inject.Inject;
 import commons.Recipe;
 import commons.RecipeIngredient;
 import javafx.collections.FXCollections;
@@ -26,20 +35,21 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.apache.commons.io.FileUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 public class MainCtrl {
     private Stage primaryStage;
@@ -134,32 +144,45 @@ public class MainCtrl {
      */
     private void loadRecipesFromDatabase() {
         try {
-            // Save the currently selected recipe before clearing
-            Recipe selectedRecipe = sidebarList
-                    .getSelectionModel()
-                    .getSelectedItem();
+            Recipe previouslySelected =
+                    sidebarList.getSelectionModel().getSelectedItem();
 
-            // Stores the recipes from the database in a list
-            List<Recipe> recipesFromDb = recipeServerUtils.getAllRecipes();
+            List<Recipe> recipesFromDB = recipeServerUtils.getAllRecipes();
+            recipesObservableList.setAll(recipesFromDB);
 
-            // Clear existing recipes
-            recipesObservableList.clear();
+            updateRecipeStackPane();
 
-            // Adds the recipes from the recipesFromDb list and adds it to the observable list
-            recipesObservableList.addAll(recipesFromDb);
-
-            // Reselect previously selected recipe (if there was any)
-            if (selectedRecipe != null) {
-                try {
-                    Recipe fetched = recipeServerUtils.getRecipe(selectedRecipe.getRecipeId());
-                    sidebarList.getSelectionModel().select(fetched);
-                } catch (Exception e) {}
+            if (!recipesObservableList.isEmpty()) {
+                if (previouslySelected != null) {
+                    sidebarList.getSelectionModel().select(previouslySelected);
+                } else {
+                    sidebarList.getSelectionModel().selectFirst();
+                }
             }
 
         } catch (Exception e) {
             System.out.println("Failed to load recipes: " + e.getMessage());
         }
     }
+
+
+    @FXML
+    public void updateRecipeStackPane() {
+        boolean hasRecipes = !sidebarList.getItems().isEmpty();
+
+        System.out.println(hasRecipes);
+        if (!hasRecipes) {
+            noRecipePane.setVisible(true);
+            allRecipePane.setVisible(false);
+        } else {
+            noRecipePane.setVisible(false);
+            allRecipePane.setVisible(true);
+        }
+    }
+
+
+
+    
 
     /**
      * Changes the UI according to the selected recipe
@@ -180,6 +203,7 @@ public class MainCtrl {
         // adds the recipe object to the list!
         recipesObservableList.add(recipe);
         sidebarList.getSelectionModel().select(recipe);
+        updateRecipeStackPane();
     }
 
     /**
@@ -199,8 +223,11 @@ public class MainCtrl {
         }
 
         removeRecipe(selected);
-        clearUI();
-        sidebarList.getSelectionModel().clearSelection();
+        updateRecipeStackPane();
+
+        if (!recipesObservableList.isEmpty()) {
+            sidebarList.getSelectionModel().selectFirst();
+        }
     }
 
     /**
@@ -720,6 +747,14 @@ public class MainCtrl {
 
     @FXML
     private Button addStepButton;
+
+    
+    @FXML
+    private AnchorPane noRecipePane;
+
+    
+    @FXML
+    private AnchorPane allRecipePane;
 
     @FXML
     private void downloadButtonClicked() throws IOException {
