@@ -30,12 +30,6 @@ public class Ingredient {
     private Long ingredientId;
 
     /**
-     * Version field for optimistic locking.
-     */
-    @Version
-    private Long version;
-
-    /**
      * name of the ingredient shouldn't be null.
      */
     @Column(nullable = false)
