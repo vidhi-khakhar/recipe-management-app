@@ -15,17 +15,20 @@
  */
 package client;
 
-import static com.google.inject.Guice.createInjector;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import client.config.Config;
-import client.config.ConfigService;
-import client.scenes.*;
+import static com.google.inject.Guice.createInjector;
 import com.google.inject.Injector;
 
-import client.utils.ServerUtils;
+import client.config.Config;
+import client.config.ConfigService;
+import client.scenes.AddButtonCtrl;
+import client.scenes.AddRecipeIngredientCtrl;
+import client.scenes.EditTitleCtrl;
+import client.scenes.MainCtrl;
+import client.scenes.NutritionalValueCtrl;
+import client.scenes.ShoppingListCtrl;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.text.Font;
@@ -67,6 +70,10 @@ public class Main extends Application {
     var nutritionInterface = FXML.load(NutritionalValueCtrl.class, "client", "scenes", "NutrionalValueInterface.fxml");
     var nutritionScene = new Scene(nutritionInterface.getValue());
 
+    // preload shopping list scene
+    var shoppingListInterface = FXML.load(ShoppingListCtrl.class, "client", "scenes", "ShoppingListInterface.fxml");
+    var shoppingListScene = new Scene(shoppingListInterface.getValue());
+
     //preload recipe add scene
     var recipeAddInterface = FXML.load(AddButtonCtrl.class, "client", "scenes", "AddRecipeInterface.fxml");
     var recipeAddScene = new Scene(recipeAddInterface.getValue());
@@ -91,7 +98,8 @@ public class Main extends Application {
     nutritionScene.getStylesheets().add(cssPathNutri);
     recipeAddScene.getStylesheets().add(cssPathRecipe);
     recipeIngredientScene.getStylesheets().add(cssPath);
-
+    shoppingListScene.getStylesheets().add(cssPathNutri);
+    
     primaryStage.setMinWidth(600);
     primaryStage.setMinHeight(500);
 
@@ -103,7 +111,7 @@ public class Main extends Application {
 
     // pass both scenes into controller
     var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-    mainCtrl.initScenes(primaryStage, mainUserInterfaceScene, nutritionScene, recipeAddScene, recipeIngredientScene, recipeIngredientCtrl, editTitleScene);
+    mainCtrl.initScenes(primaryStage, mainUserInterfaceScene, nutritionScene, recipeAddScene, recipeIngredientScene, recipeIngredientCtrl, editTitleScene, shoppingListScene);
 
     System.out.println("Window opened with width: " + primaryStage.getWidth() +
                 " and height: " + primaryStage.getHeight());

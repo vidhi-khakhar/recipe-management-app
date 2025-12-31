@@ -22,8 +22,6 @@ public class ShoppingListCtrl {
     @FXML
     private ScrollPane shoppingScrollPane;
 
-
-
     @FXML
     void addShoppingItem() {
         // This method is directly linked to the addShoppingItemButton
