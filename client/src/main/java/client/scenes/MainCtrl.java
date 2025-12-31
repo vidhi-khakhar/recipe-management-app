@@ -54,9 +54,11 @@ import javafx.stage.Stage;
 public class MainCtrl {
     private Stage primaryStage;
     private Scene nutritionScene;
+    private Scene shoppingListScene;
     private Scene recipeAddScene;
     private Scene addRecipeIngredientScene;
     private Scene editTitleScene;
+    private Scene recipeShoppingListScene;
 
     private AddRecipeIngredientCtrl addRecipeIngredientCtrl;
 
@@ -76,12 +78,14 @@ public class MainCtrl {
      */
     public void initScenes(Stage primaryStage, Scene mainUserInterfaceScene, Scene nutritionScene,
                            Scene recipeAddScene, Scene addRecipeIngredientScene, AddRecipeIngredientCtrl addRecipeIngredientCtrl,
-                           Scene editTitleScene) {
+                           Scene editTitleScene, Scene shoppingListScene, Scene recipeShoppingListScene) {
         this.primaryStage = primaryStage;
         this.nutritionScene = nutritionScene; // store it for later
         this.recipeAddScene = recipeAddScene; // store it for later
         this.addRecipeIngredientScene = addRecipeIngredientScene;
         this.addRecipeIngredientCtrl = addRecipeIngredientCtrl;
+        this.recipeShoppingListScene = recipeShoppingListScene;
+        this.shoppingListScene = shoppingListScene;
         this.editTitleScene = editTitleScene;
 
         primaryStage.show();
@@ -595,6 +599,42 @@ public class MainCtrl {
     }
 
     /**
+     * Makes sure the shopping list window is opened once the
+     * shopping list button is pressed
+     */
+    @FXML
+    void showShoppingListWindow() {
+        if (shoppingListScene == null) {
+            System.err.println("Shopping list scene not initialized!");
+            return;
+        }
+
+        Stage secondaryStage = new Stage();
+        secondaryStage.setTitle("Shopping List");
+        secondaryStage.setScene(shoppingListScene);
+        secondaryStage.initOwner(primaryStage); // makes it modal to main window if desired
+        secondaryStage.show();
+    }
+
+    /**
+     * Makes sure the recipe shopping list window is opened once the
+     * shopping list button is pressed
+     */
+    @FXML
+    void showRecipeShoppingWindow() {
+        if (recipeShoppingListScene == null) {
+            System.err.println("Recipe shopping list scene not initialized!");
+            return;
+        }
+
+        Stage secondaryStage = new Stage();
+        secondaryStage.setTitle("Recipe Shopping List");
+        secondaryStage.setScene(recipeShoppingListScene);
+        secondaryStage.initOwner(primaryStage); // makes it modal to main window if desired
+        secondaryStage.show();
+    }
+
+    /**
      * Makes sure the window with the add recipe functionality is opened once the
      * Add button is pressed.
      */
@@ -701,8 +741,14 @@ public class MainCtrl {
     @FXML
     private Button addIngredientButton;
 
+     @FXML
+    private Button shoppingListButton;
+
     @FXML
     private Button addRecipeButton;
+
+    @FXML
+    private Button recipeShoppingButton;
 
     @FXML
     private Button editItemButton;

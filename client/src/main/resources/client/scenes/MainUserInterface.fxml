@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="589.0" prefWidth="905.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MainCtrl">
+<AnchorPane prefHeight="589.0" prefWidth="905.0" stylesheets="@FoodPal.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MainCtrl">
    <children>
       <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
@@ -73,7 +73,7 @@
                      <children>
                         <HBox prefHeight="100.0" prefWidth="200.0">
                            <children>
-                              <Button fx:id="shoppingListButton" minWidth="-Infinity" mnemonicParsing="false" prefHeight="34.0" prefWidth="122.0" text="Shopping List">
+                              <Button fx:id="shoppingListButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#showShoppingListWindow" prefHeight="34.0" prefWidth="122.0" text="Shopping List">
                                  <HBox.margin>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </HBox.margin>
@@ -154,7 +154,7 @@
                      <children>
                         <StackPane prefHeight="510.0" prefWidth="634.0">
                            <children>
-                              <AnchorPane fx:id="noRecipePane" prefHeight="200.0" prefWidth="200.0">
+                              <AnchorPane fx:id="noRecipePane" prefHeight="200.0" prefWidth="200.0" visible="false">
                                  <children>
                                     <VBox AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
                                        <children>
@@ -190,7 +190,7 @@
                                     </VBox>
                                  </children>
                               </AnchorPane>
-                              <AnchorPane fx:id="allRecipePane" prefHeight="200.0" prefWidth="200.0" visible="false">
+                              <AnchorPane fx:id="allRecipePane" prefHeight="200.0" prefWidth="200.0">
                                  <children>
                                     <VBox prefHeight="490.0" prefWidth="637.0">
                                        <children>
@@ -216,6 +216,7 @@
                               
                                                                               <VBox prefHeight="231.0" prefWidth="639.0" VBox.vgrow="ALWAYS">
                                                    <children>
+                                                      <HBox prefHeight="100.0" prefWidth="200.0" />
                                                       <Label styleClass="h3" text="Ingredients:" />
                                                       <VBox fx:id="ingredientList" prefHeight="186.0" prefWidth="582.0" spacing="6.0" VBox.vgrow="ALWAYS">
                                                          <children>
@@ -240,11 +241,20 @@
                                                             <Insets top="3.0" />
                                                          </VBox.margin>
                                                       </VBox>
-                                                      <Button fx:id="addIngredientButton" mnemonicParsing="false" onAction="#ingredientAddButtonClicked" styleClass="roundbutton" text="+">
-                                                         <VBox.margin>
-                                                            <Insets top="3.0" />
-                                                         </VBox.margin>
-                                                      </Button>
+                                                      <HBox prefHeight="100.0" prefWidth="200.0">
+                                                         <children>
+                                                            <Button fx:id="addIngredientButton" mnemonicParsing="false" onAction="#ingredientAddButtonClicked" styleClass="roundbutton" text="+">
+                                                               <font>
+                                                                  <Font size="14.0" />
+                                                               </font>
+                                                            </Button>
+                                                            <Button fx:id="recipeShoppingButton" mnemonicParsing="false" onAction="#showRecipeShoppingWindow" text="Shop 🛒">
+                                                               <HBox.margin>
+                                                                  <Insets left="20.0" right="5.0" />
+                                                               </HBox.margin>
+                                                            </Button>
+                                                         </children>
+                                                      </HBox>
                                                    </children>
                                                    <VBox.margin>
                                                       <Insets bottom="5.0" top="5.0" />
