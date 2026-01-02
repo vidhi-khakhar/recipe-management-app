@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="550.0" stylesheets="@NutritionalValue.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.ShoppingListCtrl">
+   <children>
+      <BorderPane AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+         <top>
+            <HBox prefHeight="64.0" prefWidth="550.0" styleClass="headerlabel" BorderPane.alignment="CENTER">
+               <children>
+                  <HBox layoutX="394.0" layoutY="18.0" prefHeight="63.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                  <HBox prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Label alignment="CENTER" prefHeight="121.0" prefWidth="640.0" text="Shopping List" HBox.hgrow="ALWAYS">
+                           <font>
+                              <Font name="Cascadia Code Regular" size="37.0" />
+                           </font>
+                           <styleClass>
+                              <String fx:value="h1" />
+                              <String fx:value="headerlabel" />
+                           </styleClass>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="63.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+         </top>
+         <bottom>
+            <HBox prefHeight="48.0" prefWidth="550.0" BorderPane.alignment="CENTER">
+               <children>
+                  <HBox prefHeight="58.0" prefWidth="54.0" HBox.hgrow="ALWAYS" />
+                  <HBox prefHeight="58.0" prefWidth="300.0">
+                     <children>
+                        <HBox prefHeight="58.0" prefWidth="200.0">
+                           <children>
+                              <Button fx:id="resetShoppingListButton" mnemonicParsing="false" onAction="#resetShoppingList" prefHeight="30.0" prefWidth="200.0" text="Reset Shopping List">
+                                 <HBox.margin>
+                                    <Insets left="5.0" right="5.0" />
+                                 </HBox.margin>
+                              </Button>
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="58.0" prefWidth="200.0">
+                           <children>
+                              <Button fx:id="downloadShoppingListButton" mnemonicParsing="false" onAction="#downloadShoppingList" prefHeight="30.0" prefWidth="200.0" text="Download">
+                                 <HBox.margin>
+                                    <Insets left="5.0" right="5.0" />
+                                 </HBox.margin>
+                              </Button>
+                           </children>
+                        </HBox>
+                     </children>
+                     <HBox.margin>
+                        <Insets bottom="5.0" top="5.0" />
+                     </HBox.margin>
+                  </HBox>
+                  <HBox prefHeight="58.0" prefWidth="78.0" HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+         </bottom>
+         <center>
+            <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+               <children>
+                  <HBox prefHeight="38.0" prefWidth="534.0" VBox.vgrow="NEVER">
+                     <children>
+                        <Label prefHeight="34.0" prefWidth="250.0" style="-fx-font-weight: bold;" text="Ingredients to Purchase 🛒:">
+                           <HBox.margin>
+                              <Insets left="5.0" top="5.0" />
+                           </HBox.margin>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <VBox prefHeight="229.0" prefWidth="534.0" VBox.vgrow="ALWAYS">
+                     <children>
+                        <ScrollPane fx:id="shoppingScrollPane" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                           <content>
+                              <VBox fx:id="shoppingList" prefHeight="179.0" prefWidth="535.0" />
+                           </content>
+                        </ScrollPane>
+                        <Button fx:id="addShoppingItemButton" mnemonicParsing="false" onAction="#addShoppingItem" prefHeight="21.0" prefWidth="48.0" styleClass="roundbutton" text="➕">
+                           <VBox.margin>
+                              <Insets top="5.0" />
+                           </VBox.margin>
+                        </Button>
+                     </children>
+                  </VBox>
+               </children>
+               <BorderPane.margin>
+                  <Insets left="8.0" right="8.0" />
+               </BorderPane.margin>
+            </VBox>
+         </center>
+      </BorderPane>
+   </children>
+</AnchorPane>
