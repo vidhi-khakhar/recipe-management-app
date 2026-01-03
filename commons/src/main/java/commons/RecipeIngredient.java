@@ -1,8 +1,21 @@
 package commons;
 
+import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import java.util.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "recipe_ingredient")
@@ -107,6 +120,11 @@ public class RecipeIngredient {
         }
     }
 
+    /**
+     * Equality is based on the composite key (recipeId + ingredientId).
+     * @param o the other object to compare
+     * @return true if the RecipeIngredient objects have the same id
+     */
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -130,7 +148,8 @@ public class RecipeIngredient {
     public Double getAmount() { return amount; }
 
     /**
-     * Since informal and formal units can not happen at the same time if an amount is set then the informal becomes null
+     * Since informal and formal units can not happen at the same time
+     * if an amount is set then the informal becomes null
      */
     public void setFormal(Double amount, Unit unit) {
         this.amount = amount;
@@ -145,7 +164,8 @@ public class RecipeIngredient {
     public String getInformal() { return informal; }
 
     /**
-     * Since informal and formal units can not happen at the same time if an informal amount is set then the amount and unit becomes null
+     * Since informal and formal units can not happen at the same time 
+     * if an informal amount is set then the amount and unit becomes null
      */
     public void setInformal(String informal) {
         this.informal = informal;
@@ -153,6 +173,10 @@ public class RecipeIngredient {
         this.amount = null;
     }
 
+    /**
+     * A tostring method for RecipeIngredient
+     * @return string representation of RecipeIngredient
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
