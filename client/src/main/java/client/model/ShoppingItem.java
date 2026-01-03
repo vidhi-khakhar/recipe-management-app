@@ -1,9 +1,11 @@
 package client.model;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import commons.Ingredient;
 import commons.Unit;
-import java.io.Serializable;
 
 /**
  * Represents a single item in the shopping list.
@@ -112,6 +114,10 @@ public class ShoppingItem implements Serializable {
         this.sourceRecipeName = sourceRecipeName;
     }
 
+    /**
+     * String representation of ShoppingItem
+     * @return string representation
+     */
     @Override
     public String toString() {
         if (ingredient != null) {
