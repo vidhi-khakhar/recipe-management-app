@@ -67,10 +67,6 @@ public class Main extends Application {
     var mainUserInterface = FXML.load(MainCtrl.class, "client", "scenes", "MainUserInterface.fxml");
     var mainUserInterfaceScene = new Scene(mainUserInterface.getValue());
 
-    // preload nutritional values scene
-    var nutritionInterface = FXML.load(NutritionalValueCtrl.class, "client", "scenes", "NutrionalValueInterface.fxml");
-    var nutritionScene = new Scene(nutritionInterface.getValue());
-
     // preload shopping list scene
     var shoppingListInterface = FXML.load(ShoppingListCtrl.class, "client", "scenes", "ShoppingListInterface.fxml");
     var shoppingListScene = new Scene(shoppingListInterface.getValue());
@@ -78,6 +74,10 @@ public class Main extends Application {
     // preload recipe shopping list scene
     var recipeShoppingListInterface = FXML.load(RecipeShoppingListCtrl.class, "client", "scenes", "RecipeShoppingList.fxml");
     var recipeShoppingListScene = new Scene(recipeShoppingListInterface.getValue());
+
+    // preload nutritional values scene
+    var nutritionInterface = FXML.load(NutritionalValueCtrl.class, "client", "scenes", "NutrionalValueInterface.fxml");
+    var nutritionScene = new Scene(nutritionInterface.getValue());
 
     //preload recipe add scene
     var recipeAddInterface = FXML.load(AddButtonCtrl.class, "client", "scenes", "AddRecipeInterface.fxml");
@@ -103,7 +103,7 @@ public class Main extends Application {
     mainUserInterfaceScene.getStylesheets().add(cssPath);
     nutritionScene.getStylesheets().add(cssPathNutri);
     recipeAddScene.getStylesheets().add(cssPathRecipe);
-    recipeIngredientScene.getStylesheets().add(cssPath);
+    recipeIngredientScene.getStylesheets().add(cssPathRecipe);
     shoppingListScene.getStylesheets().add(cssPathNutri);
     recipeShoppingListScene.getStylesheets().add(cssPathNutri);
 

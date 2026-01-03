@@ -80,13 +80,13 @@ public class MainCtrl {
                            Scene recipeAddScene, Scene addRecipeIngredientScene, AddRecipeIngredientCtrl addRecipeIngredientCtrl,
                            Scene editTitleScene, Scene shoppingListScene, Scene recipeShoppingListScene) {
         this.primaryStage = primaryStage;
-        this.nutritionScene = nutritionScene; // store it for later
-        this.recipeAddScene = recipeAddScene; // store it for later
+        this.nutritionScene = nutritionScene;
+        this.recipeAddScene = recipeAddScene; 
         this.addRecipeIngredientScene = addRecipeIngredientScene;
         this.addRecipeIngredientCtrl = addRecipeIngredientCtrl;
-        this.recipeShoppingListScene = recipeShoppingListScene;
-        this.shoppingListScene = shoppingListScene;
         this.editTitleScene = editTitleScene;
+        this.shoppingListScene = shoppingListScene;
+        this.recipeShoppingListScene = recipeShoppingListScene;
 
         primaryStage.show();
     }
