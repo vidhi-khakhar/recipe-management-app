@@ -22,7 +22,8 @@ public class IngredientServerUtils {
     private static final int HTTP_CREATED = 201;
     private static final int HTTP_NOT_FOUND = 404;
 
-    private static final String server = ConfigService.getConfig().getServerUrl(); // The server url from the config.json
+    // The server url from the config.json
+    private static final String server = ConfigService.getConfig().getServerUrl(); 
 
     private static final Client CLIENT = ClientBuilder.newClient(
             new ClientConfig()
@@ -182,6 +183,13 @@ public class IngredientServerUtils {
         }
     }
 
+    /**
+     * Gets the usage count of an ingredient across all recipes.
+     * @param ingredientId the ID of the ingredient
+     * @return the number of recipes using the ingredient
+     * @throws ProcessingException if there's a network error or server error during the request
+     * @throws NoSuchElementException if no ingredient with the specified ID exists
+     */
     public long getIngredientUsageCount(Long ingredientId) throws ProcessingException, NoSuchElementException {
         try(Response response = CLIENT.target(server + "/api/v1/ingredients/" + ingredientId + "/usage" )
             .request(APPLICATION_JSON)

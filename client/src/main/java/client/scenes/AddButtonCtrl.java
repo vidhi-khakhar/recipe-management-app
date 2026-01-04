@@ -4,11 +4,13 @@ import com.google.inject.Inject;
 
 import client.utils.RecipeServerUtils;
 import commons.Recipe;
+import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class AddButtonCtrl {
     private final MainCtrl mainCtrl;
@@ -43,38 +45,50 @@ public class AddButtonCtrl {
     @FXML
     private void recipeAddRequest() {
         String query = recipeInput.getText().trim();
-        if (query == null || query.isEmpty()) {
-            System.out.println("Please enter a name."); // Can be removed in the future
+
+        if (query.isEmpty()) {
             statusLabel.setText("Please enter a name.");
             statusLabel.setStyle("-fx-text-fill: red;");
-        } else {
-            statusLabel.setText("");
-            System.out.println("Adding request for: " + query); // Can be removed in the future
-            if(recipeValidation(query)){
-                query = query.substring(0, 1).toUpperCase() + query.substring(1);
-                Recipe recipe = new Recipe(query);
+            statusLabel.setVisible(true);
+            return;
+        }
 
-                try{
-                    recipe.setRecipeId(recipeServerUtils.createRecipe(recipe));
+        if (!recipeValidation(query)) {
+            statusLabel.setVisible(true);
+            return;
+        }
 
-                    mainCtrl.addRecipe(recipe); // update the UI
+        query = query.substring(0, 1).toUpperCase() + query.substring(1);
+        Recipe recipe = new Recipe(query);
 
-                    recipeInput.clear();
-                    statusLabel.setText("Recipe added!");
-                    statusLabel.setStyle("-fx-text-fill: green;");
+        try {
+            recipe.setRecipeId(recipeServerUtils.createRecipe(recipe));
+            mainCtrl.addRecipe(recipe);
 
-                    Stage stage = (Stage) recipeAddButton.getScene().getWindow();
-                    stage.close();
+            recipeInput.clear();
 
-                } catch (Exception e) {
-                    statusLabel.setText("Something went wrong during adding recipe.");
-                    statusLabel.setStyle("-fx-text-fill: red;");
-                    System.out.println("Something went wrong during the creation of a recipe: " + e.getMessage());
-                }
+            statusLabel.setText("Recipe added!");
+            statusLabel.setStyle("-fx-text-fill: green;");
+            statusLabel.setVisible(true);
 
-            }
+            // DOnly close window after 2 seconds
+            PauseTransition delay = new PauseTransition(Duration.seconds(2));
+            delay.setOnFinished(event -> {
+                Stage stage = (Stage) recipeAddButton.getScene().getWindow();
+                stage.close();
+            });
+            delay.play();
+
+        } catch (Exception e) {
+            statusLabel.setText("Something went wrong during adding recipe.");
+            statusLabel.setStyle("-fx-text-fill: red;");
+            statusLabel.setVisible(true);
+            System.out.println(
+                "Something went wrong during the creation of a recipe: " + e.getMessage()
+            );
         }
     }
+
 
     /**
      * Checks whether the given input suffices the criteria

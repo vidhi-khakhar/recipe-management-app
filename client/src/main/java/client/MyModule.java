@@ -15,15 +15,20 @@
  */
 package client;
 
-import client.utils.IngredientServerUtils;
-import client.utils.ServerUtils;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
+
 import client.scenes.MainCtrl;
+import client.utils.IngredientServerUtils;
+import client.utils.ServerUtils;
 
 public class MyModule implements Module {
 
+    /**
+     * Configures the dependency injection bindings for the application.
+     * @param binder the binder used to configure the bindings
+     */
     @Override
     public void configure(Binder binder) {
         binder.bind(MainCtrl.class).in(Scopes.SINGLETON);

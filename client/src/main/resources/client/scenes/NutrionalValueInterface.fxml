@@ -34,7 +34,6 @@
                      </children>
                   </HBox>
                   <HBox prefHeight="63.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
-                  <Button fx:id="closeButton" mnemonicParsing="false" onAction="#closeWindow" text="X" />
                </children>
             </HBox>
          </top>
@@ -203,11 +202,6 @@
                                                 <Button fx:id="addIngredientButton" mnemonicParsing="false" onAction="#addIngredient" prefHeight="34.0" prefWidth="136.0" text="Add Ingredient">
                                                    <HBox.margin>
                                                       <Insets left="5.0" right="7.0" top="10.0" />
-                                                   </HBox.margin>
-                                                </Button>
-                                                <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#cancelEdit" prefHeight="34.0" prefWidth="136.0" text="Cancel">
-                                                   <HBox.margin>
-                                                      <Insets left="5.0" right="5.0" top="10.0" />
                                                    </HBox.margin>
                                                 </Button>
                                                 <HBox prefHeight="62.0" prefWidth="48.0" HBox.hgrow="ALWAYS" />

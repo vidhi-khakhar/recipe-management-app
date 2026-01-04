@@ -1,8 +1,9 @@
 package commons;
 
-import jakarta.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
+
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class RecipeIngredientKey implements Serializable {
@@ -14,11 +15,15 @@ public class RecipeIngredientKey implements Serializable {
     public RecipeIngredientKey() {
     }
 
-    public RecipeIngredientKey(Long recipeId, Long IngredientId) {
+    public RecipeIngredientKey(Long recipeId, Long ingredientId) {
         this.recipeId = recipeId;
-        this.ingredientId = IngredientId;
+        this.ingredientId = ingredientId;
     }
 
+    /**
+     * Equality is based on the composite key (recipeId + ingredientId).
+     * @param o the other object to compare
+     */
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
