@@ -204,7 +204,7 @@ public class MainCtrl {
         this.selectedRecipe = recipe;
         titleRecipeLabel.setText(recipe.getTitle());
         showInstructions(recipe);
-        //TODO showIngredients(recipe);
+        showIngredients(recipe);
     }
 
     /**
@@ -260,7 +260,7 @@ public class MainCtrl {
             // If confirmed
             return true;
         } else {
-            // If cancelled
+            // If canceled
             return false;
         }
     }
@@ -522,8 +522,8 @@ public class MainCtrl {
      */
     private HBox createExecutionStepRow(int index, String initialText, boolean startEditable) {
         // Create a new HBox (a preparation step)
-        // [ 1. ][ Label(text) ][ ✏ ][ ✖ ] when not editing
-        // [ 1. ][ TextField ][ ✔ ][ ✖ ] when editing
+        // [ 1 ][ Label(text) ][ ✏ ][ ✖ ] when not editing
+        // [ 1 ][ TextField ][ ✔ ][ ✖ ] when editing
         HBox row = new HBox(10);
         row.setAlignment(Pos.CENTER_LEFT);
 

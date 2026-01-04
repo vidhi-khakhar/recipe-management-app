@@ -8,10 +8,8 @@ import commons.RecipeIngredient;
 import commons.RecipeIngredientKey;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import server.RecipeService;
+import server.service.RecipeService;
 import server.service.RecipeIngredientService;
-
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @RestController
 @RequestMapping("/api/v1/recipes")
@@ -100,7 +98,7 @@ public class RecipeController {
      * Defines endpoint for creating recipeIngredients in the database
      * @param recipeIngredient the ingredient to be added to recipe
      *                         with all additional info it entails
-     * @return the composite id (recipe_id + ingredient_id) of the entity added
+     * @return the composite id (recipeId + ingredientId) of the entity added
      */
     @PostMapping("/ingredients")
     public ResponseEntity<RecipeIngredientKey> createRecipeIngredient(@RequestBody RecipeIngredient recipeIngredient) {
@@ -112,13 +110,13 @@ public class RecipeController {
      * Defines endpoint for getting all recipeIngredients for a recipe.
      * @return all the saved recipeIngredients
      */
-    @GetMapping("/{recipe_id}/ingredients")
-    public ResponseEntity<List<RecipeIngredient>> getRecipeIngredients(@PathVariable Long recipe_id) {
-        return ResponseEntity.ok(this.recipeIngService.getRecipeIngredients(recipe_id));
+    @GetMapping("/{recipeId}/ingredients")
+    public ResponseEntity<List<RecipeIngredient>> getRecipeIngredients(@PathVariable Long recipeId) {
+        return ResponseEntity.ok(this.recipeIngService.getRecipeIngredients(recipeId));
     }
 
     /**
-     * Defines enpoint for getting all recipeIngredients from database.
+     * Defines endpoint for getting all recipeIngredients from database.
      */
     @GetMapping("/ingredients")
     public ResponseEntity<List<RecipeIngredient>> getAllRecipeIngredients() {
@@ -127,15 +125,15 @@ public class RecipeController {
 
     /**
      * Defines endpoint for deleting a recipeIngredient from the database.
-     * @param recipe_id the id of the recipe
-     * @param ingredient_id the id of the ingredient
+     * @param recipeId the id of the recipe
+     * @param ingredientId the id of the ingredient
      * @return the id of the deleted recipeIngredient
      */
-    @DeleteMapping("/ingredients/{recipe_id}/{ingredient_id}")
+    @DeleteMapping("/ingredients/{recipeId}/{ingredientId}")
     public ResponseEntity<RecipeIngredientKey> deleteRecipeIngredient(
-            @PathVariable Long recipe_id,
-            @PathVariable Long ingredient_id) {
-        RecipeIngredientKey id = new RecipeIngredientKey(recipe_id, ingredient_id);
+            @PathVariable Long recipeId,
+            @PathVariable Long ingredientId) {
+        RecipeIngredientKey id = new RecipeIngredientKey(recipeId, ingredientId);
 
         try {
             this.recipeIngService.deleteRecipeIngredient(id);
@@ -147,18 +145,18 @@ public class RecipeController {
 
     /**
      * Defines endpoint for updating an ingredient inside a recipe.
-     * @param recipe_id the id of the recipe
-     * @param ingredient_id the id of the ingredient
+     * @param recipeId the id of the recipe
+     * @param ingredientId the id of the ingredient
      * @param recipeIngredient the recipeIngredient to update with
      * @return id of the recipeIngredient that was updated
      */
-    @PutMapping("/ingredients/{recipe_id}/{ingredient_id}")
+    @PutMapping("/ingredients/{recipeId}/{ingredientId}")
     public ResponseEntity<RecipeIngredientKey> updateRecipeIngredient(
-            @PathVariable Long recipe_id,
-            @PathVariable Long ingredient_id,
+            @PathVariable Long recipeId,
+            @PathVariable Long ingredientId,
             @RequestBody RecipeIngredient recipeIngredient
     ) {
-        RecipeIngredientKey id = new RecipeIngredientKey(recipe_id, ingredient_id);
+        RecipeIngredientKey id = new RecipeIngredientKey(recipeId, ingredientId);
         try {
             this.recipeIngService.updateRecipeIngredient(id, recipeIngredient);
             return ResponseEntity.ok(id);

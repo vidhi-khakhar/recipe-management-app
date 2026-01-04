@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import commons.Recipe;
-import server.RecipeRepository;
+import server.database.RecipeRepository;
 
 @Service
 public class RecipeService {

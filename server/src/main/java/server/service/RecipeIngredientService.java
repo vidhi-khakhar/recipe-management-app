@@ -4,9 +4,9 @@ import commons.Ingredient;
 import commons.Recipe;
 import commons.RecipeIngredient;
 import commons.RecipeIngredientKey;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import server.RecipeRepository;
+import server.database.RecipeRepository;
 import server.database.IngredientRepository;
 import server.database.RecipeIngredientRepository;
 
@@ -20,6 +20,12 @@ public class RecipeIngredientService {
     private final RecipeRepository recipeRepo;
     private final IngredientRepository ingredientRepo;
 
+    /**
+     * Creates the service for the RecipeIngredient.
+     * @param recipeIngredientRepo the database for recipeIngredients
+     * @param recipeRepo the database for recipes
+     * @param ingredientRepo the database for ingredients
+     */
     public RecipeIngredientService(
             RecipeIngredientRepository recipeIngredientRepo,
             RecipeRepository recipeRepo,
@@ -29,6 +35,12 @@ public class RecipeIngredientService {
         this.ingredientRepo = ingredientRepo;
     }
 
+    /**
+     * Creates a recipIngredient entity in the database.
+     * @param recipeIngredient the entity to be created
+     * @return the created entity
+     */
+    @Transactional
     public RecipeIngredient createRecipeIngredient(RecipeIngredient recipeIngredient) {
         Ingredient ingredientFromDb = ingredientRepo.findById(recipeIngredient.getIngredient().getId())
                 .orElseThrow(() -> new RuntimeException("Ingredient not found"));
@@ -41,6 +53,11 @@ public class RecipeIngredientService {
         return recipeIngredientRepo.save(recipeIngredient);
     }
 
+    /**
+     * Gets the recipeIngredient by id.
+     * @param id the id of the entity to be found
+     * @return the recipeIngredient, if found
+     */
     public RecipeIngredient getRecipeIngredient(RecipeIngredientKey id) {
         try {
             return recipeIngredientRepo.findById(id).get();
@@ -51,16 +68,30 @@ public class RecipeIngredientService {
         }
     }
 
+    /**
+     * Gets all recipeIngredients from the database.
+     * @return a list of all recipeIngredients
+     */
     public List<RecipeIngredient> getAllRecipeIngredients() {
         return recipeIngredientRepo.findAll();
     }
 
+    /**
+     * Gets all recipeIngredients for a specific recipe.
+     * @param recipeId the id of the recipe
+     * @return the list of recipeIngredients for the given recipe
+     */
     public List<RecipeIngredient> getRecipeIngredients(Long recipeId) {
         return getAllRecipeIngredients().stream()
                 .filter(ri -> ri.getId().getRecipeId().equals(recipeId))
                 .toList();
     }
 
+    /**
+     * Updates the recipeIngredient.
+     * @param id the id of the recipeIngredient to be updated
+     * @param updated the updated entity
+     */
     public void updateRecipeIngredient(RecipeIngredientKey id, RecipeIngredient updated) {
         Objects.requireNonNull(updated, "Updated recipeIngredient cannot be null!");
 
@@ -77,6 +108,10 @@ public class RecipeIngredientService {
         recipeIngredientRepo.save(toUpdate);
     }
 
+    /**
+     * Deletes a recipeIngredient from the database.
+     * @param id the id of the recipeIngredient to be removed
+     */
     public void deleteRecipeIngredient(RecipeIngredientKey id) {
         if (recipeIngredientRepo.existsById(id)) {
             recipeIngredientRepo.deleteById(id);

@@ -10,7 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import server.RecipeRepository;
+import server.database.RecipeRepository;
 
 /**
  * @DataJpaTest is specifically designed for testing database-layer functionality.

@@ -1,7 +1,5 @@
 package commons;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import java.util.*;
 
@@ -106,7 +104,7 @@ public class Recipe {
         this.servings = 1;
 
         if (language == null || language.trim().length() != 2) {
-        this.language = "en";
+            this.language = "en";
         } else {
             this.language = language.trim().toLowerCase();
         }
@@ -163,13 +161,17 @@ public class Recipe {
         this.instructions = instructions;
     }
 
-     public String getLanguage() {
+    public String getLanguage() {
         return language;
     }
 
+    /**
+     * Sets the language
+     * @param language the language
+     */
     public void setLanguage(String language) {
         if (language == null || language.trim().length() != 2) {
-        this.language = "en";
+            this.language = "en";
         } else {
             this.language = language.trim().toLowerCase();
         }
@@ -179,11 +181,15 @@ public class Recipe {
         return servings;
     }
 
+    /**
+     * Set the servings size.
+     * @param servings the number of servings
+     */
     public void setServings(int servings) {
         if (servings < 1) {
             this.servings = 1;
         } else
-        this.servings = servings;
+            this.servings = servings;
     }
 
     public void setRecipeId(Long recipeId) {
@@ -193,7 +199,8 @@ public class Recipe {
     /**
      * @param anotherRecipe another recipe
      * @return whether two recipes are equal
-     * Note: Reflection means the library automatically looks at the object’s fields at runtime instead of you manually listing them.
+     * Note: Reflection means the library automatically
+     * looks at the object’s fields at runtime instead of you manually listing them.
      * Uses reflection to compare all fields of this object with the other object.
      */
 
