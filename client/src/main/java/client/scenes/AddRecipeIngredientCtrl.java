@@ -58,9 +58,11 @@ public class AddRecipeIngredientCtrl {
             ingredientChoiceBox.setValue(ingredientChoiceBox.getItems().get(0));
         }
 
+        unitTypeChoiceBox.getItems().clear();
         unitTypeChoiceBox.getItems().addAll("Formal", "Informal");
         unitTypeChoiceBox.setValue(unitTypeChoiceBox.getItems().get(0));
 
+        unitChoiceBox.getItems().clear();
         unitChoiceBox.setItems(FXCollections.observableArrayList(Unit.values()));
         unitChoiceBox.setValue(unitChoiceBox.getItems().get(0));
 
