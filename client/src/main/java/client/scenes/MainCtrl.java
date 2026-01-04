@@ -353,10 +353,10 @@ public class MainCtrl {
         }
 
         Stage secondaryStage = new Stage();
+        addRecipeIngredientCtrl.initialize();
         secondaryStage.setTitle("Add Ingredient to Recipe");
         secondaryStage.setScene(addRecipeIngredientScene);
-        secondaryStage.setMaxWidth(600);
-        secondaryStage.setMaxHeight(430);
+        secondaryStage.setResizable(false);
         secondaryStage.initOwner(primaryStage);
         secondaryStage.showAndWait();
     }

@@ -49,6 +49,8 @@ public class AddRecipeIngredientCtrl {
      */
     @FXML
     public void initialize() {
+        // To fetch all global ingredients
+        ingredientChoiceBox.getItems().clear();
         ingredientChoiceBox.getItems().addAll(
                 ingredientServerUtils.getAllIngredients());
 
