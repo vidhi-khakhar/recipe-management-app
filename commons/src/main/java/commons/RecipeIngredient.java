@@ -15,13 +15,13 @@ public class RecipeIngredient {
     private RecipeIngredientKey id;
 
     // Many lines belong to one recipe
-    @ManyToOne(optional = false, cascade = CascadeType.MERGE)
+    @ManyToOne(optional = false)
     @MapsId("recipeId")
     @JoinColumn(name = "recipe_id", nullable = false)
     private Recipe recipe;
 
     // One ingredient can be used in many recipes
-    @ManyToOne(optional = false, cascade = CascadeType.MERGE)
+    @ManyToOne(optional = false)
     @MapsId("ingredientId")
     @JoinColumn(name = "ingredient_id", nullable = false)
     private Ingredient ingredient;

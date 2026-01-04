@@ -2,8 +2,6 @@ package client.utils;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import commons.Recipe;
 import commons.RecipeIngredientKey;
@@ -194,33 +192,20 @@ public class RecipeServerUtils {
      * Creates a new RecipeIngredient on the server.
      */
     public RecipeIngredientKey createRecipeIngredient(RecipeIngredient recipeIngredient) throws ProcessingException {
-        try {
-            // Serialize RecipeIngredient to JSON
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonString = objectMapper.writeValueAsString(recipeIngredient);
+        try (Response response = client
+                .target(serverUrl + "api/v1/recipes/ingredients")
+                .request(APPLICATION_JSON)
+                .post(Entity.json(recipeIngredient))) {
 
-            System.out.println("Serialized RecipeIngredient: " + jsonString);
-
-            try (Response response = client
-                    .target(serverUrl + "api/v1/recipes/ingredients")
-                    .request(APPLICATION_JSON)
-                    .post(Entity.json(jsonString))) {
-
-                if (response.getStatus() == HTTP_CREATED) {
-                    return response.readEntity(RecipeIngredientKey.class);
-                } else {
-                    throw new ProcessingException("Failed to create recipe ingredient, HTTP " + response.getStatus());
-                }
+            if (response.getStatus() == HTTP_CREATED) {
+                return response.readEntity(RecipeIngredientKey.class);
             }
-        } catch (JsonProcessingException e) {
-            System.err.println("Error serializing RecipeIngredient: " + e.getMessage());
-            throw new ProcessingException("Error serializing RecipeIngredient", e);
-        } catch (ProcessingException e) {
-            System.err.println("Error processing request: " + e.getMessage());
-            throw e;
+
+            throw new ProcessingException(
+                    "Failed to create recipe ingredient, HTTP "
+                            + response.getStatus());
         }
     }
-
 
     /**
      * Gets all RecipeIngredients for a specific recipe.
