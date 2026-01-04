@@ -52,6 +52,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 public class MainCtrl {
+
     private Stage primaryStage;
     private Scene nutritionScene;
     private Scene recipeAddScene;
@@ -68,16 +69,16 @@ public class MainCtrl {
     /**
      * Initializes the scenes
      *
-     * @param primaryStage             the main stage
-     * @param mainUserInterfaceScene   the main UI scene
-     * @param nutritionScene           the nutrition scene
-     * @param recipeAddScene           the add recipe scene
+     * @param primaryStage the main stage
+     * @param mainUserInterfaceScene the main UI scene
+     * @param nutritionScene the nutrition scene
+     * @param recipeAddScene the add recipe scene
      * @param addRecipeIngredientScene the add ingredient to recipe scene
-     * @param addRecipeIngredientCtrl  the add ingredient to recipe controller
+     * @param addRecipeIngredientCtrl the add ingredient to recipe controller
      */
     public void initScenes(Stage primaryStage, Scene mainUserInterfaceScene, Scene nutritionScene,
-                           Scene recipeAddScene, Scene addRecipeIngredientScene, AddRecipeIngredientCtrl addRecipeIngredientCtrl,
-                           Scene editTitleScene, Scene shoppingListScene) {
+            Scene recipeAddScene, Scene addRecipeIngredientScene, AddRecipeIngredientCtrl addRecipeIngredientCtrl,
+            Scene editTitleScene, Scene shoppingListScene) {
         this.primaryStage = primaryStage;
         this.nutritionScene = nutritionScene; // store it for later
         this.recipeAddScene = recipeAddScene; // store it for later
@@ -91,7 +92,9 @@ public class MainCtrl {
 
     /**
      * The constructor that connects the ServerUtils to this controller
-     * @param recipeServerUtils the utility class responsible for server communication
+     *
+     * @param recipeServerUtils the utility class responsible for server
+     * communication
      */
     @Inject
     public MainCtrl(RecipeServerUtils recipeServerUtils) {
@@ -102,10 +105,10 @@ public class MainCtrl {
      * Initializes the main UI controller.
      * <p>
      * This method is automatically called by the FXML loader after the
-     * controller's root element has been completely processed. It sets up
-     * the ListView `sidebarList` to use `recipesObservableList` as its data
-     * source and configures a custom cell factory so that only the recipe
-     * title is displayed in the list.
+     * controller's root element has been completely processed. It sets up the
+     * ListView `sidebarList` to use `recipesObservableList` as its data source
+     * and configures a custom cell factory so that only the recipe title is
+     * displayed in the list.
      * </p>
      */
     @FXML
@@ -114,17 +117,17 @@ public class MainCtrl {
 
         // Makes it so that only the title is visible in the list
         sidebarList.setCellFactory(lv -> new ListCell<>() {
-                    @Override
-                    protected void updateItem(Recipe item, boolean empty) {
-                        super.updateItem(item, empty);
+            @Override
+            protected void updateItem(Recipe item, boolean empty) {
+                super.updateItem(item, empty);
 
-                        if (empty || item == null) {
-                            setText(null);
-                        } else {
-                            setText(item.getTitle());
-                        }
-                    }
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item.getTitle());
                 }
+            }
+        }
         );
 
         // The listeners for the selected recipe
@@ -146,8 +149,8 @@ public class MainCtrl {
      */
     private void loadRecipesFromDatabase() {
         try {
-            Recipe previouslySelected =
-                    sidebarList.getSelectionModel().getSelectedItem();
+            Recipe previouslySelected
+                    = sidebarList.getSelectionModel().getSelectedItem();
 
             List<Recipe> recipesFromDB = recipeServerUtils.getAllRecipes();
             recipesObservableList.setAll(recipesFromDB);
@@ -167,7 +170,10 @@ public class MainCtrl {
         }
     }
 
-
+    /**
+     * Updates the recipe stack pane based on whether there are recipes in the
+     * sidebar list.
+     */
     @FXML
     public void updateRecipeStackPane() {
         boolean hasRecipes = !sidebarList.getItems().isEmpty();
@@ -182,12 +188,9 @@ public class MainCtrl {
         }
     }
 
-
-
-    
-
     /**
      * Changes the UI according to the selected recipe
+     *
      * @param recipe the recipe that is selected
      */
     private void onRecipeSelected(Recipe recipe) {
@@ -199,6 +202,7 @@ public class MainCtrl {
 
     /**
      * Adds the recipe to the list that is displayed by the UI.
+     *
      * @param recipe the to be added recipe.
      */
     public void addRecipe(Recipe recipe) {
@@ -234,8 +238,9 @@ public class MainCtrl {
 
     /**
      * Opens an alert when user clicks the recipe deletion button.
-     * @return true if user confirms the deletion
-     *         false if user cancels the deletion
+     *
+     * @return true if user confirms the deletion false if user cancels the
+     * deletion
      */
     private boolean deleteConfirmation() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -255,15 +260,16 @@ public class MainCtrl {
     }
 
     /**
-     * Called by the `recipeRemoveButtonClicked()` method
-     * Removes a recipe from the database and the list that is displayed by the UI
+     * Called by the `recipeRemoveButtonClicked()` method Removes a recipe from
+     * the database and the list that is displayed by the UI
+     *
      * @param recipe the to be removed recipe.
      */
     public void removeRecipe(Recipe recipe) {
-        System.out.println("Removing recipe [" +
-                recipe.getRecipeId() +
-                "] " +
-                recipe.getTitle()
+        System.out.println("Removing recipe ["
+                + recipe.getRecipeId()
+                + "] "
+                + recipe.getTitle()
         );
         // removes the recipe entity from database
         recipeServerUtils.deleteRecipe(recipe.getRecipeId());
@@ -280,10 +286,9 @@ public class MainCtrl {
     }
 
     /**
-     * The placeholder for the search functionality
-     * It checks if there is a query typed in the searchbar and then prints the query
-     * to the console if it exists,
-     * otherwise it would print "Please enter a query."
+     * The placeholder for the search functionality It checks if there is a
+     * query typed in the searchbar and then prints the query to the console if
+     * it exists, otherwise it would print "Please enter a query."
      */
     @FXML
     private void searchButtonClicked() {
@@ -299,6 +304,7 @@ public class MainCtrl {
     /**
      * This method prints out the button name + "is clicked!" to the console
      * when a button is clicked in the UI.
+     *
      * @param event the ActionEvent triggered when the button is clicked.
      */
     @FXML
@@ -331,8 +337,8 @@ public class MainCtrl {
         addRecipeIngredientCtrl.setRecipe(selectedRecipe);
         showAddRecipeIngredientWindow();
 
-        RecipeIngredient newIngredient =
-                addRecipeIngredientCtrl.getRecipeIngredient();
+        RecipeIngredient newIngredient
+                = addRecipeIngredientCtrl.getRecipeIngredient();
         if (newIngredient != null) {
             addRecipeIngredientToUI(newIngredient);
         }
@@ -345,10 +351,8 @@ public class MainCtrl {
         ingredientItem.setSpacing(8.0);
         ingredientItem.getStyleClass().add("recipe-item");
 
-
         Label itemLabel = new Label(recipeIngredient.toString());
         itemLabel.setStyle("-fx-padding: 0 0 0 9;"); // <Insets left="9.0">
-
 
         // To throw the buttons to the right
         Region spacer = new Region();
@@ -390,9 +394,9 @@ public class MainCtrl {
     }
 
     // ALL INSTRUCTION / PREPARATION STEP METHODS BELOW HERE:
-
     /**
      * Displays the instructions of a recipe in the UI.
+     *
      * @param recipe the recipe whose instructions are to be displayed
      */
     private void showInstructions(Recipe recipe) {
@@ -401,18 +405,20 @@ public class MainCtrl {
         List<String> steps = recipe.getInstructions();
 
         for (int i = 0; i < steps.size(); i++) {
-            HBox row = createExecutionStepRow(i, steps.get(i),false);
+            HBox row = createExecutionStepRow(i, steps.get(i), false);
             preparationList.getChildren().add(row);
         }
     }
 
     /**
-     * This is a placeholder method for further development
-     * Method prints out a message when the button is clicked.
+     * This is a placeholder method for further development Method prints out a
+     * message when the button is clicked.
      */
     @FXML
     private void preparationAddButtonClicked() {
-        if (selectedRecipe == null) return;
+        if (selectedRecipe == null) {
+            return;
+        }
 
         // Add empty step to recipe
         selectedRecipe.getInstructions().add("");
@@ -424,9 +430,10 @@ public class MainCtrl {
 
     /**
      * Creates a row for a preparation step.
-     * @param index       the index of the step
+     *
+     * @param index the index of the step
      * @param initialText the initial text of the step
-     * @param editable    whether the step is initially editable
+     * @param editable whether the step is initially editable
      */
     private HBox createExecutionStepRow(int index, String initialText, boolean startEditable) {
         // Create a new HBox (a preparation step)
@@ -448,17 +455,17 @@ public class MainCtrl {
         Button editSaveButton = new Button();
         Button deleteButton = new Button("✖");
 
-
         final Runnable[] switchToEdit = new Runnable[1];
         final Runnable[] saveStep = new Runnable[1];
 
         saveStep[0] = () -> {
             String text = textField.getText().trim();
-            if (text.isEmpty()) return;
+            if (text.isEmpty()) {
+                return;
+            }
 
             selectedRecipe.getInstructions().set(index, text);
             textLabel.setText(text);
-
 
             try {
                 recipeServerUtils.replaceRecipe(selectedRecipe.getRecipeId(), selectedRecipe);
@@ -499,6 +506,7 @@ public class MainCtrl {
 
     /**
      * Handles the deletion of a preparation step.
+     *
      * @param index the index of the step to be deleted
      */
     private void handleDeleteStep(int index) {
@@ -520,7 +528,6 @@ public class MainCtrl {
             showInstructions(selectedRecipe);
         }
     }
-
 
     /**
      * Edit an ingredient of a selected recipe.
@@ -550,8 +557,9 @@ public class MainCtrl {
     }
 
     /**
-     * This is a placeholder a helper method for further list management
-     * Method prints out a message when the button is clicked
+     * This is a placeholder a helper method for further list management Method
+     * prints out a message when the button is clicked
+     *
      * @param ingredient the ingredient to be added
      */
     @FXML
@@ -597,8 +605,8 @@ public class MainCtrl {
     }
 
     /**
-     * Makes sure the shopping list window is opened once the
-     * shopping list button is pressed
+     * Makes sure the shopping list window is opened once the shopping list
+     * button is pressed
      */
     @FXML
     void showShoppingListWindow() {
@@ -615,8 +623,8 @@ public class MainCtrl {
     }
 
     /**
-     * Makes sure the window with the add recipe functionality is opened once the
-     * Add button is pressed.
+     * Makes sure the window with the add recipe functionality is opened once
+     * the Add button is pressed.
      */
     @FXML
     void showAddRecipeWindow() {
@@ -635,7 +643,8 @@ public class MainCtrl {
     }
 
     /**
-     * Clone's the selected recipe, copying the name and adding (Clone) behind it
+     * Clone's the selected recipe, copying the name and adding (Clone) behind
+     * it
      */
     @FXML
     void cloneRecipe() {
@@ -693,6 +702,7 @@ public class MainCtrl {
 
     /**
      * Returns selected recipe.
+     *
      * @return selected Recipe instance
      */
     public Recipe getSelectedRecipe() {
@@ -771,11 +781,9 @@ public class MainCtrl {
     @FXML
     private Button addStepButton;
 
-    
     @FXML
     private AnchorPane noRecipePane;
 
-    
     @FXML
     private AnchorPane allRecipePane;
 
@@ -792,6 +800,7 @@ public class MainCtrl {
 
     /**
      * Saves a recipe in chosen path.
+     *
      * @param recipe recipe to be saved
      */
     private void saveRecipe(Recipe recipe) throws IOException {

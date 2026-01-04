@@ -2,7 +2,6 @@ package client.utils;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
-import com.google.inject.Inject;
 import commons.Recipe;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.*;
@@ -21,7 +20,8 @@ public class RecipeServerUtils {
     private static final int HTTP_CREATED = 201;
     private static final int HTTP_NOT_FOUND = 404;
 
-    private static final String server = ConfigService.getConfig().getServerUrl(); // The server url from the config.json
+    // The server url from the config.json
+    private static final String server = ConfigService.getConfig().getServerUrl(); 
 
     private final Client client;
     private final String serverUrl;

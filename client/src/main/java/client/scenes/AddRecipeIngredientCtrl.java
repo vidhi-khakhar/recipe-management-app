@@ -12,6 +12,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 public class AddRecipeIngredientCtrl {
+
     private Recipe recipe;
     private RecipeIngredient recipeIngredient;
 
@@ -35,11 +36,11 @@ public class AddRecipeIngredientCtrl {
     private TextField amountTextField;
 
     /**
-     * The ChoiceBoxes have the default value of the first element.
-     * Explanation of unitTypeChoiceBox:
-     *      selectionModel - in the case of a ChoiceBox it is a SingleSelectionModel
-     *      selectedItemProperty - indicates the currently selected item in the selection model
-     *      addListener - function that runs whenever a change is observed
+     * The ChoiceBoxes have the default value of the first element. Explanation
+     * of unitTypeChoiceBox: selectionModel - in the case of a ChoiceBox it is a
+     * SingleSelectionModel selectedItemProperty - indicates the currently
+     * selected item in the selection model addListener - function that runs
+     * whenever a change is observed
      */
     @FXML
     public void initialize() {
@@ -61,6 +62,12 @@ public class AddRecipeIngredientCtrl {
                 });
     }
 
+    /**
+     * Updates the visibility of the unit choice box based on the selected unit
+     * type.
+     *
+     * @param unitType the selected unit type ("Formal" or "Informal")
+     */
     public void updateUnitChoiceBoxVisibility(String unitType) {
         if (unitType.equals("Formal")) {
             unitChoiceBox.setVisible(true);
@@ -70,10 +77,10 @@ public class AddRecipeIngredientCtrl {
     }
 
     // Button Methods
-
     /**
-     * Create RecipeIngredient entity based on user input.
-     * Close the popup and return information to MainCtrl.
+     * Create RecipeIngredient entity based on user input. Close the popup and
+     * return information to MainCtrl.
+     *
      * @return the created RecipeIngredient instance
      */
     @FXML
