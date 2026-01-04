@@ -8,7 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Version;
 
 /**
  * Ingredient Entity. Database has columns: id (unmodifiable), name,
@@ -24,12 +23,6 @@ public class Ingredient {
     @Id // Specifies the primary key.
     @GeneratedValue(strategy = GenerationType.AUTO) // Auto-generated primary key.
     private Long ingredientId;
-
-    /**
-     * Version field for optimistic locking.
-     */
-    @Version
-    private Long version;
 
     /**
      * name of the ingredient shouldn't be null.
@@ -108,7 +101,7 @@ public class Ingredient {
     }
 
     /**
-     * @param anotherIngredient another ingredient
+     * @param o another ingredient
      * @return whether two ingredients are equal Note: Reflection means the
      * library automatically looks at the object’s fields at runtime instead of
      * you manually listing them. Uses reflection to compare all fields of this

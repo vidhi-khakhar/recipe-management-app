@@ -19,7 +19,7 @@ import commons.Recipe;
 class RecipeServiceTest {
      // Mock is used to create a fake version of the database
     @Mock
-    private server.RecipeRepository recipeRepository;
+    private server.database.RecipeRepository recipeRepository;
 
     // Repository is injected here
     @InjectMocks

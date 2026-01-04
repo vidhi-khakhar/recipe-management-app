@@ -1,29 +1,27 @@
 package server.api;
 
+import commons.Recipe;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import commons.RecipeIngredient;
+import commons.RecipeIngredientKey;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import commons.Recipe;
+import org.springframework.web.bind.annotation.*;
 import server.service.RecipeService;
+import server.service.RecipeIngredientService;
 
 @RestController
 @RequestMapping("/api/v1/recipes")
 public class RecipeController {
 
     private final RecipeService rService;
+    private final RecipeIngredientService recipeIngService;
 
-    public RecipeController(RecipeService service) {
+    public RecipeController(RecipeService service,
+                            RecipeIngredientService recipeIngredientService) {
         this.rService = service;
+        this.recipeIngService = recipeIngredientService;
     }
 
     /**
@@ -89,6 +87,78 @@ public class RecipeController {
     public ResponseEntity<Long> deleteRecipe(@PathVariable Long id) {
         try {
             this.rService.deleteRecipeById(id);
+            return ResponseEntity.ok(id);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    // RECIPE INGREDIENT ENDPOINTS
+    /**
+     * Defines endpoint for creating recipeIngredients in the database
+     * @param recipeIngredient the ingredient to be added to recipe
+     *                         with all additional info it entails
+     * @return the composite id (recipeId + ingredientId) of the entity added
+     */
+    @PostMapping("/ingredients")
+    public ResponseEntity<RecipeIngredientKey> createRecipeIngredient(@RequestBody RecipeIngredient recipeIngredient) {
+        this.recipeIngService.createRecipeIngredient(recipeIngredient);
+        return ResponseEntity.status(201).body(recipeIngredient.getId());
+    }
+
+    /**
+     * Defines endpoint for getting all recipeIngredients for a recipe.
+     * @return all the saved recipeIngredients
+     */
+    @GetMapping("/{recipeId}/ingredients")
+    public ResponseEntity<List<RecipeIngredient>> getRecipeIngredients(@PathVariable Long recipeId) {
+        return ResponseEntity.ok(this.recipeIngService.getRecipeIngredients(recipeId));
+    }
+
+    /**
+     * Defines endpoint for getting all recipeIngredients from database.
+     */
+    @GetMapping("/ingredients")
+    public ResponseEntity<List<RecipeIngredient>> getAllRecipeIngredients() {
+        return ResponseEntity.ok(this.recipeIngService.getAllRecipeIngredients());
+    }
+
+    /**
+     * Defines endpoint for deleting a recipeIngredient from the database.
+     * @param recipeId the id of the recipe
+     * @param ingredientId the id of the ingredient
+     * @return the id of the deleted recipeIngredient
+     */
+    @DeleteMapping("/ingredients/{recipeId}/{ingredientId}")
+    public ResponseEntity<RecipeIngredientKey> deleteRecipeIngredient(
+            @PathVariable Long recipeId,
+            @PathVariable Long ingredientId) {
+        RecipeIngredientKey id = new RecipeIngredientKey(recipeId, ingredientId);
+
+        try {
+            this.recipeIngService.deleteRecipeIngredient(id);
+            return ResponseEntity.ok(id);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * Defines endpoint for updating an ingredient inside a recipe.
+     * @param recipeId the id of the recipe
+     * @param ingredientId the id of the ingredient
+     * @param recipeIngredient the recipeIngredient to update with
+     * @return id of the recipeIngredient that was updated
+     */
+    @PutMapping("/ingredients/{recipeId}/{ingredientId}")
+    public ResponseEntity<RecipeIngredientKey> updateRecipeIngredient(
+            @PathVariable Long recipeId,
+            @PathVariable Long ingredientId,
+            @RequestBody RecipeIngredient recipeIngredient
+    ) {
+        RecipeIngredientKey id = new RecipeIngredientKey(recipeId, ingredientId);
+        try {
+            this.recipeIngService.updateRecipeIngredient(id, recipeIngredient);
             return ResponseEntity.ok(id);
         } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();

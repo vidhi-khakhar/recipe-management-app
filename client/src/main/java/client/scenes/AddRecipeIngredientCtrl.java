@@ -1,5 +1,7 @@
 package client.scenes;
 
+import client.utils.IngredientServerUtils;
+import client.utils.RecipeServerUtils;
 import commons.Ingredient;
 import commons.Recipe;
 import commons.RecipeIngredient;
@@ -15,6 +17,9 @@ public class AddRecipeIngredientCtrl {
 
     private Recipe recipe;
     private RecipeIngredient recipeIngredient;
+
+    private final IngredientServerUtils ingredientServerUtils = new IngredientServerUtils();
+    private final RecipeServerUtils recipeServerUtils = new RecipeServerUtils();
 
     // UI Elements
     @FXML
@@ -44,14 +49,20 @@ public class AddRecipeIngredientCtrl {
      */
     @FXML
     public void initialize() {
-        // Test ingredient, lacking all global ingredients
+        // To fetch all global ingredients
+        ingredientChoiceBox.getItems().clear();
         ingredientChoiceBox.getItems().addAll(
-                new Ingredient("Varza", 100, 11, 12));
-        ingredientChoiceBox.setValue(ingredientChoiceBox.getItems().get(0));
+                ingredientServerUtils.getAllIngredients());
 
+        if (!ingredientServerUtils.getAllIngredients().isEmpty()) {
+            ingredientChoiceBox.setValue(ingredientChoiceBox.getItems().get(0));
+        }
+
+        unitTypeChoiceBox.getItems().clear();
         unitTypeChoiceBox.getItems().addAll("Formal", "Informal");
         unitTypeChoiceBox.setValue(unitTypeChoiceBox.getItems().get(0));
 
+        unitChoiceBox.getItems().clear();
         unitChoiceBox.setItems(FXCollections.observableArrayList(Unit.values()));
         unitChoiceBox.setValue(unitChoiceBox.getItems().get(0));
 
@@ -102,7 +113,7 @@ public class AddRecipeIngredientCtrl {
                     ingredient, informal);
         }
 
-        System.out.println("User saved ingredient to recipe.");
+        recipeServerUtils.createRecipeIngredient(recipeIngredient);
         closeWindow();
     }
 

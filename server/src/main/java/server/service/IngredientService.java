@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import commons.Ingredient;
-import server.RecipeRepository;
+import server.database.RecipeRepository;
 import server.database.IngredientRepository;
 
 
@@ -23,8 +23,8 @@ public class IngredientService {
     private RecipeRepository recipeRepository;
 
     /**
-     * gets the ingredient by it's id
-     * @param id
+     * gets the ingredient by its id
+     * @param id the id of the ingredient
      * @return an Ingredient
      */
     public Ingredient getIngredientById(Long id) {

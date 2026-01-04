@@ -1,38 +1,26 @@
 package commons;
 
-import java.util.Objects;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.persistence.*;
+import java.util.*;
 
 @Entity
 @Table(name = "recipe_ingredient")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RecipeIngredient {
 
     @EmbeddedId
     private RecipeIngredientKey id;
 
     // Many lines belong to one recipe
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, cascade = CascadeType.MERGE)
     @MapsId("recipeId")
     @JoinColumn(name = "recipe_id", nullable = false)
-    @JsonIgnore
     private Recipe recipe;
 
     // One ingredient can be used in many recipes
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade = CascadeType.MERGE)
     @MapsId("ingredientId")
     @JoinColumn(name = "ingredient_id", nullable = false)
     private Ingredient ingredient;
@@ -42,12 +30,14 @@ public class RecipeIngredient {
      * Formal amount (e.g. 100). For informal amounts, leave null.
      */
     @Column(name = "amount")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Double amount;
 
     /**
      * Unit for the amount (e.g. G, TBSP). For informal amounts, leave null.
      */
     @Enumerated(EnumType.STRING)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Unit unit;
 
     /**
@@ -55,6 +45,7 @@ public class RecipeIngredient {
      * If this is set, amount/unit can be null.
      */
     @Column(name = "informal_amount")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String informal;
 
     @SuppressWarnings("unused")
@@ -121,9 +112,9 @@ public class RecipeIngredient {
     }
 
     /**
-     * Equality is based on the composite key (recipeId + ingredientId).
-     * @param o the other object to compare
-     * @return true if the RecipeIngredient objects have the same id
+     * Checks if two recipeIngredients are equal in values.
+     * @param o   the reference object with which to compare.
+     * @return    true if objects are equal.
      */
     @Override
     public boolean equals(Object o) {
@@ -164,7 +155,7 @@ public class RecipeIngredient {
     public String getInformal() { return informal; }
 
     /**
-     * Since informal and formal units can not happen at the same time 
+     * Since informal and formal units can not happen at the same time
      * if an informal amount is set then the amount and unit becomes null
      */
     public void setInformal(String informal) {
@@ -174,24 +165,52 @@ public class RecipeIngredient {
     }
 
     /**
-     * A tostring method for RecipeIngredient
-     * @return string representation of RecipeIngredient
+     * Displays the amount.
+     * @return a String of the format "amount unit"
+     */
+    public String displayAmount() {
+        if (informal != null && !informal.isBlank()) {
+            return informal;
+        } else if (amount != null && unit != null) {
+            return amount + " " + unit;
+        } else {
+            return "";
+        }
+    }
+
+    /**
+     * Stringifies the recipeIngredient.
+     * @return String of the format "name amount unit"
      */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-
-        sb.append(this.ingredient.getName());
-        sb.append(" ");
+        sb.append(this.ingredient.getName()).append(" ");
 
         if (this.informal != null) {
             sb.append(this.informal);
         } else {
-            sb.append(this.amount);
-            sb.append(this.unit);
+            sb.append(this.amount).append(" ").append(this.unit);
         }
 
         return sb.toString();
+    }
+
+    /**
+     * Checks if recipeIngredient is formal.
+     * @return true if recipeIngredient is formal
+     *         false otherwise
+     */
+    public boolean isFormal() {
+        return this.informal == null;
+    }
+
+    public void setIngredient(Ingredient ingredient) {
+        this.ingredient = ingredient;
+    }
+
+    public void setRecipe(Recipe recipe) {
+        this.recipe = recipe;
     }
 }
 

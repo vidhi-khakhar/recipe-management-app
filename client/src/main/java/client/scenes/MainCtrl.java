@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import commons.RecipeIngredientKey;
 import org.apache.commons.io.FileUtils;
 
 import com.google.inject.Inject;
@@ -50,6 +51,13 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class MainCtrl {
 
@@ -190,14 +198,13 @@ public class MainCtrl {
 
     /**
      * Changes the UI according to the selected recipe
-     *
      * @param recipe the recipe that is selected
      */
     private void onRecipeSelected(Recipe recipe) {
         this.selectedRecipe = recipe;
         titleRecipeLabel.setText(recipe.getTitle());
         showInstructions(recipe);
-        //TODO showIngredients(recipe);
+        showIngredients(recipe);
     }
 
     /**
@@ -238,9 +245,8 @@ public class MainCtrl {
 
     /**
      * Opens an alert when user clicks the recipe deletion button.
-     *
-     * @return true if user confirms the deletion false if user cancels the
-     * deletion
+     * @return true if user confirms the deletion
+     *         false if user cancels the deletion
      */
     private boolean deleteConfirmation() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -254,7 +260,7 @@ public class MainCtrl {
             // If confirmed
             return true;
         } else {
-            // If cancelled
+            // If canceled
             return false;
         }
     }
@@ -321,14 +327,47 @@ public class MainCtrl {
         loadRecipesFromDatabase();
     }
 
+    // RECIPE INGREDIENTS METHODS
+    /**
+     * Shows the ingredients for a recipe.
+     */
+    @FXML
+    void showIngredients(Recipe recipe) {
+        ingredientList.getChildren().clear();
+
+        List<RecipeIngredient> ingredients = this.recipeServerUtils.getRecipeIngredients(recipe.getRecipeId());
+
+        for (RecipeIngredient ingredient : ingredients) {
+            addRecipeIngredientToUI(ingredient);
+        }
+    }
+
+    /**
+     * Opens the add ingredient to recipe popup window.
+     */
+    @FXML
+    void showAddRecipeIngredientWindow() {
+        if (addRecipeIngredientScene == null) {
+            System.err.println("AddRecipeIngredientScene not initialized!");
+            return;
+        }
+
+        Stage secondaryStage = new Stage();
+        addRecipeIngredientCtrl.initialize();
+        secondaryStage.setTitle("Add Ingredient to Recipe");
+        secondaryStage.setScene(addRecipeIngredientScene);
+        secondaryStage.setResizable(false);
+        secondaryStage.initOwner(primaryStage);
+        secondaryStage.showAndWait();
+    }
+
     /**
      * Adds an ingredient to a recipe.
      */
     @FXML
     private void ingredientAddButtonClicked() throws IOException {
-        Recipe selectedRecipe = sidebarList
-                .getSelectionModel()
-                .getSelectedItem();
+        Recipe selectedRecipe = getSelectedRecipe();
+
         if (selectedRecipe == null) {
             System.out.println("No recipe selected!");
             return;
@@ -337,22 +376,29 @@ public class MainCtrl {
         addRecipeIngredientCtrl.setRecipe(selectedRecipe);
         showAddRecipeIngredientWindow();
 
-        RecipeIngredient newIngredient
-                = addRecipeIngredientCtrl.getRecipeIngredient();
+        RecipeIngredient newIngredient =
+                addRecipeIngredientCtrl.getRecipeIngredient();
+
         if (newIngredient != null) {
-            addRecipeIngredientToUI(newIngredient);
+            newIngredient.setRecipe(selectedRecipe);
+            this.recipeServerUtils.createRecipeIngredient(newIngredient);
         }
+
+        showIngredients(selectedRecipe);
     }
 
     private void addRecipeIngredientToUI(RecipeIngredient recipeIngredient) {
         // To create a new row
         HBox ingredientItem = new HBox();
+        ingredientItem.setUserData(recipeIngredient.getId());
         ingredientItem.setAlignment(Pos.CENTER_LEFT);
         ingredientItem.setSpacing(8.0);
         ingredientItem.getStyleClass().add("recipe-item");
 
+
         Label itemLabel = new Label(recipeIngredient.toString());
         itemLabel.setStyle("-fx-padding: 0 0 0 9;"); // <Insets left="9.0">
+
 
         // To throw the buttons to the right
         Region spacer = new Region();
@@ -371,6 +417,8 @@ public class MainCtrl {
         // Remove button
         Button removeButton = new Button("remove");
         removeButton.setOnAction(this::ingredientRemoveButtonClicked);
+        removeButton.setUserData(recipeIngredient.getId()); // To be able to identify which recipeIngredient to delete
+                                                            // when remove button is clicked
 
         // Put it all into HBox
         ingredientItem.getChildren().addAll(itemLabel, spacer, editButton, removeButton);
@@ -390,10 +438,47 @@ public class MainCtrl {
         HBox ingredientToRemove = (HBox) removeButton.getParent(); // To delete the whole row
         ingredientList.getChildren().remove(ingredientToRemove);
 
+        RecipeIngredientKey id = (RecipeIngredientKey) ingredientToRemove.getUserData();
+        this.recipeServerUtils.deleteRecipeIngredient(id.getRecipeId(), id.getIngredientId());
+
         System.out.println("Removed ingredient.");
     }
 
+    /**
+     * Edit an ingredient of a selected recipe.
+     */
+    @FXML
+    private void editIngredientButtonClicked(ActionEvent event)
+            throws IOException {
+        Button editButton = (Button) event.getSource();
+        HBox ingredientToEdit = (HBox) editButton.getParent();
+        Label ingredientLabel = (Label) ingredientToEdit.getChildren().get(0);
+
+        Recipe selectedRecipe = sidebarList
+                .getSelectionModel()
+                .getSelectedItem();
+        if (selectedRecipe == null) {
+            System.out.println("No recipe selected!");
+            return;
+        }
+
+        addRecipeIngredientCtrl.setRecipe(selectedRecipe);
+        showAddRecipeIngredientWindow();
+        RecipeIngredient updated = addRecipeIngredientCtrl.getRecipeIngredient();
+        ingredientLabel.setText(
+                updated.toString()
+        );
+
+        RecipeIngredientKey id = (RecipeIngredientKey) ingredientToEdit.getUserData();
+        this.recipeServerUtils.updateRecipeIngredient(id.getRecipeId(), id.getIngredientId(), updated);
+
+        showIngredients(selectedRecipe);
+
+        System.out.println("Edited ingredient.");
+    }
+
     // ALL INSTRUCTION / PREPARATION STEP METHODS BELOW HERE:
+
     /**
      * Displays the instructions of a recipe in the UI.
      *
@@ -433,12 +518,12 @@ public class MainCtrl {
      *
      * @param index the index of the step
      * @param initialText the initial text of the step
-     * @param editable whether the step is initially editable
+     * @param startEditable whether the step is initially editable
      */
     private HBox createExecutionStepRow(int index, String initialText, boolean startEditable) {
         // Create a new HBox (a preparation step)
-        // [ 1. ][ Label(text) ][ ✏ ][ ✖ ] when not editing
-        // [ 1. ][ TextField ][ ✔ ][ ✖ ] when editing
+        // [ 1 ][ Label(text) ][ ✏ ][ ✖ ] when not editing
+        // [ 1 ][ TextField ][ ✔ ][ ✖ ] when editing
         HBox row = new HBox(10);
         row.setAlignment(Pos.CENTER_LEFT);
 
@@ -454,6 +539,7 @@ public class MainCtrl {
 
         Button editSaveButton = new Button();
         Button deleteButton = new Button("✖");
+
 
         final Runnable[] switchToEdit = new Runnable[1];
         final Runnable[] saveStep = new Runnable[1];
@@ -506,7 +592,6 @@ public class MainCtrl {
 
     /**
      * Handles the deletion of a preparation step.
-     *
      * @param index the index of the step to be deleted
      */
     private void handleDeleteStep(int index) {
@@ -530,33 +615,6 @@ public class MainCtrl {
     }
 
     /**
-     * Edit an ingredient of a selected recipe.
-     */
-    @FXML
-    private void editIngredientButtonClicked(ActionEvent event)
-            throws IOException {
-        Button editButton = (Button) event.getSource();
-        HBox ingredientToEdit = (HBox) editButton.getParent();
-        Label ingredientLabel = (Label) ingredientToEdit.getChildren().get(0);
-
-        Recipe selectedRecipe = sidebarList
-                .getSelectionModel()
-                .getSelectedItem();
-        if (selectedRecipe == null) {
-            System.out.println("No recipe selected!");
-            return;
-        }
-
-        addRecipeIngredientCtrl.setRecipe(selectedRecipe);
-        showAddRecipeIngredientWindow();
-        ingredientLabel.setText(
-                addRecipeIngredientCtrl.getRecipeIngredient().toString()
-        );
-
-        System.out.println("Edited ingredient.");
-    }
-
-    /**
      * This is a placeholder a helper method for further list management Method
      * prints out a message when the button is clicked
      *
@@ -565,25 +623,6 @@ public class MainCtrl {
     @FXML
     private void addIngredientToList(String ingredient) {
         System.out.println("Added ingredient: " + ingredient);
-    }
-
-    /**
-     * Opens the add ingredient to recipe popup window.
-     */
-    @FXML
-    void showAddRecipeIngredientWindow() {
-        if (addRecipeIngredientScene == null) {
-            System.err.println("AddRecipeIngredientScene not initialized!");
-            return;
-        }
-
-        Stage secondaryStage = new Stage();
-        secondaryStage.setTitle("Add Ingredient to Recipe");
-        secondaryStage.setScene(addRecipeIngredientScene);
-        secondaryStage.setMaxWidth(600);
-        secondaryStage.setMaxHeight(430);
-        secondaryStage.initOwner(primaryStage);
-        secondaryStage.showAndWait();
     }
 
     /**
