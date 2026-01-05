@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import commons.RecipeIngredientKey;
 import org.apache.commons.io.FileUtils;
 
 import com.google.inject.Inject;
@@ -30,6 +29,7 @@ import client.RecipeFormatter;
 import client.utils.RecipeServerUtils;
 import commons.Recipe;
 import commons.RecipeIngredient;
+import commons.RecipeIngredientKey;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -51,13 +51,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.apache.commons.io.FileUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 public class MainCtrl {
 
@@ -790,7 +783,7 @@ public class MainCtrl {
     @FXML
     private Button addIngredientButton;
 
-     @FXML
+    @FXML
     private Button shoppingListButton;
 
     @FXML

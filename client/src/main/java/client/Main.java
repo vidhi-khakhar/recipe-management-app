@@ -46,6 +46,7 @@ public class Main extends Application {
 
     /**
      * Starts the JavaFX application by initializing the main window and scenes.
+     *
      * @param primaryStage the primary stage for this application
      * @throws Exception if an error occurs during initialization
      */
@@ -69,20 +70,22 @@ public class Main extends Application {
 
         System.out.println("Using server: " + config.getServerUrl()); // Feedback to see which server (url) we are using
 
-    var mainUserInterface = FXML.load(MainCtrl.class, "client", "scenes", "MainUserInterface.fxml");
-    var mainUserInterfaceScene = new Scene(mainUserInterface.getValue());
+        var mainUserInterface = FXML.load(MainCtrl.class, "client", "scenes", "MainUserInterface.fxml");
+        var mainUserInterfaceScene = new Scene(mainUserInterface.getValue());
 
-    // preload shopping list scene
-    var shoppingListInterface = FXML.load(ShoppingListCtrl.class, "client", "scenes", "ShoppingListInterface.fxml");
-    var shoppingListScene = new Scene(shoppingListInterface.getValue());
+        // preload shopping list scene
+        var shoppingListInterface = FXML.load(ShoppingListCtrl.class, "client", "scenes", "ShoppingListInterface.fxml");
+        var shoppingListScene = new Scene(shoppingListInterface.getValue());
 
-    // preload recipe shopping list scene
-    var recipeShoppingListInterface = FXML.load(RecipeShoppingListCtrl.class, "client", "scenes", "RecipeShoppingList.fxml");
-    var recipeShoppingListScene = new Scene(recipeShoppingListInterface.getValue());
+        // preload recipe shopping list scene
+        var recipeShoppingListInterface = 
+            FXML.load(RecipeShoppingListCtrl.class, "client", "scenes", "RecipeShoppingList.fxml");
+        var recipeShoppingListScene = new Scene(recipeShoppingListInterface.getValue());
 
-    // preload nutritional values scene
-    var nutritionInterface = FXML.load(NutritionalValueCtrl.class, "client", "scenes", "NutrionalValueInterface.fxml");
-    var nutritionScene = new Scene(nutritionInterface.getValue());
+        // preload nutritional values scene
+        var nutritionInterface = 
+            FXML.load(NutritionalValueCtrl.class, "client", "scenes", "NutrionalValueInterface.fxml");
+        var nutritionScene = new Scene(nutritionInterface.getValue());
 
         //preload recipe add scene
         var recipeAddInterface
@@ -102,21 +105,20 @@ public class Main extends Application {
         var editTitleScene = new Scene(editTitleInterface.getValue());
         var editTitleCtrl = editTitleInterface.getKey();
 
-    // add stylesheets if needed
-    String cssPath = getClass().getResource("/client/scenes/FoodPal.css").toExternalForm();
-    String cssPathNutri = getClass().getResource("/client/scenes/NutritionalValue.css").toExternalForm();
-    String cssPathRecipe = getClass().getResource("/client/scenes/AddRecipeInterface.css").toExternalForm();
+        // add stylesheets if needed
+        String cssPath = getClass().getResource("/client/scenes/FoodPal.css").toExternalForm();
+        String cssPathNutri = getClass().getResource("/client/scenes/NutritionalValue.css").toExternalForm();
+        String cssPathRecipe = getClass().getResource("/client/scenes/AddRecipeInterface.css").toExternalForm();
 
+        mainUserInterfaceScene.getStylesheets().add(cssPath);
+        nutritionScene.getStylesheets().add(cssPathNutri);
+        recipeAddScene.getStylesheets().add(cssPathRecipe);
+        recipeIngredientScene.getStylesheets().add(cssPathRecipe);
+        shoppingListScene.getStylesheets().add(cssPathNutri);
+        recipeShoppingListScene.getStylesheets().add(cssPathNutri);
 
-    mainUserInterfaceScene.getStylesheets().add(cssPath);
-    nutritionScene.getStylesheets().add(cssPathNutri);
-    recipeAddScene.getStylesheets().add(cssPathRecipe);
-    recipeIngredientScene.getStylesheets().add(cssPathRecipe);
-    shoppingListScene.getStylesheets().add(cssPathNutri);
-    recipeShoppingListScene.getStylesheets().add(cssPathNutri);
-
-    primaryStage.setMinWidth(600);
-    primaryStage.setMinHeight(500);
+        primaryStage.setMinWidth(600);
+        primaryStage.setMinHeight(500);
 
         Font.loadFont(getClass().getResourceAsStream("/client/scenes/CascadiaCode-VariableFont_wght.ttf"), 12);
 
@@ -124,9 +126,10 @@ public class Main extends Application {
         primaryStage.setTitle("FoodPal");
         primaryStage.show();
 
-    // pass both scenes into controller
-    var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-    mainCtrl.initScenes(primaryStage, mainUserInterfaceScene, nutritionScene, recipeAddScene, recipeIngredientScene, recipeIngredientCtrl, editTitleScene, shoppingListScene, recipeShoppingListScene);
+        // pass both scenes into controller
+        var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+        mainCtrl.initScenes(primaryStage, mainUserInterfaceScene, nutritionScene, recipeAddScene, 
+            recipeIngredientScene, recipeIngredientCtrl, editTitleScene, shoppingListScene, recipeShoppingListScene);
 
         System.out.println("Window opened with width: " + primaryStage.getWidth()
                 + " and height: " + primaryStage.getHeight());
