@@ -1,14 +1,14 @@
-package server;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+package server.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-import server.RecipeRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import commons.Recipe;
+import server.database.RecipeRepository;
 
 @Service
 public class RecipeService {

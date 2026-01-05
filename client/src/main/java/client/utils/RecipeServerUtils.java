@@ -2,8 +2,9 @@ package client.utils;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
-import com.google.inject.Inject;
 import commons.Recipe;
+import commons.RecipeIngredientKey;
+import commons.RecipeIngredient;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.*;
 import jakarta.ws.rs.core.*;
@@ -21,7 +22,8 @@ public class RecipeServerUtils {
     private static final int HTTP_CREATED = 201;
     private static final int HTTP_NOT_FOUND = 404;
 
-    private static final String server = ConfigService.getConfig().getServerUrl(); // The server url from the config.json
+    // The server url from the config.json
+    private static final String server = ConfigService.getConfig().getServerUrl();
 
     private final Client client;
     private final String serverUrl;
@@ -163,25 +165,148 @@ public class RecipeServerUtils {
     public boolean deleteRecipe(Long id)
         throws ProcessingException, NoSuchElementException {
         try (
-            Response response = client
-                .target(serverUrl + "api/v1/recipes/" + id)
-                .request(APPLICATION_JSON)
-                .delete()
+                Response response = client
+                        .target(serverUrl + "api/v1/recipes/" + id)
+                        .request(APPLICATION_JSON)
+                        .delete()
         ) {
             if (response.getStatus() == HTTP_OK) {
                 return true;
             } else if (response.getStatus() == HTTP_NOT_FOUND) {
                 throw new NoSuchElementException(
-                    "Recipe with id " + id + " not found"
+                        "Recipe with id " + id + " not found"
                 );
             } else {
                 throw new ProcessingException(
-                    "Failed to delete recipe " +
-                        id +
-                        ", HTTP " +
-                        response.getStatus()
+                        "Failed to delete recipe " +
+                                id +
+                                ", HTTP " +
+                                response.getStatus()
                 );
             }
+        }
+    }
+
+    // RECIPE INGREDIENT ENDPOINTS
+    /**
+     * Creates a new RecipeIngredient on the server.
+     */
+    public RecipeIngredientKey createRecipeIngredient(RecipeIngredient recipeIngredient) throws ProcessingException {
+        try (Response response = client
+                .target(serverUrl + "api/v1/recipes/ingredients")
+                .request(APPLICATION_JSON)
+                .post(Entity.json(recipeIngredient))) {
+
+            if (response.getStatus() == HTTP_CREATED) {
+                return response.readEntity(RecipeIngredientKey.class);
+            }
+
+            throw new ProcessingException(
+                    "Failed to create recipe ingredient, HTTP "
+                            + response.getStatus());
+        }
+    }
+
+    /**
+     * Gets all RecipeIngredients for a specific recipe.
+     */
+    public List<RecipeIngredient> getRecipeIngredients(Long recipeId)
+            throws ProcessingException {
+
+        try (Response response = client
+                .target(serverUrl + "api/v1/recipes/" + recipeId + "/ingredients")
+                .request(APPLICATION_JSON)
+                .get()) {
+
+            if (response.getStatus() == HTTP_OK) {
+                return response.readEntity(
+                        new GenericType<List<RecipeIngredient>>() {});
+            }
+
+            throw new ProcessingException(
+                    "Failed to get recipe ingredients for recipe "
+                            + recipeId + ", HTTP " + response.getStatus());
+        }
+    }
+
+    /**
+     * Gets all RecipeIngredients from the database.
+     */
+    public List<RecipeIngredient> getAllRecipeIngredients()
+            throws ProcessingException {
+
+        try (Response response = client
+                .target(serverUrl + "api/v1/recipes/ingredients")
+                .request(APPLICATION_JSON)
+                .get()) {
+
+            if (response.getStatus() == HTTP_OK) {
+                return response.readEntity(
+                        new GenericType<List<RecipeIngredient>>() {});
+            }
+
+            throw new ProcessingException(
+                    "Failed to get all recipe ingredients, HTTP "
+                            + response.getStatus());
+        }
+    }
+
+    /**
+     * Deletes a RecipeIngredient from a recipe.
+     */
+    public RecipeIngredientKey deleteRecipeIngredient(
+            Long recipeId,
+            Long ingredientId)
+            throws ProcessingException, NoSuchElementException {
+
+        try (Response response = client
+                .target(serverUrl + "api/v1/recipes/ingredients/"
+                        + recipeId + "/" + ingredientId)
+                .request(APPLICATION_JSON)
+                .delete()) {
+
+            if (response.getStatus() == HTTP_OK) {
+                return response.readEntity(RecipeIngredientKey.class);
+            }
+
+            if (response.getStatus() == HTTP_NOT_FOUND) {
+                throw new NoSuchElementException(
+                        "RecipeIngredient not found");
+            }
+
+            throw new ProcessingException(
+                    "Failed to delete recipe ingredient, HTTP "
+                            + response.getStatus());
+        }
+    }
+
+    /**
+     * Updates an existing RecipeIngredient.
+     */
+    public RecipeIngredientKey updateRecipeIngredient(
+            Long recipeId,
+            Long ingredientId,
+            RecipeIngredient recipeIngredient)
+            throws ProcessingException, NoSuchElementException {
+
+        try (Response response = client
+                .target(serverUrl + "api/v1/recipes/ingredients/"
+                        + recipeId + "/" + ingredientId)
+                .request(APPLICATION_JSON)
+                .put(Entity.json(recipeIngredient))) {
+
+            if (response.getStatus() == HTTP_OK) {
+                return response.readEntity(RecipeIngredientKey.class);
+            }
+
+            if (response.getStatus() == HTTP_NOT_FOUND) {
+                throw new NoSuchElementException(
+                        "RecipeIngredient not found");
+            }
+
+            throw new ProcessingException(
+                    "Failed to update recipe ingredient, HTTP "
+                            + response.getStatus());
         }
     }
 }

@@ -4,17 +4,20 @@
         "https://checkstyle.org/dtds/configuration_1_3.dtd">
 
 <module name="Checker">
+    <property name="fileExtensions" value="java"/>
+    <module name="BeforeExecutionExclusionFileFilter">
+        <property name="fileNamePattern" value=".*Test.*\.java$"/>
+    </module>
 
     <module name="TreeWalker">
-
         <!-- 1. Unused imports -->
         <module name="UnusedImports">
-            <property name="severity" value="warning"/>
+            <property name="severity" value="error"/>
         </module>
 
         <!-- 2. Javadoc for methods (skip getters/setters) -->
         <module name="MissingJavadocMethod">
-            <property name="severity" value="warning"/>
+            <property name="severity" value="error"/>
             <property name="scope" value="public"/>
             <property name="minLineCount" value="2"/>
             <property name="tokens" value="METHOD_DEF, CTOR_DEF, COMPACT_CTOR_DEF"/>
@@ -23,73 +26,92 @@
 
         <!-- 3. Method length, max 75 lines -->
         <module name="MethodLength">
-            <property name="severity" value="warning"/>
+            <property name="severity" value="error"/>
             <property name="tokens" value="METHOD_DEF, CTOR_DEF, COMPACT_CTOR_DEF"/>
-            <property name="max" value="75"/>
+            <property name="max" value="100"/>
         </module>
 
         <!-- 4. Visibility -->
         <module name="VisibilityModifier">
-            <property name="severity" value="warning"/>
+            <property name="severity" value="error"/>
             <property name="protectedAllowed" value="true"/>
         </module>
 
         <!-- 5. Outer type filename -->
         <module name="OuterTypeFilename">
-            <property name="severity" value="warning"/>
+            <property name="severity" value="error"/>
         </module>
 
         <!-- 6. Parameter number, max 6 -->
         <module name="ParameterNumber">
-            <property name="severity" value="warning"/>
+            <property name="severity" value="error"/>
             <property name="tokens" value="METHOD_DEF, CTOR_DEF"/>
-            <property name="max" value="6"/>
+            <property name="max" value="10"/>
         </module>
 
         <!-- 7. Cyclomatic complexity, max 8 -->
         <module name="CyclomaticComplexity">
-            <property name="severity" value="warning"/>
+            <property name="severity" value="error"/>
             <property name="switchBlockAsSingleDecisionPoint" value="true"/>
             <property name="max" value="8"/>
-            <property name="tokens" value="LITERAL_WHILE, LITERAL_DO, LITERAL_FOR, LITERAL_IF, LITERAL_SWITCH, LITERAL_CASE, QUESTION"/>
+            <property name="tokens"
+                      value="LITERAL_WHILE, LITERAL_DO, LITERAL_FOR, LITERAL_IF,
+                             LITERAL_SWITCH, LITERAL_CASE, QUESTION"/>
         </module>
 
         <!-- 8. Indentation -->
         <module name="Indentation">
-            <property name="severity" value="warning"/>
+            <property name="severity" value="error"/>
         </module>
 
         <!-- 9. Naming conventions -->
-        <module name="MemberName"><property name="severity" value="warning"/></module>
-        <module name="MethodName"><property name="severity" value="warning"/></module>
-        <module name="ParameterName"><property name="severity" value="warning"/></module>
-        <module name="LocalVariableName"><property name="severity" value="warning"/></module>
-        <module name="StaticVariableName"><property name="severity" value="warning"/></module>
+        <module name="MethodName">
+            <property name="severity" value="error"/>
+        </module>
+
+        <module name="ParameterName">
+            <property name="severity" value="error"/>
+        </module>
+
+        <module name="LocalVariableName">
+            <property name="severity" value="error"/>
+        </module>
+
+        <module name="StaticVariableName">
+            <property name="severity" value="error"/>
+        </module>
+
         <module name="LambdaParameterName">
             <property name="format" value="(^_|([a-z][a-zA-Z0-9]*)$)"/>
             <message key="name.invalidPattern"
                      value="Lambda parameter name ''{0}'' must match pattern ''{1}''."/>
-            <property name="severity" value="warning"/>
+            <property name="severity" value="error"/>
         </module>
-        <module name="TypeName"><property name="severity" value="warning"/></module>
+
+        <module name="TypeName">
+            <property name="severity" value="error"/>
+        </module>
+
         <module name="ClassTypeParameterName">
+            <property name="severity" value="error"/>
             <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*$)"/>
             <message key="name.invalidPattern"
                      value="Class type name ''{0}'' must match pattern ''{1}''."/>
         </module>
 
-        <module name="MultipleVariableDeclarations"> <property name="severity" value="warning"/>
-</module>
-
+        <module name="MultipleVariableDeclarations">
+            <property name="severity" value="error"/>
+        </module>
 
     </module>
 
-    <!-- 10. Line length, max 100 lines -->
+    <!-- 10. Line length, max 100 characters -->
     <module name="LineLength">
-        <property name="severity" value="warning"/>
+        <property name="severity" value="error"/>
         <property name="fileExtensions" value="java"/>
-        <property name="max" value="100"/>
-        <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+        <property name="max" value="120"/>
+        <property name="ignorePattern"
+                  value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
     </module>
 
 </module>

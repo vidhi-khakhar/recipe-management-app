@@ -37,32 +37,37 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
-	private static final Injector INJECTOR = createInjector(new MyModule());
-	private static final MyFXML FXML = new MyFXML(INJECTOR);
+    private static final Injector INJECTOR = createInjector(new MyModule());
+    private static final MyFXML FXML = new MyFXML(INJECTOR);
 
-	public static void main(String[] args) throws URISyntaxException, IOException {
-		launch();
-	}
-
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-
-    // Filepath for the config.json
-    String configPath = "client/config.json";
-
-    // Check whether the user has entered their own directory for the config file
-    var args = getParameters().getRaw();
-    for (int i = 0; i < args.size(); i++) {
-        if ("--cfg".equals(args.get(i)) && i + 1 < args.size()) {
-            configPath = args.get(i + 1);
-        }
+    public static void main(String[] args) throws URISyntaxException, IOException {
+        launch();
     }
 
-    ConfigService.setConfigPath(configPath);
+    /**
+     * Starts the JavaFX application by initializing the main window and scenes.
+     * @param primaryStage the primary stage for this application
+     * @throws Exception if an error occurs during initialization
+     */
+    @Override
+    public void start(Stage primaryStage) throws Exception {
 
-    Config config = ConfigService.getConfig();
+        // Filepath for the config.json
+        String configPath = "client/config.json";
 
-    System.out.println("Using server: " + config.getServerUrl()); // Feedback to see which server (url) we are using
+        // Check whether the user has entered their own directory for the config file
+        var args = getParameters().getRaw();
+        for (int i = 0; i < args.size(); i++) {
+            if ("--cfg".equals(args.get(i)) && i + 1 < args.size()) {
+                configPath = args.get(i + 1);
+            }
+        }
+
+        ConfigService.setConfigPath(configPath);
+
+        Config config = ConfigService.getConfig();
+
+        System.out.println("Using server: " + config.getServerUrl()); // Feedback to see which server (url) we are using
 
     var mainUserInterface = FXML.load(MainCtrl.class, "client", "scenes", "MainUserInterface.fxml");
     var mainUserInterfaceScene = new Scene(mainUserInterface.getValue());
@@ -79,20 +84,23 @@ public class Main extends Application {
     var nutritionInterface = FXML.load(NutritionalValueCtrl.class, "client", "scenes", "NutrionalValueInterface.fxml");
     var nutritionScene = new Scene(nutritionInterface.getValue());
 
-    //preload recipe add scene
-    var recipeAddInterface = FXML.load(AddButtonCtrl.class, "client", "scenes", "AddRecipeInterface.fxml");
-    var recipeAddScene = new Scene(recipeAddInterface.getValue());
-    var recipeAddCtrl = recipeAddInterface.getKey(); // The instance of the controller
+        //preload recipe add scene
+        var recipeAddInterface
+                = FXML.load(AddButtonCtrl.class, "client", "scenes", "AddRecipeInterface.fxml");
+        var recipeAddScene = new Scene(recipeAddInterface.getValue());
+        var recipeAddCtrl = recipeAddInterface.getKey(); // The instance of the controller
 
-    // Load AddRecipeIngredientScene
-    var recipeIngredientInterface = FXML.load(AddRecipeIngredientCtrl.class, "client", "scenes", "AddRecipeIngredientScene.fxml");
-    var recipeIngredientScene = new Scene(recipeIngredientInterface.getValue());
-    var recipeIngredientCtrl = recipeIngredientInterface.getKey();
+        // Load AddRecipeIngredientScene
+        var recipeIngredientInterface
+                = FXML.load(AddRecipeIngredientCtrl.class, "client", "scenes", "AddRecipeIngredientScene.fxml");
+        var recipeIngredientScene = new Scene(recipeIngredientInterface.getValue());
+        var recipeIngredientCtrl = recipeIngredientInterface.getKey();
 
-    // Load EditTitleScene
-    var editTitleInterface = FXML.load(EditTitleCtrl.class, "client", "scenes", "EditTitleScene.fxml");
-    var editTitleScene = new Scene(editTitleInterface.getValue());
-    var editTitleCtrl = editTitleInterface.getKey();
+        // Load EditTitleScene
+        var editTitleInterface
+                = FXML.load(EditTitleCtrl.class, "client", "scenes", "EditTitleScene.fxml");
+        var editTitleScene = new Scene(editTitleInterface.getValue());
+        var editTitleCtrl = editTitleInterface.getKey();
 
     // add stylesheets if needed
     String cssPath = getClass().getResource("/client/scenes/FoodPal.css").toExternalForm();
@@ -110,18 +118,18 @@ public class Main extends Application {
     primaryStage.setMinWidth(600);
     primaryStage.setMinHeight(500);
 
-    Font.loadFont(getClass().getResourceAsStream("/client/scenes/CascadiaCode-VariableFont_wght.ttf"), 12);
+        Font.loadFont(getClass().getResourceAsStream("/client/scenes/CascadiaCode-VariableFont_wght.ttf"), 12);
 
-    primaryStage.setScene(mainUserInterfaceScene);
-    primaryStage.setTitle("FoodPal");
-    primaryStage.show();
+        primaryStage.setScene(mainUserInterfaceScene);
+        primaryStage.setTitle("FoodPal");
+        primaryStage.show();
 
     // pass both scenes into controller
     var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
     mainCtrl.initScenes(primaryStage, mainUserInterfaceScene, nutritionScene, recipeAddScene, recipeIngredientScene, recipeIngredientCtrl, editTitleScene, shoppingListScene, recipeShoppingListScene);
 
-    System.out.println("Window opened with width: " + primaryStage.getWidth() +
-                " and height: " + primaryStage.getHeight());
+        System.out.println("Window opened with width: " + primaryStage.getWidth()
+                + " and height: " + primaryStage.getHeight());
 
         primaryStage.widthProperty().addListener((obs, oldWidth, newWidth) -> {
             System.out.println("Window width changed from " + oldWidth + " to " + newWidth);
@@ -131,6 +139,5 @@ public class Main extends Application {
             System.out.println("Window height changed from " + oldHeight + " to " + newHeight);
         });
 
-
-	}
+    }
 }
