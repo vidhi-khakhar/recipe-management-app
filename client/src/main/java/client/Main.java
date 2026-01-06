@@ -28,6 +28,7 @@ import client.scenes.AddRecipeIngredientCtrl;
 import client.scenes.EditTitleCtrl;
 import client.scenes.MainCtrl;
 import client.scenes.NutritionalValueCtrl;
+import client.scenes.RecipeShoppingListCtrl;
 import client.scenes.ShoppingListCtrl;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -45,6 +46,7 @@ public class Main extends Application {
 
     /**
      * Starts the JavaFX application by initializing the main window and scenes.
+     *
      * @param primaryStage the primary stage for this application
      * @throws Exception if an error occurs during initialization
      */
@@ -68,19 +70,22 @@ public class Main extends Application {
 
         System.out.println("Using server: " + config.getServerUrl()); // Feedback to see which server (url) we are using
 
-        var mainUserInterface
-                = FXML.load(MainCtrl.class, "client", "scenes", "MainUserInterface.fxml");
+        var mainUserInterface = FXML.load(MainCtrl.class, "client", "scenes", "MainUserInterface.fxml");
         var mainUserInterfaceScene = new Scene(mainUserInterface.getValue());
 
-        // preload nutritional values scene
-        var nutritionInterface
-                = FXML.load(NutritionalValueCtrl.class, "client", "scenes", "NutrionalValueInterface.fxml");
-        var nutritionScene = new Scene(nutritionInterface.getValue());
-
         // preload shopping list scene
-        var shoppingListInterface
-                = FXML.load(ShoppingListCtrl.class, "client", "scenes", "ShoppingListInterface.fxml");
+        var shoppingListInterface = FXML.load(ShoppingListCtrl.class, "client", "scenes", "ShoppingListInterface.fxml");
         var shoppingListScene = new Scene(shoppingListInterface.getValue());
+
+        // preload recipe shopping list scene
+        var recipeShoppingListInterface = 
+            FXML.load(RecipeShoppingListCtrl.class, "client", "scenes", "RecipeShoppingList.fxml");
+        var recipeShoppingListScene = new Scene(recipeShoppingListInterface.getValue());
+
+        // preload nutritional values scene
+        var nutritionInterface = 
+            FXML.load(NutritionalValueCtrl.class, "client", "scenes", "NutrionalValueInterface.fxml");
+        var nutritionScene = new Scene(nutritionInterface.getValue());
 
         //preload recipe add scene
         var recipeAddInterface
@@ -108,8 +113,9 @@ public class Main extends Application {
         mainUserInterfaceScene.getStylesheets().add(cssPath);
         nutritionScene.getStylesheets().add(cssPathNutri);
         recipeAddScene.getStylesheets().add(cssPathRecipe);
-        recipeIngredientScene.getStylesheets().add(cssPath);
+        recipeIngredientScene.getStylesheets().add(cssPathRecipe);
         shoppingListScene.getStylesheets().add(cssPathNutri);
+        recipeShoppingListScene.getStylesheets().add(cssPathNutri);
 
         primaryStage.setMinWidth(600);
         primaryStage.setMinHeight(500);
@@ -122,9 +128,8 @@ public class Main extends Application {
 
         // pass both scenes into controller
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-        mainCtrl.initScenes(primaryStage, mainUserInterfaceScene, nutritionScene, 
-            recipeAddScene, recipeIngredientScene, recipeIngredientCtrl, 
-            editTitleScene, shoppingListScene);
+        mainCtrl.initScenes(primaryStage, mainUserInterfaceScene, nutritionScene, recipeAddScene, 
+            recipeIngredientScene, recipeIngredientCtrl, editTitleScene, shoppingListScene, recipeShoppingListScene);
 
         System.out.println("Window opened with width: " + primaryStage.getWidth()
                 + " and height: " + primaryStage.getHeight());

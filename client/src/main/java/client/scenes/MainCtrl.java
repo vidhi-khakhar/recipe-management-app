@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import commons.RecipeIngredientKey;
 import org.apache.commons.io.FileUtils;
 
 import com.google.inject.Inject;
@@ -30,6 +29,7 @@ import client.RecipeFormatter;
 import client.utils.RecipeServerUtils;
 import commons.Recipe;
 import commons.RecipeIngredient;
+import commons.RecipeIngredientKey;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -51,22 +51,16 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.apache.commons.io.FileUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 public class MainCtrl {
 
     private Stage primaryStage;
     private Scene nutritionScene;
+    private Scene shoppingListScene;
     private Scene recipeAddScene;
     private Scene addRecipeIngredientScene;
     private Scene editTitleScene;
-    private Scene shoppingListScene;
+    private Scene recipeShoppingListScene;
 
     private AddRecipeIngredientCtrl addRecipeIngredientCtrl;
 
@@ -86,14 +80,15 @@ public class MainCtrl {
      */
     public void initScenes(Stage primaryStage, Scene mainUserInterfaceScene, Scene nutritionScene,
             Scene recipeAddScene, Scene addRecipeIngredientScene, AddRecipeIngredientCtrl addRecipeIngredientCtrl,
-            Scene editTitleScene, Scene shoppingListScene) {
+            Scene editTitleScene, Scene shoppingListScene, Scene recipeShoppingListScene) {
         this.primaryStage = primaryStage;
-        this.nutritionScene = nutritionScene; // store it for later
-        this.recipeAddScene = recipeAddScene; // store it for later
+        this.nutritionScene = nutritionScene;
+        this.recipeAddScene = recipeAddScene; 
         this.addRecipeIngredientScene = addRecipeIngredientScene;
         this.addRecipeIngredientCtrl = addRecipeIngredientCtrl;
-        this.shoppingListScene = shoppingListScene;
         this.editTitleScene = editTitleScene;
+        this.shoppingListScene = shoppingListScene;
+        this.recipeShoppingListScene = recipeShoppingListScene;
 
         primaryStage.show();
     }
@@ -662,8 +657,26 @@ public class MainCtrl {
     }
 
     /**
-     * Makes sure the window with the add recipe functionality is opened once
-     * the Add button is pressed.
+     * Makes sure the recipe shopping list window is opened once the
+     * shopping list button is pressed
+     */
+    @FXML
+    void showRecipeShoppingWindow() {
+        if (recipeShoppingListScene == null) {
+            System.err.println("Recipe shopping list scene not initialized!");
+            return;
+        }
+
+        Stage secondaryStage = new Stage();
+        secondaryStage.setTitle("Recipe Shopping List");
+        secondaryStage.setScene(recipeShoppingListScene);
+        secondaryStage.initOwner(primaryStage); // makes it modal to main window if desired
+        secondaryStage.show();
+    }
+
+    /**
+     * Makes sure the window with the add recipe functionality is opened once the
+     * Add button is pressed.
      */
     @FXML
     void showAddRecipeWindow() {
@@ -775,6 +788,9 @@ public class MainCtrl {
 
     @FXML
     private Button addRecipeButton;
+
+    @FXML
+    private Button recipeShoppingButton;
 
     @FXML
     private Button editItemButton;
