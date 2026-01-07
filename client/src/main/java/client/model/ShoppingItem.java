@@ -4,63 +4,75 @@ import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import commons.Ingredient;
 import commons.Unit;
 
 /**
  * Represents a single item in the shopping list.
- * Contains the ingredient and source recipe
+ * This is a client-side snapshot and is NOT linked to server data.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ShoppingItem implements Serializable {
 
-    private Ingredient ingredient;
-    private String sourceRecipeName;
+    /** Name of the item, e.g. "Milk", "Cereal" */
+    private String name;
+
+    /** Amount of the item */
     private double amount;
+
+    /** Unit of the amount */
     private Unit unit;
 
+    /** Name of the source recipe (null or "Manual" if added directly) */
+    private String sourceRecipeName;
+
     /**
-     * Default constructor
+     * Default constructor (required for JSON deserialization)
      */
     public ShoppingItem() {}
 
     /**
-     * Constructor with ingredient and source recipe name
-     * @param ingredient ingredient to set
-     * @param sourceRecipeName name of the recipe this item came from (can be null)
+     * Constructor for manually added shopping items
+     *
+     * @param name name of the item
      */
-    public ShoppingItem(Ingredient ingredient, String sourceRecipeName) {
-        this.ingredient = ingredient;
-        this.sourceRecipeName = sourceRecipeName;
+    public ShoppingItem(String name) {
+        this.name = name;
         this.amount = 0.0;
-        this.unit = Unit.G; // Default unit
+        this.unit = Unit.G; // default unit
+        this.sourceRecipeName = null;
     }
 
     /**
-     * Constructor with ingredient, amount and unit
-     * @param ingredient ingredient to set
-     * @param amount amount to set
-     * @param unit unit to set
-     * @param sourceRecipeName name of the recipe this item came from (can be null)
+     * Full constructor
+     *
+     * @param name name of the item
+     * @param amount amount
+     * @param unit unit
+     * @param sourceRecipeName source recipe name (can be null)
      */
-    public ShoppingItem(Ingredient ingredient, double amount, Unit unit, String sourceRecipeName) {
-        this.ingredient = ingredient;
+    public ShoppingItem(String name, double amount, Unit unit, String sourceRecipeName) {
+        this.name = name;
         this.amount = amount;
         this.unit = unit;
         this.sourceRecipeName = sourceRecipeName;
     }
 
     /**
-     * Get ingredient
-     * @return ingredient
+     * Get item name
      */
-    public Ingredient getIngredient() {
-        return ingredient;
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Set item name
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
      * Get amount
-     * @return amount
      */
     public double getAmount() {
         return amount;
@@ -68,7 +80,6 @@ public class ShoppingItem implements Serializable {
 
     /**
      * Set amount
-     * @param amount amount to set
      */
     public void setAmount(double amount) {
         this.amount = amount;
@@ -76,7 +87,6 @@ public class ShoppingItem implements Serializable {
 
     /**
      * Get unit
-     * @return unit
      */
     public Unit getUnit() {
         return unit;
@@ -84,23 +94,13 @@ public class ShoppingItem implements Serializable {
 
     /**
      * Set unit
-     * @param unit unit to set
      */
     public void setUnit(Unit unit) {
         this.unit = unit;
     }
 
     /**
-     * Set ingredient
-     * @param ingredient ingredient to set
-     */
-    public void setIngredient(Ingredient ingredient) {
-        this.ingredient = ingredient;
-    }
-
-    /**
      * Get source recipe name
-     * @return source recipe name (could be null tho)
      */
     public String getSourceRecipeName() {
         return sourceRecipeName;
@@ -108,21 +108,17 @@ public class ShoppingItem implements Serializable {
 
     /**
      * Set source recipe name
-     * @param sourceRecipeName source recipe name to set
      */
     public void setSourceRecipeName(String sourceRecipeName) {
         this.sourceRecipeName = sourceRecipeName;
     }
 
     /**
-     * String representation of ShoppingItem
-     * @return string representation
+     * String representation for UI / printing
      */
     @Override
     public String toString() {
-        if (ingredient != null) {
-            return String.format("%s (%.1f %s)", ingredient.getName(), amount, unit);
-        }
-        return "null";
+        String source = sourceRecipeName != null ? " (" + sourceRecipeName + ")" : "";
+        return String.format("%s (%.1f %s)%s", name, amount, unit, source);
     }
 }
