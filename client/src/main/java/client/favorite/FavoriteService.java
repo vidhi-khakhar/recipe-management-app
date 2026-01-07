@@ -32,11 +32,15 @@ public class FavoriteService {
      * Fetches the current favorite IDs from the config
      * @param idsFromConfig the current IDs in the config
      */
-    public void LoadFavoriteRecipes(Collection<Long> idsFromConfig) {
+    public void loadFavoriteRecipes(Collection<Long> idsFromConfig) {
         favoriteRecipeIds.clear();
         favoriteRecipeIds.addAll(idsFromConfig);
     }
 
+    /**
+     * Displays favorite IDs as an unmodifiable set (read-only)
+     * @return the set with favorited IDs
+     */
     public Set<Long> getFavoriteRecipeIDs() {
         return Collections.unmodifiableSet(favoriteRecipeIds); // Maybe overkill but why not
     }
@@ -62,7 +66,8 @@ public class FavoriteService {
             return; // TODO alert user that recipe can't be null
         }
 
-        boolean changed = favoriteRecipeIds.add(recipe.getRecipeId()); // Safety check: checks if correctly added to the list
+        // Safety check: checks if correctly added to the list
+        boolean changed = favoriteRecipeIds.add(recipe.getRecipeId());
         if (changed) {
             save();
         }
@@ -76,7 +81,9 @@ public class FavoriteService {
         if (recipe == null || recipe.getRecipeId() == null) {
             return;
         }
-        boolean changed = favoriteRecipeIds.remove(recipe.getRecipeId()); // Safety check: checks if correctly added to the list
+
+        // Safety check: checks if correctly added to the list
+        boolean changed = favoriteRecipeIds.remove(recipe.getRecipeId());
         if (changed) {
             save();
         }
