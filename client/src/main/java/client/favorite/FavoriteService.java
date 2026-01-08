@@ -26,6 +26,11 @@ public class FavoriteService {
     public FavoriteService() {
         this.configService = ConfigService.getInstance();
         this.config = ConfigService.getConfig();
+
+        // Checks whether a config exists and if there are any favorite recipes
+        if (config != null && config.getFavoriteRecipeIds() != null) {
+            favoriteRecipeIds.addAll(config.getFavoriteRecipeIds());
+        }
     }
 
     /**
