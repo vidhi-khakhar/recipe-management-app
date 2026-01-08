@@ -256,4 +256,9 @@ public class ShoppingListCtrl {
         emptyShoppingList.setVisible(true);
         notEmptyShoppingList.setVisible(false);
     }
+
+    void setShoppingListModelForTest(ShoppingList shoppingList) {
+        this.shoppingListModel = shoppingList;
+    }
+
 }
