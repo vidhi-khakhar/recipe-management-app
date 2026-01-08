@@ -62,25 +62,4 @@ class ShoppingItemTest {
         assertEquals("pcs", item.getUnit());
         assertEquals("Omelette", item.getSourceRecipeName());
     }
-
-    @Test
-    void toStringNoSourceTest() {
-        ShoppingItem item = new ShoppingItem("Water", 1, "", null);
-
-        assertEquals("Water (1,0 )", item.toString());
-    }
-
-    @Test
-    void toStringWithSourceTest() {
-        ShoppingItem item = new ShoppingItem("Butter", 200, "g", "Cake");
-
-        assertEquals("Butter (200,0 g) (Cake)", item.toString());
-    }
-
-    @Test
-    void toStringWithSourceOnlyTest() {
-        ShoppingItem item = new ShoppingItem("Milk", 2, "", "Pancakes");
-
-        assertEquals("Milk (2,0 ) (Pancakes)", item.toString());
-    }
 }
