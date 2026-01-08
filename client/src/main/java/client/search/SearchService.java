@@ -12,12 +12,24 @@ public class SearchService {
     private final RecipeCollection recipeCollection;
     private final FavoriteService favoriteService;
 
+
+    /**
+     * Creates a searchService
+     * @param recipeCollection the collection of recipes for the search service
+     * @param favoriteService the favoriteService for the local machine
+     */
     @Inject
     public SearchService(RecipeCollection recipeCollection, FavoriteService favoriteService) {
         this.recipeCollection = recipeCollection;
         this.favoriteService = favoriteService;
     }
 
+    /**
+     * Searches for the recipes that comply with the query, also depending on the favoritesOnly parameter
+     * @param query the query the user wrote
+     * @param favoritesOnly a boolean that states if the user wants to seach in favorites or no
+     * @return The list of recipes that correlate with the query
+     */
     public List<Recipe> search(String query, boolean favoritesOnly) {
 
         String[] terms = query.toLowerCase().split("\\s+");

@@ -3,7 +3,6 @@ package client.search;
 import commons.Recipe;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Represents an in-memory collection of Recipe objects.
@@ -103,6 +102,10 @@ public class RecipeCollection {
         recipes.clear();
     }
 
+    /**
+     * Updates the collection of recipes if any has been added, deleted or modified
+     * @param newRecipes the updated list of recipes
+     */
     public void update(ArrayList<Recipe> newRecipes){
         if(newRecipes.isEmpty()){
             return;
