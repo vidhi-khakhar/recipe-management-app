@@ -15,6 +15,7 @@
  */
 package client;
 
+import client.search.RecipeCollection;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
@@ -34,5 +35,7 @@ public class MyModule implements Module {
         binder.bind(MainCtrl.class).in(Scopes.SINGLETON);
         binder.bind(ServerUtils.class).in(Scopes.SINGLETON);
         binder.bind(IngredientServerUtils.class).in(Scopes.SINGLETON);
+        binder.bind(RecipeCollection.class).in(Scopes.SINGLETON);
+        binder.bind(searchService.class).in(Scopes.SINGLETON);
     }
 }

@@ -103,6 +103,14 @@ public class RecipeCollection {
         recipes.clear();
     }
 
+    public void update(ArrayList<Recipe> newRecipes){
+        if(newRecipes.isEmpty()){
+            return;
+        }
+        this.clear();
+        newRecipes.forEach(this::add);
+    }
+
 }
 
 
