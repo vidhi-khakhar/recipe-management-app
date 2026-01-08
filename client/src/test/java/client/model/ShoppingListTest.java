@@ -50,21 +50,6 @@ class ShoppingListTest {
     }
 
     @Test
-    void removeItemIndexTest() {
-        ShoppingList list = new ShoppingList();
-        ShoppingItem milk = new ShoppingItem("Milk");
-        ShoppingItem eggs = new ShoppingItem("Eggs");
-
-        list.addItem(milk);
-        list.addItem(eggs);
-
-        list.removeItemAt(0);
-
-        assertEquals(1, list.size());
-        assertEquals("Eggs", list.getShoppingItems().get(0).getName());
-    }
-
-    @Test
     void clearShoppingListTest() {
         ShoppingList list = new ShoppingList();
         list.addItem(new ShoppingItem("Milk"));

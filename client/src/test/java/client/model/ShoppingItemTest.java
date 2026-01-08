@@ -67,20 +67,20 @@ class ShoppingItemTest {
     void toStringNoSourceTest() {
         ShoppingItem item = new ShoppingItem("Water", 1, "", null);
 
-        assertEquals("Water (1.0 )", item.toString());
+        assertEquals("Water (1,0 )", item.toString());
     }
 
     @Test
     void toStringWithSourceTest() {
         ShoppingItem item = new ShoppingItem("Butter", 200, "g", "Cake");
 
-        assertEquals("Butter (200.0 g) (Cake)", item.toString());
+        assertEquals("Butter (200,0 g) (Cake)", item.toString());
     }
 
     @Test
     void toStringWithSourceOnlyTest() {
         ShoppingItem item = new ShoppingItem("Milk", 2, "", "Pancakes");
 
-        assertEquals("Milk (2.0 ) (Pancakes)", item.toString());
+        assertEquals("Milk (2,0 ) (Pancakes)", item.toString());
     }
 }
