@@ -1,5 +1,6 @@
-package commons;
+package client.search;
 
+import commons.Recipe;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
