@@ -4,8 +4,6 @@ import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import commons.Unit;
-
 /**
  * Represents a single item in the shopping list.
  * This is a client-side snapshot and is NOT linked to server data.
@@ -19,8 +17,8 @@ public class ShoppingItem implements Serializable {
     /** Amount of the item */
     private double amount;
 
-    /** Unit of the amount */
-    private Unit unit;
+    /** Unit of the amount, can be informal like "box" or formal like "g" */
+    private String unit;
 
     /** Name of the source recipe (null or "Manual" if added directly) */
     private String sourceRecipeName;
@@ -38,7 +36,7 @@ public class ShoppingItem implements Serializable {
     public ShoppingItem(String name) {
         this.name = name;
         this.amount = 0.0;
-        this.unit = Unit.G; // default unit
+        this.unit = ""; // default empty string for unit
         this.sourceRecipeName = null;
     }
 
@@ -47,13 +45,13 @@ public class ShoppingItem implements Serializable {
      *
      * @param name name of the item
      * @param amount amount
-     * @param unit unit
+     * @param unit unit (formal or informal)
      * @param sourceRecipeName source recipe name (can be null)
      */
-    public ShoppingItem(String name, double amount, Unit unit, String sourceRecipeName) {
+    public ShoppingItem(String name, double amount, String unit, String sourceRecipeName) {
         this.name = name;
         this.amount = amount;
-        this.unit = unit;
+        this.unit = unit != null ? unit : "";
         this.sourceRecipeName = sourceRecipeName;
     }
 
@@ -88,15 +86,15 @@ public class ShoppingItem implements Serializable {
     /**
      * Get unit
      */
-    public Unit getUnit() {
+    public String getUnit() {
         return unit;
     }
 
     /**
      * Set unit
      */
-    public void setUnit(Unit unit) {
-        this.unit = unit;
+    public void setUnit(String unit) {
+        this.unit = unit != null ? unit : "";
     }
 
     /**
@@ -119,6 +117,7 @@ public class ShoppingItem implements Serializable {
     @Override
     public String toString() {
         String source = sourceRecipeName != null ? " (" + sourceRecipeName + ")" : "";
-        return String.format("%s (%.1f %s)%s", name, amount, unit, source);
+        String unitPart = (unit != null && !unit.isEmpty()) ? unit : "";
+        return String.format("%s (%.1f %s)%s", name, amount, unitPart, source);
     }
 }
