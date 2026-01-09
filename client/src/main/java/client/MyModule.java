@@ -16,6 +16,8 @@
 package client;
 
 import client.favorite.FavoriteService;
+import client.scenes.AddRecipeIngredientCtrl;
+import client.utils.RecipeServerUtils;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
@@ -23,8 +25,14 @@ import com.google.inject.Scopes;
 import client.scenes.MainCtrl;
 import client.utils.IngredientServerUtils;
 import client.utils.ServerUtils;
+import com.google.inject.name.Names;
 
 public class MyModule implements Module {
+    private final String configPath;
+
+    public MyModule(String configPath) {
+        this.configPath = configPath;
+    }
 
     /**
      * Configures the dependency injection bindings for the application.
@@ -32,9 +40,15 @@ public class MyModule implements Module {
      */
     @Override
     public void configure(Binder binder) {
+        binder.bind(String.class)
+                .annotatedWith(Names.named("configPath"))
+                .toInstance(configPath);
+
         binder.bind(MainCtrl.class).in(Scopes.SINGLETON);
         binder.bind(ServerUtils.class).in(Scopes.SINGLETON);
         binder.bind(IngredientServerUtils.class).in(Scopes.SINGLETON);
         binder.bind(FavoriteService.class).in(Scopes.SINGLETON);
+        binder.bind(RecipeServerUtils.class).in(Scopes.SINGLETON);
+        binder.bind(AddRecipeIngredientCtrl.class);
     }
 }

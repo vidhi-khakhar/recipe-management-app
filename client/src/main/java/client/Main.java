@@ -37,9 +37,6 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
-    private static final Injector INJECTOR = createInjector(new MyModule());
-    private static final MyFXML FXML = new MyFXML(INJECTOR);
-
     public static void main(String[] args) throws URISyntaxException, IOException {
         launch();
     }
@@ -64,44 +61,47 @@ public class Main extends Application {
             }
         }
 
-        ConfigService.setConfigPath(configPath);
+        Injector injector = createInjector(new MyModule(configPath));
+        MyFXML fxml = new MyFXML(injector);
 
-        Config config = ConfigService.getConfig();
+        ConfigService configService = injector.getInstance(ConfigService.class);
+        Config config = configService.getConfig();
+
 
         System.out.println("Using server: " + config.getServerUrl()); // Feedback to see which server (url) we are using
 
-        var mainUserInterface = FXML.load(MainCtrl.class, "client", "scenes", "MainUserInterface.fxml");
+        var mainUserInterface = fxml.load(MainCtrl.class, "client", "scenes", "MainUserInterface.fxml");
         var mainUserInterfaceScene = new Scene(mainUserInterface.getValue());
 
         // preload shopping list scene
-        var shoppingListInterface = FXML.load(ShoppingListCtrl.class, "client", "scenes", "ShoppingListInterface.fxml");
+        var shoppingListInterface = fxml.load(ShoppingListCtrl.class, "client", "scenes", "ShoppingListInterface.fxml");
         var shoppingListScene = new Scene(shoppingListInterface.getValue());
 
         // preload recipe shopping list scene
         var recipeShoppingListInterface = 
-            FXML.load(RecipeShoppingListCtrl.class, "client", "scenes", "RecipeShoppingList.fxml");
+            fxml.load(RecipeShoppingListCtrl.class, "client", "scenes", "RecipeShoppingList.fxml");
         var recipeShoppingListScene = new Scene(recipeShoppingListInterface.getValue());
 
         // preload nutritional values scene
         var nutritionInterface = 
-            FXML.load(NutritionalValueCtrl.class, "client", "scenes", "NutrionalValueInterface.fxml");
+            fxml.load(NutritionalValueCtrl.class, "client", "scenes", "NutrionalValueInterface.fxml");
         var nutritionScene = new Scene(nutritionInterface.getValue());
 
         //preload recipe add scene
         var recipeAddInterface
-                = FXML.load(AddButtonCtrl.class, "client", "scenes", "AddRecipeInterface.fxml");
+                = fxml.load(AddButtonCtrl.class, "client", "scenes", "AddRecipeInterface.fxml");
         var recipeAddScene = new Scene(recipeAddInterface.getValue());
         var recipeAddCtrl = recipeAddInterface.getKey(); // The instance of the controller
 
         // Load AddRecipeIngredientScene
         var recipeIngredientInterface
-                = FXML.load(AddRecipeIngredientCtrl.class, "client", "scenes", "AddRecipeIngredientScene.fxml");
+                = fxml.load(AddRecipeIngredientCtrl.class, "client", "scenes", "AddRecipeIngredientScene.fxml");
         var recipeIngredientScene = new Scene(recipeIngredientInterface.getValue());
         var recipeIngredientCtrl = recipeIngredientInterface.getKey();
 
         // Load EditTitleScene
         var editTitleInterface
-                = FXML.load(EditTitleCtrl.class, "client", "scenes", "EditTitleScene.fxml");
+                = fxml.load(EditTitleCtrl.class, "client", "scenes", "EditTitleScene.fxml");
         var editTitleScene = new Scene(editTitleInterface.getValue());
         var editTitleCtrl = editTitleInterface.getKey();
 
@@ -127,7 +127,7 @@ public class Main extends Application {
         primaryStage.show();
 
         // pass both scenes into controller
-        var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+        var mainCtrl = injector.getInstance(MainCtrl.class);
         mainCtrl.initScenes(primaryStage, mainUserInterfaceScene, nutritionScene, recipeAddScene, 
             recipeIngredientScene, recipeIngredientCtrl, editTitleScene, shoppingListScene, recipeShoppingListScene);
 

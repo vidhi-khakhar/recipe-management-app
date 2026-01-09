@@ -33,7 +33,7 @@ public class FavoriteService {
     /**
      * Loads favorite IDs from the current config
      */
-    private void loadFromConfig() {
+    public void loadFromConfig() {
         Config config = configService.getConfig();
         if (config != null && config.getFavoriteRecipeIds() != null) {
             favoriteRecipeIds.clear();

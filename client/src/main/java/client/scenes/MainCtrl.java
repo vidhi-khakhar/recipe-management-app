@@ -71,6 +71,8 @@ public class MainCtrl {
     private final ObservableList<Recipe> recipesObservableList = FXCollections.observableArrayList();
     private Recipe selectedRecipe;
 
+    private ConfigService configService;
+
     /**
      * Initializes the scenes
      *
@@ -105,9 +107,10 @@ public class MainCtrl {
      * logic.
      */
     @Inject
-    public MainCtrl(RecipeServerUtils recipeServerUtils, FavoriteService favoriteService) {
+    public MainCtrl(RecipeServerUtils recipeServerUtils, FavoriteService favoriteService, ConfigService configService) {
         this.recipeServerUtils = recipeServerUtils;
         this.favoriteService = favoriteService;
+        this.configService = configService;
     }
 
     /**
@@ -322,9 +325,9 @@ public class MainCtrl {
      */
     @FXML
     private void refreshButtonClicked() {
-        ConfigService.reloadConfig(); // this makes sure the client has the up to date config
+        configService.reload(); // this makes sure the client has the up to date config
         loadRecipesFromDatabase();
-        favoriteService.reloadFromConfig();
+        favoriteService.loadFromConfig();
         sidebarList.refresh();
     }
 

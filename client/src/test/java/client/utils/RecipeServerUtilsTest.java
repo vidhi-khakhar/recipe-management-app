@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import client.config.ConfigService;
 import commons.Recipe;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.Client;
@@ -198,11 +199,6 @@ public class RecipeServerUtilsTest {
         assertEquals(1L, id);
     }
 
-    @Test
-    public void testDefaultConstructorCreatesClientAndUsesDefaultUrl() {
-        RecipeServerUtils defaultUtils = new RecipeServerUtils();
-        assertNotNull(defaultUtils);
-    }
 
     @Test
     public void testGetRecipeUnexpectedStatus() {

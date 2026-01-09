@@ -2,6 +2,7 @@ package client.utils;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
+import com.google.inject.Inject;
 import commons.Recipe;
 import commons.RecipeIngredientKey;
 import commons.RecipeIngredient;
@@ -22,17 +23,17 @@ public class RecipeServerUtils {
     private static final int HTTP_CREATED = 201;
     private static final int HTTP_NOT_FOUND = 404;
 
-    // The server url from the config.json
-    private static final String server = ConfigService.getConfig().getServerUrl();
-
+    private final ConfigService configService;
     private final Client client;
+
     private final String serverUrl;
 
-    /**
-     * Default constructor with default values
-     */
-    public RecipeServerUtils() {
-        this(ClientBuilder.newClient(new ClientConfig()), server);
+    @Inject
+    public RecipeServerUtils(ConfigService configService) {
+        this.configService = configService;
+        this.client = ClientBuilder.newClient(new ClientConfig());
+        this.serverUrl = configService.getConfig().getServerUrl()
+                .endsWith("/") ?  configService.getConfig().getServerUrl() : configService.getConfig().getServerUrl() + "/";
     }
 
     /**
@@ -40,9 +41,19 @@ public class RecipeServerUtils {
      * @param client the JAX-RS client
      * @param serverUrl the base URL of the server
      */
+    public RecipeServerUtils(Client client, String serverUrl, ConfigService configService) {
+        this.configService = configService;
+        this.client = client;
+        this.serverUrl = serverUrl.endsWith("/") ? serverUrl : serverUrl + "/";
+    }
+
+    /**
+     * Extra constructor for tests
+     */
     public RecipeServerUtils(Client client, String serverUrl) {
         this.client = client;
         this.serverUrl = serverUrl.endsWith("/") ? serverUrl : serverUrl + "/";
+        this.configService = null;
     }
 
     /**
