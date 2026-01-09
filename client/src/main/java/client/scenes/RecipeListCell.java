@@ -3,6 +3,7 @@ package client.scenes;
 import client.favorite.FavoriteService;
 import com.google.inject.Inject;
 import commons.Recipe;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -28,13 +29,24 @@ public class RecipeListCell extends ListCell<Recipe> {
         starButton.setOnAction(e -> {
             Recipe recipe = getItem();
             if (recipe != null) {
-                favoriteService.toggleFavorite(recipe);
-                getListView().refresh();
+                if(favoriteService.toggleFavorite(recipe)) {
+                    getListView().refresh();
+                }else{
+                    errorAlert();
+                }
             }
             e.consume();
         });
 
         layout.getChildren().addAll(titleLabel, starButton);
+    }
+
+    private void errorAlert() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Invalid Recipe");
+        alert.setHeaderText(null);
+        alert.setContentText("This recipe does not exist or has not been saved yet.");
+        alert.showAndWait();
     }
 
     @Override
