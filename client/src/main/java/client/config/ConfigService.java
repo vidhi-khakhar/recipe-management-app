@@ -11,10 +11,13 @@ import org.apache.commons.io.FileUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import client.model.ShoppingList;
+
 public class ConfigService {
 
-    // Makes the list readable
-    private final ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT); 
+    private final ObjectMapper mapper =
+        new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+
     private final File configFile;
 
     private static ConfigService instance;
@@ -23,25 +26,22 @@ public class ConfigService {
 
     /**
      * Creates a ConfigService that reads from and writes to the given file path.
-     * @param path the location of the configuration file
+     * @param path the file path for the config file
+     * @throws IOException if the file cannot be accessed
      */
     public ConfigService(String path) {
         this.configFile = new File(path);
     }
 
     /**
-     * Returns the singleton instance of ConfigService.
-     * Initializes the service on first access and loads the configuration.
-     * Throws a runtime exception if loading the config fails.
-     *
-     * @return the shared ConfigService instance
+     * Singleton access
      */
     public static ConfigService getInstance() {
-        if(instance == null){
+        if (instance == null) {
             instance = new ConfigService(configPath);
-            try{
+            try {
                 config = instance.load();
-            }catch(IOException e){
+            } catch (IOException e) {
                 throw new RuntimeException("Failed to load config", e);
             }
         }
@@ -67,7 +67,7 @@ public class ConfigService {
         configPath = path;
     }
 
-    /**
+     /**
      * Loads the configuration from disk, or creates a default one if no file exists.
      * @return the loaded or newly created Config
      * @throws IOException if reading the file fails
@@ -78,11 +78,18 @@ public class ConfigService {
         }
 
         String json = FileUtils.readFileToString(
-                configFile,
-                StandardCharsets.UTF_8
+            configFile,
+            StandardCharsets.UTF_8
         );
 
-        return mapper.readValue(json, Config.class);
+        Config loaded = mapper.readValue(json, Config.class);
+
+        // Safety: ensure shopping list always exists
+        if (loaded.getShoppingList() == null) {
+            loaded.setShoppingList(new ShoppingList());
+        }
+
+        return loaded;
     }
 
     /**
@@ -94,9 +101,9 @@ public class ConfigService {
         String json = mapper.writeValueAsString(config);
 
         FileUtils.writeStringToFile(
-                configFile,
-                json,
-                StandardCharsets.UTF_8
+            configFile,
+            json,
+            StandardCharsets.UTF_8
         );
     }
 
@@ -107,10 +114,10 @@ public class ConfigService {
      */
     private Config createDefault() throws IOException {
         Config config = new Config();
-        config.setServerUrl("http://localhost:8080"); // This is the Server URL
-        config.setFavoriteRecipeIds(new ArrayList<>()); // Empty list for the favorites
-        config.setLanguage(Locale.ENGLISH); // Default language is English
-        config.setShoppingListIds(new ArrayList<>()); // Empty list for the shopping list
+        config.setServerUrl("http://localhost:8080");
+        config.setFavoriteRecipeIds(new ArrayList<>());
+        config.setLanguage(Locale.ENGLISH);
+        config.setShoppingList(new ShoppingList()); // ✅ client-side list
 
         save(config);
         return config;

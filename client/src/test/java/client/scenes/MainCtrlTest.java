@@ -19,6 +19,9 @@ import client.favorite.FavoriteService;
 import client.utils.RecipeServerUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import client.search.SearchService;
+import client.favorite.FavoriteService;
+import client.search.RecipeCollection;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -28,11 +31,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class MainCtrlTest {
     private RecipeServerUtils recipeServerUtils;
     private FavoriteService favoriteService;
+    private SearchService searchService;
+    private RecipeCollection recipeCollection;
     private MainCtrl sut;
 
     @BeforeEach
     public void setup() {
-        sut = new MainCtrl(recipeServerUtils, favoriteService);
+        sut = new MainCtrl(recipeServerUtils, searchService, favoriteService, recipeCollection);
     }
 
     @Test

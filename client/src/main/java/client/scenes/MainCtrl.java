@@ -23,6 +23,9 @@ import java.util.Optional;
 
 import client.config.ConfigService;
 import client.favorite.FavoriteService;
+import client.search.RecipeCollection;
+import client.search.SearchService;
+import javafx.scene.input.KeyCode;
 import org.apache.commons.io.FileUtils;
 
 import com.google.inject.Inject;
@@ -69,6 +72,8 @@ public class MainCtrl {
     private final FavoriteService favoriteService;
     private final ObservableList<Recipe> recipesObservableList = FXCollections.observableArrayList();
     private Recipe selectedRecipe;
+    private final SearchService searchService;
+    private final RecipeCollection recipeCollection;
 
     /**
      * Initializes the scenes
@@ -104,9 +109,12 @@ public class MainCtrl {
      * logic.
      */
     @Inject
-    public MainCtrl(RecipeServerUtils recipeServerUtils, FavoriteService favoriteService) {
+    public MainCtrl(RecipeServerUtils recipeServerUtils, SearchService searchService,
+                    FavoriteService favoriteService, RecipeCollection recipeCollection) {
         this.recipeServerUtils = recipeServerUtils;
+        this.searchService = searchService;
         this.favoriteService = favoriteService;
+        this.recipeCollection = recipeCollection;
     }
 
     /**
@@ -135,7 +143,20 @@ public class MainCtrl {
                     }
                 });
 
+        //Listener for the searchBar
+        searchBar.textProperty().addListener((obs, oldText, newText) -> {
+            applySearch();
+        });
+
+        //Listener for esc key
+        searchBar.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ESCAPE) {
+                searchBar.clear();
+            }
+        });
+
         loadRecipesFromDatabase();
+
     }
 
 
@@ -149,12 +170,16 @@ public class MainCtrl {
                     = sidebarList.getSelectionModel().getSelectedItem();
 
             List<Recipe> recipesFromDB = recipeServerUtils.getAllRecipes();
-            recipesObservableList.setAll(recipesFromDB);
 
-            updateRecipeStackPane();
+            recipeCollection.update(recipesFromDB);
+
+            favoriteService.removeDeletedFavorites(recipesFromDB);
+            applySearch();
+
+
 
             if (!recipesObservableList.isEmpty()) {
-                if (previouslySelected != null) {
+                if (previouslySelected != null && recipesObservableList.contains(previouslySelected)) {
                     sidebarList.getSelectionModel().select(previouslySelected);
                 } else {
                     sidebarList.getSelectionModel().selectFirst();
@@ -294,14 +319,26 @@ public class MainCtrl {
      * it exists, otherwise it would print "Please enter a query."
      */
     @FXML
-    private void searchButtonClicked() {
+    private void applySearch() {
         String query = searchBar.getText();
-        if (query == null || query.isEmpty()) {
-            System.out.println("Please enter a query.");
-        } else {
-            System.out.println("Searching for: " + query);
-            // Actual functionality should be added here!
+        boolean searchFavorites;
+
+        if(favoriteS.getText() == "★"){
+            searchFavorites = true;
+        }else{
+            searchFavorites = false;
         }
+
+        List<Recipe> filtered = searchService.search(query, searchFavorites);
+
+        recipesObservableList.setAll(filtered);
+        updateRecipeStackPane();
+    }
+
+    @FXML
+    private void searchFavorites() {
+        favoriteS.setText("★");
+        applySearch();
     }
 
     /**
@@ -786,6 +823,9 @@ public class MainCtrl {
     private ListView<Recipe> sidebarList;
 
     @FXML
+    private Button favoriteS;
+
+    @FXML
     private Button addIngredientButton;
 
     @FXML
@@ -824,8 +864,6 @@ public class MainCtrl {
     @FXML
     private TextField searchBar;
 
-    @FXML
-    private Button searchButton;
 
     @FXML
     private Label titleRecipeLabel;
