@@ -22,8 +22,11 @@ import com.google.inject.Module;
 import com.google.inject.Scopes;
 
 import client.scenes.MainCtrl;
+import client.scenes.RecipeShoppingListCtrl;
 import client.utils.IngredientServerUtils;
 import client.utils.ServerUtils;
+import client.utils.RecipeServerUtils;
+import client.shopping.RecipeShoppingService;
 
 public class MyModule implements Module {
 
@@ -36,7 +39,11 @@ public class MyModule implements Module {
         binder.bind(MainCtrl.class).in(Scopes.SINGLETON);
         binder.bind(ServerUtils.class).in(Scopes.SINGLETON);
         binder.bind(IngredientServerUtils.class).in(Scopes.SINGLETON);
+        binder.bind(RecipeServerUtils.class).in(Scopes.SINGLETON);
         binder.bind(RecipeCollection.class).in(Scopes.SINGLETON);
         binder.bind(SearchService.class).in(Scopes.SINGLETON);
+        binder.bind(RecipeShoppingListCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(RecipeShoppingService.class).in(Scopes.SINGLETON);
+        binder.bind(client.favorite.FavoriteService.class).in(Scopes.SINGLETON);
     }
 }

@@ -128,8 +128,10 @@ public class Main extends Application {
 
         // pass both scenes into controller
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+        var recipeShoppingListCtrl = INJECTOR.getInstance(RecipeShoppingListCtrl.class);
         mainCtrl.initScenes(primaryStage, mainUserInterfaceScene, nutritionScene, recipeAddScene, 
-            recipeIngredientScene, recipeIngredientCtrl, editTitleScene, shoppingListScene, recipeShoppingListScene);
+            recipeIngredientScene, recipeIngredientCtrl, editTitleScene, shoppingListScene, 
+            recipeShoppingListScene, recipeShoppingListCtrl);
 
         System.out.println("Window opened with width: " + primaryStage.getWidth()
                 + " and height: " + primaryStage.getHeight());

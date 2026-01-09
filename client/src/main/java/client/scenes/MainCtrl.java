@@ -67,6 +67,7 @@ public class MainCtrl {
     private Scene recipeShoppingListScene;
 
     private AddRecipeIngredientCtrl addRecipeIngredientCtrl;
+    private RecipeShoppingListCtrl recipeShoppingListCtrl;
 
     private final RecipeServerUtils recipeServerUtils;
     private final ObservableList<Recipe> recipesObservableList = FXCollections.observableArrayList();
@@ -87,7 +88,8 @@ public class MainCtrl {
      */
     public void initScenes(Stage primaryStage, Scene mainUserInterfaceScene, Scene nutritionScene,
             Scene recipeAddScene, Scene addRecipeIngredientScene, AddRecipeIngredientCtrl addRecipeIngredientCtrl,
-            Scene editTitleScene, Scene shoppingListScene, Scene recipeShoppingListScene) {
+            Scene editTitleScene, Scene shoppingListScene, Scene recipeShoppingListScene, 
+            RecipeShoppingListCtrl recipeShoppingListCtrl) {
         this.primaryStage = primaryStage;
         this.nutritionScene = nutritionScene;
         this.recipeAddScene = recipeAddScene; 
@@ -96,6 +98,7 @@ public class MainCtrl {
         this.editTitleScene = editTitleScene;
         this.shoppingListScene = shoppingListScene;
         this.recipeShoppingListScene = recipeShoppingListScene;
+        this.recipeShoppingListCtrl = recipeShoppingListCtrl;
 
         primaryStage.show();
     }
@@ -702,15 +705,25 @@ public class MainCtrl {
      */
     @FXML
     void showRecipeShoppingWindow() {
-        if (recipeShoppingListScene == null) {
-            System.err.println("Recipe shopping list scene not initialized!");
+        if (recipeShoppingListScene == null || recipeShoppingListCtrl == null) {
+            System.err.println("Recipe shopping list scene or controller not initialized!");
+            return;
+        }
+
+        // Check if a recipe is selected
+        if (selectedRecipe == null) {
+            showError("Please select a recipe first");
             return;
         }
 
         Stage secondaryStage = new Stage();
-        secondaryStage.setTitle("Recipe Shopping List");
+        secondaryStage.setTitle("Recipe Shopping List - " + selectedRecipe.getTitle());
         secondaryStage.setScene(recipeShoppingListScene);
         secondaryStage.initOwner(primaryStage); // makes it modal to main window if desired
+        
+        // Initialize the controller with the selected recipe
+        recipeShoppingListCtrl.initializeWithRecipe(selectedRecipe);
+        
         secondaryStage.show();
     }
 
@@ -811,6 +824,19 @@ public class MainCtrl {
 
     public void refreshSidebarList() {
         sidebarList.refresh();
+    }
+
+    /**
+     * Shows an error message dialog.
+     * 
+     * @param message error message
+     */
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     public void updateTitleLabel(String title) {
