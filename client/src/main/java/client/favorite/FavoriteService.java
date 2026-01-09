@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import client.config.Config;
 import client.config.ConfigService;
 import commons.Recipe;
-import javafx.scene.control.Alert;
 
 /**
  * Manages the user's favorite recipes locally.
