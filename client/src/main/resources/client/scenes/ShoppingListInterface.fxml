@@ -8,10 +8,11 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="550.0" stylesheets="@NutritionalValue.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.ShoppingListCtrl">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="600.0" stylesheets="@NutritionalValue.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.ShoppingListCtrl">
    <children>
       <BorderPane AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
          <top>
@@ -82,18 +83,62 @@
                   </HBox>
                   <VBox prefHeight="229.0" prefWidth="534.0" VBox.vgrow="ALWAYS">
                      <children>
-                        <ScrollPane fx:id="shoppingScrollPane" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-                           <content>
-                              <VBox fx:id="shoppingList" prefHeight="179.0" prefWidth="535.0" />
-                           </content>
-                        </ScrollPane>
-                        <Button fx:id="addShoppingItemButton" mnemonicParsing="false" onAction="#addShoppingItem" prefHeight="21.0" prefWidth="48.0" styleClass="roundbutton" text="➕">
-                           <VBox.margin>
-                              <Insets top="5.0" />
-                           </VBox.margin>
-                        </Button>
+                        <StackPane prefHeight="249.0" prefWidth="584.0" VBox.vgrow="ALWAYS">
+                           <children>
+                              <AnchorPane fx:id="emptyShoppingList" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <children>
+                                    <VBox prefHeight="240.0" prefWidth="580.0">
+                                       <children>
+                                          <HBox prefHeight="114.0" prefWidth="316.0" VBox.vgrow="ALWAYS">
+                                             <VBox.margin>
+                                                <Insets />
+                                             </VBox.margin>
+                                          </HBox>
+                                          <HBox layoutX="10.0" layoutY="10.0" prefHeight="100.0" prefWidth="320.0" VBox.vgrow="SOMETIMES">
+                                             <children>
+                                                <VBox prefHeight="98.0" prefWidth="316.0" HBox.hgrow="ALWAYS">
+                                                   <children>
+                                                      <HBox prefHeight="42.0" prefWidth="318.0">
+                                                         <children>
+                                                            <HBox prefHeight="21.0" prefWidth="62.0" HBox.hgrow="ALWAYS" />
+                                                            <Label fx:id="noIngredientTitle" text="Shopping List is Empty!" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
+                                                            <HBox prefHeight="21.0" prefWidth="82.0" HBox.hgrow="ALWAYS" />
+                                                         </children>
+                                                      </HBox>
+                                                      <HBox prefHeight="100.0" prefWidth="200.0">
+                                                         <children>
+                                                            <HBox prefHeight="79.0" prefWidth="10.0" HBox.hgrow="ALWAYS" />
+                                                            <Label fx:id="noIngredientSubtitle" alignment="CENTER" contentDisplay="CENTER" text="Please add items to shopping list using add (+) button ⸜(｡˃ ᵕ ˂ )⸝♡" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
+                                                            <HBox layoutX="10.0" layoutY="10.0" prefHeight="79.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                                                         </children>
+                                                      </HBox>
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                          </HBox>
+                                          <HBox layoutX="10.0" layoutY="110.0" prefHeight="110.0" prefWidth="316.0" VBox.vgrow="ALWAYS" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </AnchorPane>
+                              <AnchorPane fx:id="notEmptyShoppingList" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <children>
+                                    <ScrollPane fx:id="shoppingScrollPane" VBox.vgrow="ALWAYS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <content>
+                                          <VBox fx:id="shoppingList" prefHeight="241.0" prefWidth="579.0" />
+                                       </content>
+                                    </ScrollPane>
+                                 </children>
+                              </AnchorPane>
+                           </children>
+                        </StackPane>
                      </children>
                   </VBox>
+                  <HBox prefHeight="40.0" prefWidth="584.0" VBox.vgrow="NEVER">
+                     <children>
+                        <Button fx:id="addShoppingItemButton" mnemonicParsing="false" onAction="#addShoppingItem" prefHeight="21.0" prefWidth="48.0" styleClass="roundbutton" text="➕" />
+                     </children>
+                  </HBox>
                </children>
                <BorderPane.margin>
                   <Insets left="8.0" right="8.0" />
