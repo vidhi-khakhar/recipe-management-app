@@ -52,6 +52,17 @@ public class ConfigService {
         return getInstance() != null ? config : null;
     }
 
+    /**
+     * Reloads the config by recalling the load() method.
+     */
+    public static void reloadConfig() {
+        try {
+            config = getInstance().load();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to reload config", e);
+        }
+    }
+
     public static void setConfigPath(String path) {
         configPath = path;
     }

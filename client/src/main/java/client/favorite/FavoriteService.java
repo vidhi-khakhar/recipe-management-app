@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import client.config.Config;
 import client.config.ConfigService;
 import commons.Recipe;
+import javafx.scene.control.Alert;
 
 /**
  * Manages the user's favorite recipes locally.
@@ -43,6 +44,16 @@ public class FavoriteService {
     }
 
     /**
+     * Reloads the current favorite IDs from the config
+     */
+    public void reloadFromConfig() {
+        Config newConfig = ConfigService.getConfig();
+        if (newConfig != null && newConfig.getFavoriteRecipeIds() != null) {
+            loadFavoriteRecipes(newConfig.getFavoriteRecipeIds());
+        }
+    }
+
+    /**
      * Displays favorite IDs as an unmodifiable set (read-only)
      * @return the set with favorited IDs
      */
@@ -67,7 +78,6 @@ public class FavoriteService {
      */
     public void addFavorite(Recipe recipe) {
         if(recipe == null || recipe.getRecipeId() == null) {
-            System.out.println("Recipe is not added to database or recipe does not exist");
             return; // TODO alert user that recipe can't be null
         }
 
