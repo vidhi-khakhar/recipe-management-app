@@ -53,10 +53,11 @@ public class ShoppingListCtrl {
         shoppingList.setPadding(new Insets(10, 15, 10, 15));
         shoppingList.setSpacing(8);
 
-        if (ConfigService.getConfig().getShoppingList() == null) {
-            ConfigService.getConfig().setShoppingList(new ShoppingList());
+        var config = ConfigService.getConfig();
+        if (config == null) {
+            throw new IllegalStateException("ConfigService returned null config");
         }
-        shoppingListModel = ConfigService.getConfig().getShoppingList();
+        shoppingListModel = config.getShoppingList();
 
         refreshUI();
     }
