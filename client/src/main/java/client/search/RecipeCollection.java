@@ -106,7 +106,8 @@ public class RecipeCollection {
      * Updates the collection of recipes if any has been added, deleted or modified
      * @param newRecipes the updated list of recipes
      */
-    public void update(ArrayList<Recipe> newRecipes){
+    public void update(List<Recipe> newRecipes){
+        Objects.requireNonNull(newRecipes, "Recipes must not be null");
         if(newRecipes.isEmpty()){
             return;
         }
