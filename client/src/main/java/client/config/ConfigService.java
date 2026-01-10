@@ -105,7 +105,9 @@ public class ConfigService {
         config.setLanguage(Locale.ENGLISH);
         config.setShoppingList(new ShoppingList());
 
+        this.config = config;
         save();
+
         return config;
     }
 }
