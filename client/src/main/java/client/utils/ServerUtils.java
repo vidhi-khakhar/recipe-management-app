@@ -17,7 +17,6 @@ package client.utils;
 
 import java.net.ConnectException;
 
-import client.favorite.FavoriteService;
 import com.google.inject.Inject;
 import org.glassfish.jersey.client.ClientConfig;
 

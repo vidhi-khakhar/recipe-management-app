@@ -28,12 +28,18 @@ public class RecipeServerUtils {
 
     private final String serverUrl;
 
+    /**
+     * Initializes the server utils with config and HTTP client.
+     * Ensures the server URL always ends with a slash.
+     * @param configService to be injected
+     */
     @Inject
     public RecipeServerUtils(ConfigService configService) {
         this.configService = configService;
         this.client = ClientBuilder.newClient(new ClientConfig());
-        this.serverUrl = configService.getConfig().getServerUrl()
-                .endsWith("/") ?  configService.getConfig().getServerUrl() : configService.getConfig().getServerUrl() + "/";
+        this.serverUrl = configService.getConfig().getServerUrl().endsWith("/")
+                ?  configService.getConfig().getServerUrl()
+                : configService.getConfig().getServerUrl() + "/";
     }
 
     /**
