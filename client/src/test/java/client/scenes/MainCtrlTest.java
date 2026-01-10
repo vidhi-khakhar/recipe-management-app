@@ -15,6 +15,7 @@
  */
 package client.scenes;
 
+import client.favorite.FavoriteService;
 import client.utils.RecipeServerUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,14 +30,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MainCtrlTest {
     private RecipeServerUtils recipeServerUtils;
-    private SearchService searchService;
     private FavoriteService favoriteService;
+    private SearchService searchService;
     private RecipeCollection recipeCollection;
     private MainCtrl sut;
 
     @BeforeEach
     public void setup() {
-        sut = new MainCtrl(recipeServerUtils, searchService, favoriteService,  recipeCollection);
+        sut = new MainCtrl(recipeServerUtils, searchService, favoriteService, recipeCollection);
     }
 
     @Test
