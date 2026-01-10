@@ -7,7 +7,6 @@ import client.config.Config;
 import client.config.ConfigService;
 import com.google.inject.Inject;
 import commons.Recipe;
-import javafx.scene.control.Alert;
 
 /**
  * Manages the user's favorite recipes locally.
@@ -63,44 +62,51 @@ public class FavoriteService {
     /**
      * Marks the given recipe as favorite and saves the change.
      * @param recipe that is to be added.
+     * @return boolean whether action was successful
      */
-    public void addFavorite(Recipe recipe) {
+    public boolean addFavorite(Recipe recipe) {
         if(recipe == null || recipe.getRecipeId() == null) {
-            return; // TODO alert user that recipe can't be null
+            return false; // TODO alert user that recipe can't be null
         }
 
         // Safety check: checks if correctly added to the list
         boolean changed = favoriteRecipeIds.add(recipe.getRecipeId());
         if (changed) {
             save();
+            return true;
         }
+        return false;
     }
 
     /**
      * Removes the given recipe from favorites and saves the change.
      * @param recipe that is to be removed.
+     * @return boolean whether action was successful
      */
-    public void removeFavorite(Recipe recipe) {
+    public boolean removeFavorite(Recipe recipe) {
         if (recipe == null || recipe.getRecipeId() == null) {
-            return;
+            return false;
         }
 
         // Safety check: checks if correctly added to the list
         boolean changed = favoriteRecipeIds.remove(recipe.getRecipeId());
         if (changed) {
             save();
+            return true;
         }
+        return false;
     }
 
     /**
      * Toggles the favorite status of the given recipe.
      * @param recipe that is to be toggled.
+     * @return boolean whether action was successful
      */
-    public void toggleFavorite(Recipe recipe) {
+    public boolean toggleFavorite(Recipe recipe) {
         if (isFavorite(recipe)) {
-            removeFavorite(recipe);
+            return removeFavorite(recipe);
         } else {
-            addFavorite(recipe);
+            return addFavorite(recipe);
         }
     }
 
