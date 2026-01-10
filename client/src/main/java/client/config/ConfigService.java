@@ -14,12 +14,13 @@ import org.apache.commons.io.FileUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import client.model.ShoppingList;
+
 @Singleton
 public class ConfigService {
 
     // Makes the list readable
-    private final ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT); 
-
+    private final ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
     private final File configFile;
     private Config config;
 
@@ -66,7 +67,14 @@ public class ConfigService {
                 StandardCharsets.UTF_8
         );
 
-        return mapper.readValue(json, Config.class);
+        Config loaded = mapper.readValue(json, Config.class);
+
+        // Safety: ensure shopping list always exists
+        if (loaded.getShoppingList() == null) {
+            loaded.setShoppingList(new ShoppingList());
+        }
+
+        return loaded;
     }
 
     /**
@@ -92,10 +100,10 @@ public class ConfigService {
      */
     private Config createDefault() throws IOException {
         Config config = new Config();
-        config.setServerUrl("http://localhost:8080"); // This is the Server URL
-        config.setFavoriteRecipeIds(new ArrayList<>()); // Empty list for the favorites
-        config.setLanguage(Locale.ENGLISH); // Default language is English
-        config.setShoppingListIds(new ArrayList<>()); // Empty list for the shopping list
+        config.setServerUrl("http://localhost:8080");
+        config.setFavoriteRecipeIds(new ArrayList<>());
+        config.setLanguage(Locale.ENGLISH);
+        config.setShoppingList(new ShoppingList());
 
         save();
         return config;
