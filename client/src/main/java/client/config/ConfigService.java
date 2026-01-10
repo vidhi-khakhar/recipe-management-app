@@ -16,6 +16,18 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import client.model.ShoppingList;
 
+/**
+ * The class with the business logic for Config.
+ * <br><br>
+ * To access this class make sure to follow the steps in your own class:<br>
+ * 1. Create a field 'ConfigService configService';<br>
+ * 2. Use an @Inject constructor and have
+ *    'ConfigService configService' as a parameter;<br>
+ * 3. Assign parameter to field: this.configService = configService.
+ *<br><br>
+ * Now all methods from this class (and by extend Config) can be used in your class.
+ * Make sure to always use configService.save() after making changes to Config.
+ */
 @Singleton
 public class ConfigService {
 
@@ -27,6 +39,8 @@ public class ConfigService {
     /**
      * Creates a ConfigService that reads from and writes to the given file path.
      * @param configPath the location of the configuration file
+     *                   this can be either default or passed through
+     *                   in the program parameters
      */
     @Inject
     public ConfigService(@Named("configPath") String configPath) {
@@ -45,7 +59,10 @@ public class ConfigService {
         }
     }
 
-
+    /**
+     * This way all files get access to the same state of the Config Class
+     * @return the same state of the config
+     */
     public Config getConfig() {
         return config;
     }
@@ -85,7 +102,7 @@ public class ConfigService {
     }
 
     /**
-     * Saves the given Config object to disk as a JSON file.
+     * Saves the current version of the Config class to disk.
      */
     public void save() {
         try {
