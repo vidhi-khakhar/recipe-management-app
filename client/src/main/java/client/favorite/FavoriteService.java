@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import client.config.Config;
 import client.config.ConfigService;
+import com.google.inject.Inject;
 import commons.Recipe;
 
 /**
@@ -18,37 +19,24 @@ public class FavoriteService {
      */
     private final Set<Long> favoriteRecipeIds = new HashSet<>();
     private final ConfigService configService;
-    private final Config config;
 
     /**
      * The constructor for the FavoriteService class that links this class to the config
      */
-    public FavoriteService() {
-        this.configService = ConfigService.getInstance();
-        this.config = ConfigService.getConfig();
+    @Inject
+    public FavoriteService(ConfigService configService) {
+        this.configService = configService;
+        loadFromConfig();
+    }
 
-        // Checks whether a config exists and if there are any favorite recipes
+    /**
+     * Loads favorite IDs from the current config
+     */
+    public void loadFromConfig() {
+        Config config = configService.getConfig();
         if (config != null && config.getFavoriteRecipeIds() != null) {
+            favoriteRecipeIds.clear();
             favoriteRecipeIds.addAll(config.getFavoriteRecipeIds());
-        }
-    }
-
-    /**
-     * Fetches the current favorite IDs from the config
-     * @param idsFromConfig the current IDs in the config
-     */
-    public void loadFavoriteRecipes(Collection<Long> idsFromConfig) {
-        favoriteRecipeIds.clear();
-        favoriteRecipeIds.addAll(idsFromConfig);
-    }
-
-    /**
-     * Reloads the current favorite IDs from the config
-     */
-    public void reloadFromConfig() {
-        Config newConfig = ConfigService.getConfig();
-        if (newConfig != null && newConfig.getFavoriteRecipeIds() != null) {
-            loadFavoriteRecipes(newConfig.getFavoriteRecipeIds());
         }
     }
 
@@ -159,13 +147,9 @@ public class FavoriteService {
      * Saves the current favorite IDs to the config file.
      */
     public void save() {
-        try{
-            config.setFavoriteRecipeIds(new  ArrayList<>(favoriteRecipeIds));
-            configService.save(config);
-        }
-        catch(Exception e){
-            System.err.println("Error saving favorite recipes: " + e.getMessage());
-        }
+        Config config = configService.getConfig();
+        config.setFavoriteRecipeIds(new ArrayList<>(favoriteRecipeIds));
+        configService.save();
     }
 
 }

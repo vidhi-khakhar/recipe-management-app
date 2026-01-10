@@ -75,6 +75,8 @@ public class MainCtrl {
     private final SearchService searchService;
     private final RecipeCollection recipeCollection;
 
+    private ConfigService configService;
+
     /**
      * Initializes the scenes
      *
@@ -110,11 +112,12 @@ public class MainCtrl {
      */
     @Inject
     public MainCtrl(RecipeServerUtils recipeServerUtils, SearchService searchService,
-                    FavoriteService favoriteService, RecipeCollection recipeCollection) {
+                    FavoriteService favoriteService, RecipeCollection recipeCollection, ConfigService configService) {
         this.recipeServerUtils = recipeServerUtils;
         this.searchService = searchService;
         this.favoriteService = favoriteService;
         this.recipeCollection = recipeCollection;
+        this.configService = configService;
     }
 
     /**
@@ -358,9 +361,9 @@ public class MainCtrl {
      */
     @FXML
     private void refreshButtonClicked() {
-        ConfigService.reloadConfig(); // this makes sure the client has the up to date config
+        configService.reload(); // this makes sure the client has the up to date config
         loadRecipesFromDatabase();
-        favoriteService.reloadFromConfig();
+        favoriteService.loadFromConfig();
         sidebarList.refresh();
     }
 

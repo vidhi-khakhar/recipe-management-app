@@ -3,6 +3,7 @@ package client.scenes;
 import client.config.ConfigService;
 import client.model.ShoppingItem;
 import client.model.ShoppingList;
+import com.google.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -46,6 +47,13 @@ public class ShoppingListCtrl {
 
     private ShoppingList shoppingListModel;
 
+    private ConfigService configService;
+
+    @Inject
+    public ShoppingListCtrl(ConfigService configService) {
+        this.configService = configService;
+    }
+
     /** Initializes the shopping list UI */
     @FXML
     public void initialize() {
@@ -53,7 +61,7 @@ public class ShoppingListCtrl {
         shoppingList.setPadding(new Insets(10, 15, 10, 15));
         shoppingList.setSpacing(8);
 
-        var config = ConfigService.getConfig();
+        var config = configService.getConfig();
         if (config == null) {
             throw new IllegalStateException("ConfigService returned null config");
         }
@@ -234,8 +242,8 @@ public class ShoppingListCtrl {
     /** Saves the shopping list to config */
     private void saveShoppingList() {
         try {
-            ConfigService.getConfig().setShoppingList(shoppingListModel);
-            ConfigService.getInstance().save(ConfigService.getConfig());
+            configService.getConfig().setShoppingList(shoppingListModel);
+            configService.save();
         } catch (Exception e) {
             e.printStackTrace();
         }
