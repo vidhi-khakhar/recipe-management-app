@@ -17,6 +17,7 @@ package client;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
 
 import static com.google.inject.Guice.createInjector;
 import com.google.inject.Injector;
@@ -38,7 +39,7 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
     public static void main(String[] args) throws URISyntaxException, IOException {
-        launch();
+        launch(args); // args should be passed as a parameter
     }
 
     /**
@@ -51,7 +52,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         // Filepath for the config.json
-        String configPath = "client/config.json";
+        String configPath = Paths.get("client", "config.json").toString();
 
         // Check whether the user has entered their own directory for the config file
         var args = getParameters().getRaw();

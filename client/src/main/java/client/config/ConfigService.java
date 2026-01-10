@@ -31,6 +31,13 @@ public class ConfigService {
     @Inject
     public ConfigService(@Named("configPath") String configPath) {
         this.configFile = new File(configPath);
+
+        // Safety for when given config path does not exist, it automatically creates it
+        File parent = configFile.getParentFile();
+        if (parent != null) {
+            parent.mkdirs();
+        }
+
         try {
             this.config = load();
         } catch (IOException e) {
