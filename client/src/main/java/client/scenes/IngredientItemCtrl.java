@@ -30,6 +30,7 @@ public class IngredientItemCtrl {
     private RecipeIngredientData ingredientData;
     private Runnable onRemove;
     private Runnable onChange;
+    private boolean updatingFields = false;
 
     // Common units for the dropdown
     private static final ObservableList<String> COMMON_UNITS = FXCollections.observableArrayList(
@@ -78,14 +79,14 @@ public class IngredientItemCtrl {
         
         // Add listeners for real-time updates
         nameField.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (ingredientData != null) {
+            if (ingredientData != null && !updatingFields) {
                 ingredientData.setName(newVal.trim());
                 notifyChange();
             }
         });
 
         amountField.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (ingredientData != null) {
+            if (ingredientData != null && !updatingFields) {
                 try {
                     double amount = Double.parseDouble(newVal);
                     ingredientData.setAmount(amount);
@@ -101,7 +102,7 @@ public class IngredientItemCtrl {
         });
 
         unitComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
-            if (ingredientData != null) {
+            if (ingredientData != null && !updatingFields) {
                 String unit = newVal != null ? newVal.trim() : "";
                 ingredientData.setUnit(unit);
                 
@@ -136,6 +137,7 @@ public class IngredientItemCtrl {
     private void updateFields() {
         if (ingredientData == null) return;
 
+        updatingFields = true;
         nameField.setText(ingredientData.getName());
         
         if (ingredientData.isFormal()) {
@@ -149,6 +151,7 @@ public class IngredientItemCtrl {
                 unitComboBox.setValue("");
             }
         }
+        updatingFields = false;
     }
 
     /**

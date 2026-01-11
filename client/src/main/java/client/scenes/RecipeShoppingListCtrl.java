@@ -185,10 +185,13 @@ public class RecipeShoppingListCtrl {
     @FXML
     private void addShoppingItem(ActionEvent event) {
         try {
+            int currentServings = servingsSpinner.getValue();
+            double scaleFactor = (double) currentServings / originalServings;
+            
             // Create new ingredient
             RecipeIngredientData newIngredient = new RecipeIngredientData();
             newIngredient.setName("New Ingredient");
-            newIngredient.setAmount(1.0);
+            newIngredient.setAmount(1.0 * scaleFactor);
             newIngredient.setUnit("unit");
             newIngredient.setFormal(true);
             newIngredient.setCustomAdded(true);

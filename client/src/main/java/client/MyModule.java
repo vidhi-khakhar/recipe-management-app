@@ -28,7 +28,6 @@ import client.scenes.MainCtrl;
 import client.scenes.RecipeShoppingListCtrl;
 import client.utils.IngredientServerUtils;
 import client.utils.ServerUtils;
-import client.utils.RecipeServerUtils;
 import client.shopping.RecipeShoppingService;
 import com.google.inject.name.Names;
 public class MyModule implements Module {
@@ -57,7 +56,6 @@ public class MyModule implements Module {
         binder.bind(SearchService.class).in(Scopes.SINGLETON);
         binder.bind(RecipeShoppingListCtrl.class).in(Scopes.SINGLETON);
         binder.bind(RecipeShoppingService.class).in(Scopes.SINGLETON);
-        binder.bind(RecipeServerUtils.class).in(Scopes.SINGLETON);
         binder.bind(AddRecipeIngredientCtrl.class);
     }
 }
