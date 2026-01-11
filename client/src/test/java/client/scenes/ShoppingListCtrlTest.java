@@ -5,15 +5,24 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import client.config.Config;
+import client.config.ConfigService;
 import client.model.ShoppingItem;
 import client.model.ShoppingList;
 
 class ShoppingListCtrlTest {
     private ShoppingList shoppingList;
+    private ShoppingListCtrl controller;
+    private ConfigService configService;
 
     @BeforeEach
     void setUp() {
         shoppingList = new ShoppingList();
+        Config config = new Config();
+        config.setShoppingList(new ShoppingList());
+        configService = new ConfigService("client/config.json");
+        controller = new ShoppingListCtrl(configService);
+        controller.setShoppingListModelForTest(shoppingList);
     }
 
     @Test
@@ -82,14 +91,14 @@ class ShoppingListCtrlTest {
 
         ShoppingItem item1 = new ShoppingItem("1", 2, "L", "Recipe1");
         ShoppingItem item2 = new ShoppingItem("2", 12, "pcs", "Recipe1");
-        
-        ConfigService.getConfig().getShoppingList().addItem(item1);
-        ConfigService.getConfig().getShoppingList().addItem(item2);
+
+        configService.getConfig().getShoppingList().addItem(item1);
+        configService.getConfig().getShoppingList().addItem(item2);
 
         controller.refreshFromConfig();
 
         assertEquals(2, controller.getShoppingListModelForTest().size());
-        
+
         assertEquals("1", controller.getShoppingListModelForTest().getShoppingItems().get(0).getName());
         assertEquals("2", controller.getShoppingListModelForTest().getShoppingItems().get(1).getName());
     }

@@ -18,14 +18,17 @@ import com.google.inject.Inject;
 public class RecipeShoppingService {
 
     private final RecipeServerUtils recipeServerUtils;
+    private final ConfigService configService;
 
     /**
      * Constructor for dependency injection.
      * @param recipeServerUtils utility for communicating with recipe server
+     * @param configService service for accessing configuration
      */
     @Inject
-    public RecipeShoppingService(RecipeServerUtils recipeServerUtils) {
+    public RecipeShoppingService(RecipeServerUtils recipeServerUtils, ConfigService configService) {
         this.recipeServerUtils = recipeServerUtils;
+        this.configService = configService;
     }
 
     /**
@@ -154,19 +157,19 @@ public class RecipeShoppingService {
 
     /**
      * Adds the converted shopping items to the main shopping list.
-     * 
+     *
      * @param shoppingItems the items to add
      */
     public void addToShoppingList(List<ShoppingItem> shoppingItems) {
-        var config = ConfigService.getConfig();
+        var config = configService.getConfig();
         if (config != null && config.getShoppingList() != null) {
             for (ShoppingItem item : shoppingItems) {
                 config.getShoppingList().addItem(item);
             }
-            
+
             // Save to config.json
             try {
-                ConfigService.getInstance().save(config);
+                configService.save();
             } catch (Exception e) {
                 System.err.println("Failed to save shopping list to config: " + e.getMessage());
             }
