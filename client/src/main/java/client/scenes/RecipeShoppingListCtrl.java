@@ -128,6 +128,13 @@ public class RecipeShoppingListCtrl {
                 // Setup the controller
                 ctrl.setIngredientData(ingredient.copy());
                 ctrl.setOnRemove(() -> removeIngredient(ingredient));
+                ctrl.setOnUpdate(updatedData -> {
+                    ingredient.setName(updatedData.getName());
+                    ingredient.setAmount(updatedData.getAmount());
+                    ingredient.setUnit(updatedData.getUnit());
+                    ingredient.setFormal(updatedData.isFormal());
+                    ingredient.setInformal(updatedData.getInformal());
+                });
                 ctrl.setOnChange(this::validateIngredients);
                 
                 // Add to UI

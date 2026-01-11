@@ -30,6 +30,7 @@ public class IngredientItemCtrl {
     private RecipeIngredientData ingredientData;
     private Runnable onRemove;
     private Runnable onChange;
+    private java.util.function.Consumer<RecipeIngredientData> onUpdate;
     private boolean updatingFields = false;
 
     // Common units for the dropdown
@@ -66,6 +67,15 @@ public class IngredientItemCtrl {
      */
     public void setOnChange(Runnable onChange) {
         this.onChange = onChange;
+    }
+
+    /**
+     * Sets the callback to be executed when ingredient data is updated
+     *
+     * @param onUpdate the callback that receives the updated ingredient data
+     */
+    public void setOnUpdate(java.util.function.Consumer<RecipeIngredientData> onUpdate) {
+        this.onUpdate = onUpdate;
     }
 
     /**
@@ -170,6 +180,9 @@ public class IngredientItemCtrl {
      * Notifies listeners of changes.
      */
     private void notifyChange() {
+        if (onUpdate != null) {
+            onUpdate.accept(ingredientData.copy());
+        }
         if (onChange != null) {
             onChange.run();
         }
