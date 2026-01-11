@@ -17,6 +17,8 @@ package client;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import static com.google.inject.Guice.createInjector;
 import com.google.inject.Injector;
@@ -31,6 +33,8 @@ import client.scenes.NutritionalValueCtrl;
 import client.scenes.RecipeShoppingListCtrl;
 import client.scenes.ShoppingListCtrl;
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -56,6 +60,8 @@ public class Main extends Application {
         // Filepath for the config.json
         String configPath = "client/config.json";
 
+        ResourceBundle bundle = ResourceBundle.getBundle("client.scenes.Translations", new Locale("en"));
+
         // Check whether the user has entered their own directory for the config file
         var args = getParameters().getRaw();
         for (int i = 0; i < args.size(); i++) {
@@ -70,7 +76,21 @@ public class Main extends Application {
 
         System.out.println("Using server: " + config.getServerUrl()); // Feedback to see which server (url) we are using
 
+<<<<<<< Updated upstream
         var mainUserInterface = FXML.load(MainCtrl.class, "client", "scenes", "MainUserInterface.fxml");
+=======
+//        old way to load mainUserInterface
+//        var mainUserInterface
+//                = FXML.load(MainCtrl.class, "client", "scenes", "MainUserInterface.fxml");
+
+        var loader = new FXMLLoader(getClass().getResource("/client/scenes/MainUserInterface.fxml"));
+        loader.setResources(bundle);
+        loader.setControllerFactory(INJECTOR::getInstance);
+        Parent root = loader.load();
+        MainCtrl controller = loader.getController();
+        var mainUserInterface = new javafx.util.Pair<>(controller, root);
+
+>>>>>>> Stashed changes
         var mainUserInterfaceScene = new Scene(mainUserInterface.getValue());
 
         // preload shopping list scene
@@ -127,9 +147,17 @@ public class Main extends Application {
         primaryStage.show();
 
         // pass both scenes into controller
+<<<<<<< Updated upstream
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
         mainCtrl.initScenes(primaryStage, mainUserInterfaceScene, nutritionScene, recipeAddScene, 
             recipeIngredientScene, recipeIngredientCtrl, editTitleScene, shoppingListScene, recipeShoppingListScene);
+=======
+//        var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+
+        controller.initScenes(primaryStage, mainUserInterfaceScene, nutritionScene,
+            recipeAddScene, recipeIngredientScene, recipeIngredientCtrl, 
+            editTitleScene, shoppingListScene);
+>>>>>>> Stashed changes
 
         System.out.println("Window opened with width: " + primaryStage.getWidth()
                 + " and height: " + primaryStage.getHeight());
