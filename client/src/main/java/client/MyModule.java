@@ -46,6 +46,5 @@ public class MyModule implements Module {
         binder.bind(SearchService.class).in(Scopes.SINGLETON);
         binder.bind(RecipeShoppingListCtrl.class).in(Scopes.SINGLETON);
         binder.bind(RecipeShoppingService.class).in(Scopes.SINGLETON);
-        binder.bind(client.favorite.FavoriteService.class).in(Scopes.SINGLETON);
     }
 }

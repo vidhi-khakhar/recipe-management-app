@@ -694,6 +694,12 @@ public class MainCtrl {
             return;
         }
 
+        // Refresh the shopping list data from config before showing
+        ShoppingListCtrl shoppingListCtrl = (ShoppingListCtrl) shoppingListScene.getUserData();
+        if (shoppingListCtrl != null) {
+            shoppingListCtrl.refreshFromConfig();
+        }
+
         Stage secondaryStage = new Stage();
         secondaryStage.setTitle("Shopping List");
         secondaryStage.setScene(shoppingListScene);

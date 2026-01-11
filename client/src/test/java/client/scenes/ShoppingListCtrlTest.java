@@ -83,4 +83,22 @@ class ShoppingListCtrlTest {
 
         assertEquals(3, item.getAmount());
     }
+
+    @Test
+    void refreshFromConfig_updatesShoppingList() {
+        assertEquals(0, controller.getShoppingListModelForTest().size());
+
+        ShoppingItem item1 = new ShoppingItem("1", 2, "L", "Recipe1");
+        ShoppingItem item2 = new ShoppingItem("2", 12, "pcs", "Recipe1");
+        
+        ConfigService.getConfig().getShoppingList().addItem(item1);
+        ConfigService.getConfig().getShoppingList().addItem(item2);
+
+        controller.refreshFromConfig();
+
+        assertEquals(2, controller.getShoppingListModelForTest().size());
+        
+        assertEquals("1", controller.getShoppingListModelForTest().getShoppingItems().get(0).getName());
+        assertEquals("2", controller.getShoppingListModelForTest().getShoppingItems().get(1).getName());
+    }
 }

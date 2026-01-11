@@ -77,9 +77,28 @@ public class RecipeShoppingService {
             int originalServings,
             int targetServings,
             String recipeName) {
+        return convertToShoppingItems(ingredients, originalServings, targetServings, recipeName, false);
+    }
+
+    /**
+     * Converts recipe ingredients to shopping items with serving size scaling applie
+     * 
+     * @param ingredients the ingredient data to convert
+     * @param originalServings the original serving size of the recipe
+     * @param targetServings the desired serving size
+     * @param recipeName the name of the source recipe
+     * @param alreadyScaled whether the ingredients are already scaled
+     * @return list of shopping items ready to be added to the shopping list
+     */
+    public List<ShoppingItem> convertToShoppingItems(
+            List<RecipeIngredientData> ingredients,
+            int originalServings,
+            int targetServings,
+            String recipeName,
+            boolean alreadyScaled) {
         
         List<ShoppingItem> shoppingItems = new ArrayList<>();
-        double scaleFactor = (double) targetServings / originalServings;
+        double scaleFactor = alreadyScaled ? 1.0 : (double) targetServings / originalServings;
 
         for (RecipeIngredientData ingredient : ingredients) {
             ShoppingItem item = new ShoppingItem();

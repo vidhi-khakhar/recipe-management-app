@@ -234,7 +234,7 @@ public class RecipeShoppingListCtrl {
             // Convert to shopping items and add to list
             recipeShoppingService.addToShoppingList(
                 recipeShoppingService.convertToShoppingItems(
-                    currentIngredients, originalServings, targetServings, currentRecipe.getTitle()));
+                    currentIngredients, originalServings, targetServings, currentRecipe.getTitle(), true));
             
             // Close window
             ((Node) event.getSource()).getScene().getWindow().hide();

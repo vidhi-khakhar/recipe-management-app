@@ -53,13 +53,25 @@ public class ShoppingListCtrl {
         shoppingList.setPadding(new Insets(10, 15, 10, 15));
         shoppingList.setSpacing(8);
 
+        loadShoppingListModel();
+        refreshUI();
+    }
+
+    /** Loads the latest shopping list from config */
+    private void loadShoppingListModel() {
         var config = ConfigService.getConfig();
         if (config == null) {
             throw new IllegalStateException("ConfigService returned null config");
         }
         shoppingListModel = config.getShoppingList();
+    }
 
-        refreshUI();
+    /** Refreshes the shopping list data and UI - call this when window is opened */
+    public void refreshFromConfig() {
+        loadShoppingListModel();
+        if (shoppingList != null) { // Check if UI is initialized
+            refreshUI();
+        }
     }
 
     /** Rebuilds the shopping list UI from the model */
@@ -260,6 +272,10 @@ public class ShoppingListCtrl {
 
     void setShoppingListModelForTest(ShoppingList shoppingList) {
         this.shoppingListModel = shoppingList;
+    }
+
+    ShoppingList getShoppingListModelForTest() {
+        return this.shoppingListModel;
     }
 
 }

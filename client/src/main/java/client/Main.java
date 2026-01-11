@@ -76,6 +76,7 @@ public class Main extends Application {
         // preload shopping list scene
         var shoppingListInterface = FXML.load(ShoppingListCtrl.class, "client", "scenes", "ShoppingListInterface.fxml");
         var shoppingListScene = new Scene(shoppingListInterface.getValue());
+        shoppingListScene.setUserData(shoppingListInterface.getKey()); // Store controller reference
 
         // preload recipe shopping list scene
         var recipeShoppingListInterface = 
