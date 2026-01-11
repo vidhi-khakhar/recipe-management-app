@@ -23,6 +23,8 @@ class ShoppingListCtrlTest {
         configService = new ConfigService("client/config.json");
         controller = new ShoppingListCtrl(configService);
         controller.setShoppingListModelForTest(shoppingList);
+        
+        configService.getConfig().getShoppingList().clear();
     }
 
     @Test
@@ -87,6 +89,8 @@ class ShoppingListCtrlTest {
 
     @Test
     void refreshFromConfig_updatesShoppingList() {
+        configService.getConfig().getShoppingList().clear();
+        
         assertEquals(0, controller.getShoppingListModelForTest().size());
 
         ShoppingItem item1 = new ShoppingItem("1", 2, "L", "Recipe1");
