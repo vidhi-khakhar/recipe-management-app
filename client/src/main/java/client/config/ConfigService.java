@@ -6,54 +6,74 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import com.google.inject.name.Named;
 import org.apache.commons.io.FileUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import client.model.ShoppingList;
+
+/**
+ * The class with the business logic for Config.
+ * <br><br>
+ * To access this class make sure to follow the steps in your own class:<br>
+ * 1. Create a field 'ConfigService configService';<br>
+ * 2. Use an @Inject constructor and have
+ *    'ConfigService configService' as a parameter;<br>
+ * 3. Assign parameter to field: this.configService = configService.
+ *<br><br>
+ * Now all methods from this class (and by extend Config) can be used in your class.
+ * Make sure to always use configService.save() after making changes to Config.
+ */
+@Singleton
 public class ConfigService {
 
     // Makes the list readable
-    private final ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT); 
+    private final ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
     private final File configFile;
-
-    private static ConfigService instance;
-    private static Config config;
-    private static String configPath = "client/config.json";
+    private Config config;
 
     /**
      * Creates a ConfigService that reads from and writes to the given file path.
-     * @param path the location of the configuration file
+     * @param configPath the location of the configuration file
+     *                   this can be either default or passed through
+     *                   in the program parameters
      */
-    public ConfigService(String path) {
-        this.configFile = new File(path);
+    @Inject
+    public ConfigService(@Named("configPath") String configPath) {
+        this.configFile = new File(configPath);
+
+        // Safety for when given config path does not exist, it automatically creates it
+        File parent = configFile.getParentFile();
+        if (parent != null) {
+            parent.mkdirs();
+        }
+
+        try {
+            this.config = load();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load config", e);
+        }
     }
 
     /**
-     * Returns the singleton instance of ConfigService.
-     * Initializes the service on first access and loads the configuration.
-     * Throws a runtime exception if loading the config fails.
-     *
-     * @return the shared ConfigService instance
+     * This way all files get access to the same state of the Config Class
+     * @return the same state of the config
      */
-    public static ConfigService getInstance() {
-        if(instance == null){
-            instance = new ConfigService(configPath);
-            try{
-                config = instance.load();
-            }catch(IOException e){
-                throw new RuntimeException("Failed to load config", e);
-            }
+    public Config getConfig() {
+        return config;
+    }
+
+    /** Reloads the config from disk */
+    public void reload() {
+        try {
+            this.config = load();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to reload config", e);
         }
-        return instance;
-    }
-
-    public static Config getConfig() {
-        return getInstance() != null ? config : null;
-    }
-
-    public static void setConfigPath(String path) {
-        configPath = path;
     }
 
     /**
@@ -71,22 +91,30 @@ public class ConfigService {
                 StandardCharsets.UTF_8
         );
 
-        return mapper.readValue(json, Config.class);
+        Config loaded = mapper.readValue(json, Config.class);
+
+        // Safety: ensure shopping list always exists
+        if (loaded.getShoppingList() == null) {
+            loaded.setShoppingList(new ShoppingList());
+        }
+
+        return loaded;
     }
 
     /**
-     * Saves the given Config object to disk as a JSON file.
-     * @param config the configuration to persist
-     * @throws IOException if writing the file fails
+     * Saves the current version of the Config class to disk.
      */
-    public void save(Config config) throws IOException {
-        String json = mapper.writeValueAsString(config);
-
-        FileUtils.writeStringToFile(
-                configFile,
-                json,
-                StandardCharsets.UTF_8
-        );
+    public void save() {
+        try {
+            String json = mapper.writeValueAsString(config);
+            FileUtils.writeStringToFile(
+                    configFile,
+                    json,
+                    StandardCharsets.UTF_8
+            );
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save config", e);
+        }
     }
 
     /**
@@ -96,12 +124,14 @@ public class ConfigService {
      */
     private Config createDefault() throws IOException {
         Config config = new Config();
-        config.setServerUrl("http://localhost:8080"); // This is the Server URL
-        config.setFavoriteRecipeIds(new ArrayList<>()); // Empty list for the favorites
-        config.setLanguage(Locale.ENGLISH); // Default language is English
-        config.setShoppingListIds(new ArrayList<>()); // Empty list for the shopping list
+        config.setServerUrl("http://localhost:8080");
+        config.setFavoriteRecipeIds(new ArrayList<>());
+        config.setLanguage(Locale.ENGLISH);
+        config.setShoppingList(new ShoppingList());
 
-        save(config);
+        this.config = config;
+        save();
+
         return config;
     }
 }

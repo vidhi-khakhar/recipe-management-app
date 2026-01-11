@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import client.config.ConfigService;
 import client.favorite.FavoriteService;
 import client.search.RecipeCollection;
 import client.search.SearchService;
@@ -44,7 +45,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
@@ -69,11 +69,13 @@ public class MainCtrl {
     private AddRecipeIngredientCtrl addRecipeIngredientCtrl;
 
     private final RecipeServerUtils recipeServerUtils;
+    private final FavoriteService favoriteService;
     private final ObservableList<Recipe> recipesObservableList = FXCollections.observableArrayList();
     private Recipe selectedRecipe;
     private final SearchService searchService;
-    private final FavoriteService favoriteService;
     private final RecipeCollection recipeCollection;
+
+    private ConfigService configService;
 
     /**
      * Initializes the scenes
@@ -101,18 +103,21 @@ public class MainCtrl {
     }
 
     /**
-     * The constructor that connects the ServerUtils to this controller
+     * The constructor that connects the ServerUtils to this controller.
      *
      * @param recipeServerUtils the utility class responsible for server
-     * communication
+     * communication.
+     * @param favoriteService the service class responsible for favoriting
+     * logic.
      */
     @Inject
     public MainCtrl(RecipeServerUtils recipeServerUtils, SearchService searchService,
-                    FavoriteService favoriteService, RecipeCollection recipeCollection) {
+                    FavoriteService favoriteService, RecipeCollection recipeCollection, ConfigService configService) {
         this.recipeServerUtils = recipeServerUtils;
         this.searchService = searchService;
         this.favoriteService = favoriteService;
         this.recipeCollection = recipeCollection;
+        this.configService = configService;
     }
 
     /**
@@ -129,24 +134,11 @@ public class MainCtrl {
     public void initialize() {
         sidebarList.setItems(recipesObservableList);
 
-        // Makes it so that only the title is visible in the list
-        sidebarList.setCellFactory(lv -> new ListCell<>() {
-            @Override
-            protected void updateItem(Recipe item, boolean empty) {
-                super.updateItem(item, empty);
-
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(item.getTitle());
-                }
-            }
-        }
+        sidebarList.setCellFactory(lv ->
+                new RecipeListCell(favoriteService)
         );
 
-        // The listeners for the selected recipe
-        sidebarList
-                .getSelectionModel()
+        sidebarList.getSelectionModel()
                 .selectedItemProperty()
                 .addListener((obs, oldRecipe, newRecipe) -> {
                     if (newRecipe != null) {
@@ -169,6 +161,7 @@ public class MainCtrl {
         loadRecipesFromDatabase();
 
     }
+
 
     /**
      * Loads all recipes from the database. That way once the UI is opened, all
@@ -259,6 +252,11 @@ public class MainCtrl {
         }
 
         removeRecipe(selected);
+        // If the selected recipe is a favorite, the favorite id gets removed from config
+        if(favoriteService.isFavorite(selected)) {
+            favoriteService.removeFavorite(selected);
+        }
+
         updateRecipeStackPane();
 
         if (!recipesObservableList.isEmpty()) {
@@ -275,6 +273,10 @@ public class MainCtrl {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmation");
         alert.setHeaderText("Are you sure you want to delete this recipe?");
+
+        if(favoriteService.isFavorite(selectedRecipe)) {
+            alert.setContentText("This is one of your favorites!");
+        }
 
         // Wait for the conformation from the user
         Optional<ButtonType> result = alert.showAndWait();
@@ -359,7 +361,10 @@ public class MainCtrl {
      */
     @FXML
     private void refreshButtonClicked() {
+        configService.reload(); // this makes sure the client has the up to date config
         loadRecipesFromDatabase();
+        favoriteService.loadFromConfig();
+        sidebarList.refresh();
     }
 
     // RECIPE INGREDIENTS METHODS
