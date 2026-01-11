@@ -3,6 +3,7 @@ package client.utils;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import client.config.ConfigService;
+import com.google.inject.Inject;
 import commons.Ingredient;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.Client;
@@ -22,12 +23,22 @@ public class IngredientServerUtils {
     private static final int HTTP_CREATED = 201;
     private static final int HTTP_NOT_FOUND = 404;
 
-    // The server url from the config.json
-    private static final String server = ConfigService.getConfig().getServerUrl(); 
+    private final ConfigService configService;
+    private final Client client;
 
-    private static final Client CLIENT = ClientBuilder.newClient(
-            new ClientConfig()
-    );
+    /**
+     * Constructor injection via Guice
+     */
+    @Inject
+    public IngredientServerUtils(ConfigService configService) {
+        this.configService = configService;
+        this.client = ClientBuilder.newClient(new ClientConfig()); // This is the correct way maybe
+    }
+
+    /** Convenience method */
+    private String server() {
+        return configService.getConfig().getServerUrl();
+    }
 
     /**
      * Creates a new ingredient on the server.
@@ -36,7 +47,7 @@ public class IngredientServerUtils {
      * @throws ProcessingException if there's a network error or server error
      */
     public Long createIngredient(Ingredient ingredient) throws ProcessingException {
-        try (Response response = CLIENT.target(server + "/api/v1/ingredients")
+        try (Response response = client.target(server() + "/api/v1/ingredients")
                 .request(APPLICATION_JSON)
                 .post(Entity.json(ingredient))) {
 
@@ -66,7 +77,7 @@ public class IngredientServerUtils {
      * @throws ProcessingException if there's a network error or server error
      */
     public List<Ingredient> getAllIngredients() throws ProcessingException {
-        try (Response response = CLIENT.target(server + "/api/v1/ingredients")
+        try (Response response = client.target(server() + "/api/v1/ingredients")
                 .request(APPLICATION_JSON)
                 .get()) {
 
@@ -88,7 +99,7 @@ public class IngredientServerUtils {
      */
     public Ingredient getIngredient(Long id)
             throws ProcessingException, NoSuchElementException {
-        try (Response response = CLIENT.target(server + "/api/v1/ingredients/" + id)
+        try (Response response = client.target(server() + "/api/v1/ingredients/" + id)
                     .request(APPLICATION_JSON)
                     .get())
         {
@@ -123,7 +134,7 @@ public class IngredientServerUtils {
      */
     public boolean replaceIngredient(Long id, Ingredient ingredient)
             throws ProcessingException, NoSuchElementException {
-        try (Response response = CLIENT.target(server + "/api/v1/ingredients/" + id)
+        try (Response response = client.target(server() + "/api/v1/ingredients/" + id)
                     .request(APPLICATION_JSON)
                     .put(Entity.json(ingredient)))
         {
@@ -158,7 +169,7 @@ public class IngredientServerUtils {
     public boolean deleteIngredient(Long id)
             throws ProcessingException, NoSuchElementException {
         try
-            (Response response = CLIENT.target(server + "/api/v1/ingredients/" + id)
+            (Response response = client.target(server() + "/api/v1/ingredients/" + id)
                     .request(APPLICATION_JSON)
                     .delete())
         {
@@ -191,7 +202,7 @@ public class IngredientServerUtils {
      * @throws NoSuchElementException if no ingredient with the specified ID exists
      */
     public long getIngredientUsageCount(Long ingredientId) throws ProcessingException, NoSuchElementException {
-        try(Response response = CLIENT.target(server + "/api/v1/ingredients/" + ingredientId + "/usage" )
+        try(Response response = client.target(server() + "/api/v1/ingredients/" + ingredientId + "/usage" )
             .request(APPLICATION_JSON)
                     .get()){
             if (response.getStatus() == HTTP_OK) {

@@ -5,23 +5,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import client.config.ConfigService;
 import client.model.ShoppingItem;
 import client.model.ShoppingList;
 
 class ShoppingListCtrlTest {
-
-    private ShoppingListCtrl controller;
     private ShoppingList shoppingList;
 
     @BeforeEach
     void setUp() {
-        // Ensure clean config state
         shoppingList = new ShoppingList();
-        ConfigService.getConfig().setShoppingList(shoppingList);
-
-        controller = new ShoppingListCtrl();
-        controller.setShoppingListModelForTest(shoppingList);
     }
 
     @Test
