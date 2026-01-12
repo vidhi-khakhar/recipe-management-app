@@ -123,7 +123,7 @@ public class AddRecipeIngredientCtrl {
                     ingredient, informal);
         }
 
-        recipeServerUtils.createRecipeIngredient(recipeIngredient);
+        //recipeServerUtils.createRecipeIngredient(recipeIngredient);
         closeWindow();
     }
 

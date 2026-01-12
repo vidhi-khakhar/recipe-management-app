@@ -42,9 +42,9 @@ public class RecipeIngredientService {
      */
     @Transactional
     public RecipeIngredient createRecipeIngredient(RecipeIngredient recipeIngredient) {
-        Ingredient ingredientFromDb = ingredientRepo.findById(recipeIngredient.getIngredient().getId())
+        Ingredient ingredientFromDb = ingredientRepo.findById(recipeIngredient.getId().getIngredientId())
                 .orElseThrow(() -> new RuntimeException("Ingredient not found"));
-        Recipe recipeFromDb = recipeRepo.findById(recipeIngredient.getRecipe().getRecipeId())
+        Recipe recipeFromDb = recipeRepo.findById(recipeIngredient.getId().getRecipeId())
                 .orElseThrow(() -> new RuntimeException("Recipe not found"));
 
         recipeIngredient.setIngredient(ingredientFromDb);
@@ -92,7 +92,7 @@ public class RecipeIngredientService {
      * @param id the id of the recipeIngredient to be updated
      * @param updated the updated entity
      */
-    public void updateRecipeIngredient(RecipeIngredientKey id, RecipeIngredient updated) {
+   public void updateRecipeIngredient(RecipeIngredientKey id, RecipeIngredient updated) {
         Objects.requireNonNull(updated, "Updated recipeIngredient cannot be null!");
 
         RecipeIngredient toUpdate = getRecipeIngredient(id);
@@ -102,8 +102,8 @@ public class RecipeIngredientService {
             toUpdate.setInformal(updated.getInformal());
         }
 
-        toUpdate.setIngredient(updated.getIngredient());
-        toUpdate.setRecipe(updated.getRecipe());
+//        toUpdate.setIngredient(updated.getIngredient());
+//        toUpdate.setRecipe(updated.getRecipe());
 
         recipeIngredientRepo.save(toUpdate);
     }

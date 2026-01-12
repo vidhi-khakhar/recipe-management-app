@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import client.favorite.FavoriteService;
 import commons.Recipe;
 import com.google.inject.Inject;
+import commons.RecipeIngredient;
 
 public class SearchService {
 
@@ -40,8 +41,12 @@ public class SearchService {
                     if(terms.length == 0){
                         return true;
                     }
+                    String ingredientText = r.getIngredients().stream()
+                            .map(RecipeIngredient::toString)
+                            .collect(Collectors.joining(" "));
+
                     String content = (r.getTitle() + " " +
-                            String.join(" ", r.getIngredients()) + " " +
+                            ingredientText + " " +
                             String.join(" ", r.getInstructions())).toLowerCase();
 
                     return Arrays.stream(terms).allMatch(content::contains);

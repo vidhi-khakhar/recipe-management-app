@@ -1,5 +1,6 @@
 package commons;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.*;
 
@@ -36,10 +37,9 @@ public class Recipe {
      * Currently for basic functionality, ingredients are just stored as strings...
      * Later (for nutritional values), this will change to a structured IngredientAmount entity.
      */
-    @ElementCollection
-    @CollectionTable(name = "recipe_ingredients", joinColumns = @JoinColumn(name = "recipe_id"))
-    @Column(name = "ingredient_text")
-    private List<String> ingredients = new ArrayList<>();
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private List<RecipeIngredient> ingredients = new ArrayList<>();
 
     /**
      * The element collection tag makes it so that instructions are also stored in a separate table.
@@ -143,12 +143,12 @@ public class Recipe {
     }
 
     
-    public List<String> getIngredients() {
+    public List<RecipeIngredient> getIngredients() {
         return ingredients;
     }
 
     
-    public void setIngredients(List<String> ingredients) {
+    public void setIngredients(List<RecipeIngredient> ingredients) {
         this.ingredients = ingredients;
     }
 
@@ -206,7 +206,14 @@ public class Recipe {
 
     @Override
     public boolean equals(Object anotherRecipe) {
-        return EqualsBuilder.reflectionEquals(this,anotherRecipe);
+        if(this == anotherRecipe) {
+            return true;
+        }
+        if(!(anotherRecipe instanceof Recipe)) {
+            return false;
+        }
+        Recipe recipe = (Recipe) anotherRecipe;
+        return recipeId != null && recipeId.equals(recipe.recipeId);
     }
 
     /**
@@ -215,7 +222,7 @@ public class Recipe {
      */
     @Override
     public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
+        return Objects.hash(recipeId);
     }
 
     /**
