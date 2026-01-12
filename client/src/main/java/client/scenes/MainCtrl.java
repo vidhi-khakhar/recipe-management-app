@@ -201,7 +201,6 @@ public class MainCtrl {
     @FXML
     public void updateRecipeStackPane() {
         boolean hasRecipes = !sidebarList.getItems().isEmpty();
-
         System.out.println(hasRecipes);
         if (!hasRecipes) {
             noRecipePane.setVisible(true);
@@ -232,6 +231,7 @@ public class MainCtrl {
         // adds the recipe object to the list!
         recipesObservableList.add(recipe);
         sidebarList.getSelectionModel().select(recipe);
+        loadRecipesFromDatabase();
         updateRecipeStackPane();
     }
 
@@ -340,7 +340,12 @@ public class MainCtrl {
 
     @FXML
     private void searchFavorites() {
-        favoriteS.setText("★");
+        if(favoriteS.getText() == "★"){
+            favoriteS.setText("☆");
+        }else{
+            favoriteS.setText("★");
+        }
+
         applySearch();
     }
 
