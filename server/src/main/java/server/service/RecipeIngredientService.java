@@ -110,13 +110,17 @@ public class RecipeIngredientService {
      * Deletes a recipeIngredient from the database.
      * @param id the id of the recipeIngredient to be removed
      */
+    @Transactional
     public void deleteRecipeIngredient(RecipeIngredientKey id) {
-        if (recipeIngredientRepo.existsById(id)) {
-            recipeIngredientRepo.deleteById(id);
-        } else {
-            throw new NoSuchElementException("Ingredient with id " +
-                    id.getIngredientId() + " does not belong to recipe with id " +
-                    id.getRecipeId() + " !");
+        Recipe recipe = recipeRepo.findById(id.getRecipeId())
+                .orElseThrow(() -> new NoSuchElementException("Recipe not found"));
+
+        boolean removed = recipe.getIngredients().removeIf(ri -> ri.getId()
+                .equals(id));
+        if (!removed) {
+            throw new NoSuchElementException("Ingredient not found");
         }
+
+        recipeRepo.save(recipe);
     }
 }

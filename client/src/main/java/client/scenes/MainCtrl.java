@@ -365,6 +365,7 @@ public class MainCtrl {
         loadRecipesFromDatabase();
         favoriteService.loadFromConfig();
         sidebarList.refresh();
+        showIngredients(sidebarList.getSelectionModel().getSelectedItem());
     }
 
     // RECIPE INGREDIENTS METHODS
@@ -421,8 +422,10 @@ public class MainCtrl {
 
         if (newIngredient != null) {
             newIngredient.setRecipe(selectedRecipe);
+
             this.recipeServerUtils.createRecipeIngredient(newIngredient);
             selectedRecipe.getIngredients().add(newIngredient);
+
         }
 
         showIngredients(selectedRecipe);
@@ -477,18 +480,33 @@ public class MainCtrl {
     private void ingredientRemoveButtonClicked(ActionEvent event) {
         Button removeButton = (Button) event.getSource(); // To identify the button of which ingredient was clicked
         HBox ingredientToRemove = (HBox) removeButton.getParent(); // To delete the whole row
-        ingredientList.getChildren().remove(ingredientToRemove);
-
         RecipeIngredientKey id = (RecipeIngredientKey) ingredientToRemove.getUserData();
-        this.recipeServerUtils.deleteRecipeIngredient(id.getRecipeId(), id.getIngredientId());
 
-        if(selectedRecipe != null) {
-            selectedRecipe.getIngredients().removeIf(ri ->
-                    ri.getId().getIngredientId().equals(id.getIngredientId())
-            );
+        if(id == null) return;
+
+        try{
+            boolean success = this.recipeServerUtils.deleteRecipeIngredient(id.getRecipeId(),
+                    id.getIngredientId());
+
+            if (success) {
+                ingredientList.getChildren().remove(ingredientToRemove);
+
+                if(selectedRecipe != null) {
+                    selectedRecipe.getIngredients().removeIf(ri ->
+                            ri.getId().equals(id)
+                    );
+                }
+            }
+
+            System.out.println("Removed ingredient.");
+
+        } catch (Exception e) {
+            System.err.println("Error deleting recipe ingredient from Database");
         }
 
-        System.out.println("Removed ingredient.");
+
+
+
     }
 
     /**
@@ -791,6 +809,11 @@ public class MainCtrl {
                 }else{
                     newI = RecipeIngredient.informal(newRecipe, oldI.getIngredient(), oldI.getInformal());
                 }
+
+                recipeServerUtils.createRecipeIngredient(newI);
+
+                newRecipe.getIngredients().add(newI);
+
             }
 
             recipesObservableList.add(newRecipe);

@@ -227,6 +227,14 @@ public class RecipeIngredient {
     public void setRecipe(Recipe recipe) {
         this.recipe = recipe;
     }
+
+    public RecipeIngredientKey getRecipeId() {
+        return id;
+    }
+
+    public void setId(RecipeIngredientKey id) {
+        this.id = id;
+    }
 }
 
 
