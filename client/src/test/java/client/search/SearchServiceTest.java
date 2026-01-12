@@ -1,5 +1,6 @@
 package client.search;
 
+import client.config.ConfigService;
 import client.favorite.FavoriteService;
 import commons.Recipe;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,7 +13,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SearchServiceTest {
 
+
     private RecipeCollection recipeCollection;
+
+
+    private ConfigService configService;
+
 
     private FavoriteService favoriteService;
 
@@ -24,8 +30,11 @@ public class SearchServiceTest {
     @BeforeEach
     public void setup() {
 
+
+        configService = new ConfigService("test-config.json");
+
         recipeCollection = new RecipeCollection();
-        favoriteService = new FavoriteService();
+        favoriteService = new FavoriteService(configService);
 
         r1 = new Recipe("Sandwich");
         r1.setRecipeId(1L);
