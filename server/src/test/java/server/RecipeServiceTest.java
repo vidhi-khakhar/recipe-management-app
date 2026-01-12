@@ -28,6 +28,7 @@ class RecipeServiceTest {
     @Test
     void createRecipe() {
         Recipe recipe = new Recipe("Sarmale");
+        recipe.setRecipeId(1L);
         recipeService.createRecipe(recipe);
 
         // Checks that save was called for repository exactly 1 time
@@ -41,6 +42,7 @@ class RecipeServiceTest {
     @Test
     void getRecipeById() {
         Recipe recipe = new Recipe("Sarmale");
+        recipe.setRecipeId(1L);
         Long id = recipe.getRecipeId();
 
         // Simulate behaviour of findById in database
@@ -54,7 +56,9 @@ class RecipeServiceTest {
     @Test
     void getAllRecipes() {
         Recipe recipe1 = new Recipe("Sarmale");
+        recipe1.setRecipeId(1L);
         Recipe recipe2 = new Recipe("Ciorba Radauteana");
+        recipe2.setRecipeId(2L);
 
         when(recipeRepository.findAll())
                 .thenReturn(Arrays.asList(recipe1, recipe2));
@@ -65,20 +69,25 @@ class RecipeServiceTest {
     @Test
     void updateRecipe() {
         Recipe recipeToUpdate  = new Recipe("Sarmale cu Vita-de-Vie");
+        recipeToUpdate.setRecipeId(1L);
         Long id  = recipeToUpdate.getRecipeId();
+
+        Recipe updatedRecipe = new Recipe("Sarmale cu Varza");
+
         when(recipeRepository.findById(id))
                 .thenReturn(Optional.of(recipeToUpdate));
 
-        Recipe updatedRecipe = new Recipe("Sarmale cu Varza");
+
         recipeService.updateRecipe(id, updatedRecipe);
 
-        verify(recipeRepository, times(1)).save(updatedRecipe);
-        assertEquals("Sarmale cu Varza", recipeService.getRecipeById(id).getTitle());
+        verify(recipeRepository, times(1)).save(recipeToUpdate);
+        assertEquals("Sarmale cu Varza", recipeToUpdate.getTitle());
     }
 
     @Test
     void deleteRecipeById() {
         Recipe recipe = new Recipe("Sarmale");
+        recipe.setRecipeId(1L);
         Long id = recipe.getRecipeId();
 
         when(recipeRepository.existsById(id))

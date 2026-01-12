@@ -92,7 +92,7 @@ public class RecipeIngredientService {
      * @param id the id of the recipeIngredient to be updated
      * @param updated the updated entity
      */
-   public void updateRecipeIngredient(RecipeIngredientKey id, RecipeIngredient updated) {
+    public void updateRecipeIngredient(RecipeIngredientKey id, RecipeIngredient updated) {
         Objects.requireNonNull(updated, "Updated recipeIngredient cannot be null!");
 
         RecipeIngredient toUpdate = getRecipeIngredient(id);
@@ -102,8 +102,6 @@ public class RecipeIngredientService {
             toUpdate.setInformal(updated.getInformal());
         }
 
-//        toUpdate.setIngredient(updated.getIngredient());
-//        toUpdate.setRecipe(updated.getRecipe());
 
         recipeIngredientRepo.save(toUpdate);
     }

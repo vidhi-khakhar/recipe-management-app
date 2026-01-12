@@ -135,47 +135,59 @@ public class RecipeTest {
     @Test
     void testEqualsSame() {
         Recipe testRecipe = new Recipe("Pesto Panini");
+        testRecipe.setRecipeId(1L);
         assertTrue(testRecipe.equals(testRecipe));
     }
 
     @Test
     void testEqualSameValues() {
         Recipe testRecipe = new Recipe("Pesto Panini");
+        testRecipe.setRecipeId(1L);
         Recipe testRecipe2 = new Recipe("Pesto Panini");
+        testRecipe2.setRecipeId(1L);
         assertEquals(testRecipe, testRecipe2);
     }
 
     @Test
     void testEqualsDifferentValues(){
         Recipe testRecipe = new Recipe("Pesto Panini");
+        testRecipe.setRecipeId(1L);
         Recipe testRecipe2 = new Recipe("Pesto Pasta");
+        testRecipe2.setRecipeId(2L);
         assertNotEquals(testRecipe, testRecipe2);
     }
 
     @Test
     void testEqualsDifferentLanguages(){
         Recipe testRecipe = new Recipe("Pesto Panini", "en");
+        testRecipe.setRecipeId(1L);
         Recipe testRecipe2 = new Recipe("Pesto Panini", "ro");
+        testRecipe2.setRecipeId(2L);
         assertNotEquals(testRecipe, testRecipe2);
     }
 
     @Test
     void testHashCodeSame() {
         Recipe testRecipe = new Recipe("Pesto Panini", "en");
+        testRecipe.setRecipeId(1L);
         assertEquals(testRecipe.hashCode(), testRecipe.hashCode());
     }
 
     @Test
     void testHashCodeSameValues() {
         Recipe testRecipe = new Recipe("Pesto Panini", "nl");
+        testRecipe.setRecipeId(1L);
         Recipe testRecipe2 = new Recipe("Pesto Panini", "nl");
+        testRecipe2.setRecipeId(1L);
         assertEquals(testRecipe.hashCode(), testRecipe2.hashCode());
     }
 
     @Test
     void testHashCode_notEqualDifferentValues() {
         Recipe testRecipe = new Recipe("Pesto Panini", "en");
+        testRecipe.setRecipeId(1L);
         Recipe testRecipe2 = new Recipe("Pesto Panini", "ro");
+        testRecipe2.setRecipeId(2L);
         assertNotEquals(testRecipe.hashCode(), testRecipe2.hashCode());
     }
 
