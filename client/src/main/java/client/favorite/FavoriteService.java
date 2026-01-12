@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import client.config.Config;
 import client.config.ConfigService;
+import com.google.inject.Inject;
 import commons.Recipe;
 
 /**
@@ -18,28 +19,25 @@ public class FavoriteService {
      */
     private final Set<Long> favoriteRecipeIds = new HashSet<>();
     private final ConfigService configService;
-    private final Config config;
 
     /**
      * The constructor for the FavoriteService class that links this class to the config
      */
-    public FavoriteService() {
-        this.configService = ConfigService.getInstance();
-        this.config = ConfigService.getConfig();
-
-        // Checks whether a config exists and if there are any favorite recipes
-        if (config != null && config.getFavoriteRecipeIds() != null) {
-            favoriteRecipeIds.addAll(config.getFavoriteRecipeIds());
-        }
+    @Inject
+    public FavoriteService(ConfigService configService) {
+        this.configService = configService;
+        loadFromConfig();
     }
 
     /**
-     * Fetches the current favorite IDs from the config
-     * @param idsFromConfig the current IDs in the config
+     * Loads favorite IDs from the current config
      */
-    public void loadFavoriteRecipes(Collection<Long> idsFromConfig) {
-        favoriteRecipeIds.clear();
-        favoriteRecipeIds.addAll(idsFromConfig);
+    public void loadFromConfig() {
+        Config config = configService.getConfig();
+        if (config != null && config.getFavoriteRecipeIds() != null) {
+            favoriteRecipeIds.clear();
+            favoriteRecipeIds.addAll(config.getFavoriteRecipeIds());
+        }
     }
 
     /**
@@ -64,45 +62,51 @@ public class FavoriteService {
     /**
      * Marks the given recipe as favorite and saves the change.
      * @param recipe that is to be added.
+     * @return boolean whether action was successful
      */
-    public void addFavorite(Recipe recipe) {
+    public boolean addFavorite(Recipe recipe) {
         if(recipe == null || recipe.getRecipeId() == null) {
-            System.out.println("Recipe is not added to database or recipe does not exist");
-            return; // TODO alert user that recipe can't be null
+            return false; // TODO alert user that recipe can't be null
         }
 
         // Safety check: checks if correctly added to the list
         boolean changed = favoriteRecipeIds.add(recipe.getRecipeId());
         if (changed) {
             save();
+            return true;
         }
+        return false;
     }
 
     /**
      * Removes the given recipe from favorites and saves the change.
      * @param recipe that is to be removed.
+     * @return boolean whether action was successful
      */
-    public void removeFavorite(Recipe recipe) {
+    public boolean removeFavorite(Recipe recipe) {
         if (recipe == null || recipe.getRecipeId() == null) {
-            return;
+            return false;
         }
 
         // Safety check: checks if correctly added to the list
         boolean changed = favoriteRecipeIds.remove(recipe.getRecipeId());
         if (changed) {
             save();
+            return true;
         }
+        return false;
     }
 
     /**
      * Toggles the favorite status of the given recipe.
      * @param recipe that is to be toggled.
+     * @return boolean whether action was successful
      */
-    public void toggleFavorite(Recipe recipe) {
+    public boolean toggleFavorite(Recipe recipe) {
         if (isFavorite(recipe)) {
-            removeFavorite(recipe);
+            return removeFavorite(recipe);
         } else {
-            addFavorite(recipe);
+            return addFavorite(recipe);
         }
     }
 
@@ -143,13 +147,9 @@ public class FavoriteService {
      * Saves the current favorite IDs to the config file.
      */
     public void save() {
-        try{
-            config.setFavoriteRecipeIds(new  ArrayList<>(favoriteRecipeIds));
-            configService.save(config);
-        }
-        catch(Exception e){
-            System.err.println("Error saving favorite recipes: " + e.getMessage());
-        }
+        Config config = configService.getConfig();
+        config.setFavoriteRecipeIds(new ArrayList<>(favoriteRecipeIds));
+        configService.save();
     }
 
 }

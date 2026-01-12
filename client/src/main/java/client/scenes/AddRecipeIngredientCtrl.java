@@ -2,6 +2,7 @@ package client.scenes;
 
 import client.utils.IngredientServerUtils;
 import client.utils.RecipeServerUtils;
+import com.google.inject.Inject;
 import commons.Ingredient;
 import commons.Recipe;
 import commons.RecipeIngredient;
@@ -18,8 +19,17 @@ public class AddRecipeIngredientCtrl {
     private Recipe recipe;
     private RecipeIngredient recipeIngredient;
 
-    private final IngredientServerUtils ingredientServerUtils = new IngredientServerUtils();
-    private final RecipeServerUtils recipeServerUtils = new RecipeServerUtils();
+    private final IngredientServerUtils ingredientServerUtils;
+    private final RecipeServerUtils recipeServerUtils;
+
+    @Inject
+    public AddRecipeIngredientCtrl(
+            IngredientServerUtils ingredientServerUtils,
+            RecipeServerUtils recipeServerUtils
+    ) {
+        this.ingredientServerUtils = ingredientServerUtils;
+        this.recipeServerUtils = recipeServerUtils;
+    }
 
     // UI Elements
     @FXML
