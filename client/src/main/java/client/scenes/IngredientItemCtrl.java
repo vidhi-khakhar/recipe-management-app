@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import java.text.NumberFormat;
@@ -29,6 +30,9 @@ public class IngredientItemCtrl {
     @FXML
     private Button removeButton;
 
+    @FXML
+    private Label helperLabel;
+
     private RecipeIngredientData ingredientData;
     private Runnable onRemove;
     private Runnable onChange;
@@ -41,7 +45,9 @@ public class IngredientItemCtrl {
         "g", "kg", "mg", "oz", "lb",
         "ml", "l", "fl oz", "cup", "tsp", "tbsp", "pinch",
         "whole", "piece", "slice", "clove", "dash",
-        "", "to taste", "as needed"
+        "to taste", "as needed",
+        "───",
+        "Type custom unit..."
     );
 
     /**
@@ -91,51 +97,106 @@ public class IngredientItemCtrl {
         unitComboBox.setEditable(true); // Allow custom units
         
         // Add listeners for real-time updates
-        nameField.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (ingredientData != null && !updatingFields) {
-                ingredientData.setName(newVal.trim());
-                notifyChange();
-            }
-        });
+        nameField.textProperty().addListener((obs, oldVal, newVal) ->
+                handleNameFieldChange(newVal));
 
-        amountField.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (ingredientData != null && !updatingFields) {
-                try {
-                    if (newVal.trim().isEmpty()) {
-                        ingredientData.setAmount(0.0);
-                        ingredientData.setFormal(false);
-                    } else {
-                        Number parsed = numberFormat.parse(newVal);
-                        double amount = parsed.doubleValue();
-                        ingredientData.setAmount(amount);
-                        ingredientData.setFormal(true);
-                    }
-                } catch (ParseException e) {
+        amountField.textProperty().addListener((obs, oldVal, newVal) ->
+                handleAmountFieldChange(newVal));
+
+        unitComboBox.valueProperty().addListener((obs, oldVal, newVal) ->
+                handleUnitComboBoxChange(newVal));
+
+        // Handle custom typed units
+        unitComboBox.setOnAction(e -> handleCustomUnitAction());
+    }
+
+    private void handleNameFieldChange(String newVal) {
+        if (ingredientData != null && !updatingFields) {
+            ingredientData.setName(newVal.trim());
+            notifyChange();
+        }
+    }
+
+    private void handleAmountFieldChange(String newVal) {
+        if (ingredientData != null && !updatingFields) {
+            try {
+                if (newVal.trim().isEmpty()) {
                     ingredientData.setAmount(0.0);
-                    if (newVal.trim().isEmpty()) {
-                        ingredientData.setFormal(false);
-                    }
-                }
-                notifyChange();
-            }
-        });
-
-        unitComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
-            if (ingredientData != null && !updatingFields) {
-                String unit = newVal != null ? newVal.trim() : "";
-                ingredientData.setUnit(unit);
-                
-                // Check if this should be treated as informal
-                if (isInformalUnit(unit)) {
                     ingredientData.setFormal(false);
-                    ingredientData.setInformal(unit);
                 } else {
+                    Number parsed = numberFormat.parse(newVal);
+                    double amount = parsed.doubleValue();
+                    ingredientData.setAmount(amount);
                     ingredientData.setFormal(true);
-                    ingredientData.setInformal(null);
                 }
+            } catch (ParseException e) {
+                ingredientData.setAmount(0.0);
+                if (newVal.trim().isEmpty()) {
+                    ingredientData.setFormal(false);
+                }
+            }
+            notifyChange();
+        }
+    }
+
+    private void handleUnitComboBoxChange(String newVal) {
+        if (ingredientData != null && !updatingFields) {
+            String unit = newVal != null ? newVal.trim() : "";
+            
+            // Always update the unit in the data model
+            ingredientData.setUnit(unit);
+            
+            // Check if this should be treated as informal
+            if (isInformalUnit(unit) || unit.equals("Type custom unit...")
+                    || unit.equals("───")) {
+                if (unit.equals("Type custom unit...") || unit.equals("───")) {
+                    // Clear and focus for typing
+                    updatingFields = true;
+                    unitComboBox.getEditor().clear();
+                    unitComboBox.hide();
+                    unitComboBox.getEditor().requestFocus();
+                    updatingFields = false;
+                    helperLabel.setText("Type custom unit for informal measurement");
+                    return;
+                }
+                ingredientData.setFormal(false);
+                ingredientData.setInformal(unit);
+                amountField.setDisable(true);
+                amountField.setStyle("-fx-opacity: 0.5;");
+                helperLabel.setText("Informal: " + unit + " (amount not needed)");
+            } else {
+                ingredientData.setFormal(true);
+                ingredientData.setInformal(null);
+                amountField.setDisable(false);
+                amountField.setStyle("");
+                if (unit.isEmpty()) {
+                    helperLabel.setText("Select a unit or type custom unit for informal measurement");
+                } else {
+                    helperLabel.setText("Enter amount and select unit for formal measurement");
+                }
+            }
+            notifyChange();
+        }
+    }
+
+    private void handleCustomUnitAction() {
+        if (ingredientData != null && !updatingFields) {
+            String unit = unitComboBox.getEditor().getText().trim();
+            boolean isCustom = !unit.isEmpty()
+                    && !unit.equals("Type custom unit...")
+                    && !unit.equals("───")
+                    && !COMMON_UNITS.contains(unit);
+            if (isCustom) {
+                // Custom unit typed
+                ingredientData.setUnit(unit);
+                ingredientData.setFormal(false);
+                ingredientData.setInformal(unit);
+                amountField.setDisable(true);
+                amountField.setStyle("-fx-opacity: 0.5;");
+                helperLabel.setText("Custom informal: " + unit + " (amount not needed)");
                 notifyChange();
             }
-        });
+        }
     }
 
     /**
@@ -162,12 +223,21 @@ public class IngredientItemCtrl {
         if (ingredientData.isFormal()) {
             amountField.setText(numberFormat.format(ingredientData.getAmount()));
             unitComboBox.setValue(ingredientData.getUnit());
+            amountField.setDisable(false);
+            amountField.setStyle("");
+            helperLabel.setText("Enter amount and select unit for formal measurement");
         } else {
             amountField.setText("");
             if (ingredientData.getInformal() != null) {
                 unitComboBox.setValue(ingredientData.getInformal());
+                amountField.setDisable(true);
+                amountField.setStyle("-fx-opacity: 0.5;");
+                helperLabel.setText("Informal: " + ingredientData.getInformal() + " (amount not needed)");
             } else {
                 unitComboBox.setValue("");
+                amountField.setDisable(false);
+                amountField.setStyle("");
+                helperLabel.setText("Enter amount and select unit for formal measurement");
             }
         }
         updatingFields = false;
@@ -227,7 +297,8 @@ public class IngredientItemCtrl {
         
         nameField.setStyle("");
         
-        if (ingredientData.isFormal()) {
+        // Only validate amount for formal ingredients
+        if (ingredientData.isFormal() && !amountField.isDisabled()) {
             try {
                 Number parsed = numberFormat.parse(amountField.getText());
                 double amount = parsed.doubleValue();
@@ -250,6 +321,8 @@ public class IngredientItemCtrl {
      */
     public void clearValidation() {
         nameField.setStyle("");
-        amountField.setStyle("");
+        if (!amountField.isDisabled()) {
+            amountField.setStyle("");
+        }
     }
 }
