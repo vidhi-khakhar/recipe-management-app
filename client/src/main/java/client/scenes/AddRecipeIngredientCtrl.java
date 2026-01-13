@@ -127,12 +127,7 @@ public class AddRecipeIngredientCtrl {
             recipeIngredient = RecipeIngredient.informal(recipe,
                     ingredient, informal);
         }
-
-//        try{
-//            recipeServerUtils.createRecipeIngredient(recipeIngredient);
-//        }catch(Exception e){
-//            System.err.println("Server save failed, likely duplicate" + e.getMessage());
-//        }
+        
 
         closeWindow();
     }
