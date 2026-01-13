@@ -42,24 +42,9 @@ public class RecipeShoppingService {
     public List<RecipeIngredientData> getRecipeIngredients(Recipe recipe) {
         List<RecipeIngredientData> ingredients = new ArrayList<>();
 
-        // First, add string-based ingredients (priority as per requirements)
         if (recipe.getIngredients() != null && !recipe.getIngredients().isEmpty()) {
-            for (String ingredientStr : recipe.getIngredients()) {
-                ingredients.add(parseStringIngredient(ingredientStr, recipe));
-            }
-        } else {
-            // Fallback to formal RecipeIngredient entities if no string ingredients
-            try {
-                List<RecipeIngredient> formalIngredients = 
-                    recipeServerUtils.getRecipeIngredients(recipe.getRecipeId());
-                
-                for (RecipeIngredient recipeIngredient : formalIngredients) {
-                    ingredients.add(convertFormalIngredient(recipeIngredient, recipe));
-                }
-            } catch (Exception e) {
-                // Log error but don't fail completely
-                System.err.println("Failed to fetch formal ingredients for recipe " 
-                    + recipe.getRecipeId() + ": " + e.getMessage());
+            for (RecipeIngredient recipeIngredient : recipe.getIngredients()) {
+                ingredients.add(convertFormalIngredient(recipeIngredient, recipe));
             }
         }
 
