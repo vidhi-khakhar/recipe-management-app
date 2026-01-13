@@ -1,6 +1,7 @@
 package client;
 
 import commons.Recipe;
+import commons.RecipeIngredient;
 
 public class RecipeFormatter {
     private final Recipe recipe;
@@ -24,8 +25,8 @@ public class RecipeFormatter {
         // - ingredient_1
         // - ...
         text.append("Ingredients: \n");
-        for (String ingredient : recipe.getIngredients()) {
-            text.append("\t- " + ingredient + "\n");
+        for (RecipeIngredient ingredient : recipe.getIngredients()) {
+            text.append("\t- " + ingredient.toString() + "\n");
         }
 
         // Instructions:
@@ -51,8 +52,8 @@ public class RecipeFormatter {
         text.append(" (" + recipe.getLanguage() + ")\n");
 
         text.append("## Ingredients: \n");
-        for (String ingredient : recipe.getIngredients()) {
-            text.append("- " + ingredient + "\n");
+        for (RecipeIngredient ingredient : recipe.getIngredients()) {
+            text.append("- " + ingredient.toString() + "\n");
         }
 
         text.append("\n## Instructions: \n");

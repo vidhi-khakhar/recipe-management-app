@@ -40,7 +40,15 @@ public class RecipeIngredientKey implements Serializable {
         return recipeId;
     }
 
+    public void setRecipeId(Long recipeId) {
+        this.recipeId = recipeId;
+    }
+
     public Long getIngredientId() {
         return ingredientId;
+    }
+
+    public void setIngredientId(Long ingredientId) {
+        this.ingredientId = ingredientId;
     }
 }

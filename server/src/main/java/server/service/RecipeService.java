@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
+import commons.RecipeIngredient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -72,8 +73,15 @@ public class RecipeService {
         recipeToUpdate.setTitle(updatedRecipe.getTitle());
         recipeToUpdate.setServings(updatedRecipe.getServings());
         recipeToUpdate.setLanguage(updatedRecipe.getLanguage());
-        recipeToUpdate.setIngredients(updatedRecipe.getIngredients());
         recipeToUpdate.setInstructions(updatedRecipe.getInstructions());
+
+        recipeToUpdate.getIngredients().clear();
+        if(updatedRecipe.getIngredients() != null) {
+            for(RecipeIngredient ingredient : updatedRecipe.getIngredients()) {
+                ingredient.setRecipe(recipeToUpdate);
+                recipeToUpdate.getIngredients().add(ingredient);
+            }
+        }
 
         recipeRepository.save(recipeToUpdate);
     }

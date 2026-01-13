@@ -90,6 +90,11 @@ public class AddRecipeIngredientCtrl {
      * @param unitType the selected unit type ("Formal" or "Informal")
      */
     public void updateUnitChoiceBoxVisibility(String unitType) {
+
+        if(unitType == null) {
+            return;
+        }
+
         if (unitType.equals("Formal")) {
             unitChoiceBox.setVisible(true);
         } else if (unitType.equals("Informal")) {
@@ -122,8 +127,8 @@ public class AddRecipeIngredientCtrl {
             recipeIngredient = RecipeIngredient.informal(recipe,
                     ingredient, informal);
         }
+        
 
-        recipeServerUtils.createRecipeIngredient(recipeIngredient);
         closeWindow();
     }
 

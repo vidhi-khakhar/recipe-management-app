@@ -2,6 +2,7 @@ package commons;
 
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -30,6 +31,7 @@ public class RecipeIngredient {
     @ManyToOne(optional = false, cascade = CascadeType.MERGE)
     @MapsId("recipeId")
     @JoinColumn(name = "recipe_id", nullable = false)
+    @JsonBackReference
     private Recipe recipe;
 
     // One ingredient can be used in many recipes
@@ -224,6 +226,14 @@ public class RecipeIngredient {
 
     public void setRecipe(Recipe recipe) {
         this.recipe = recipe;
+    }
+
+    public RecipeIngredientKey getRecipeId() {
+        return id;
+    }
+
+    public void setId(RecipeIngredientKey id) {
+        this.id = id;
     }
 }
 

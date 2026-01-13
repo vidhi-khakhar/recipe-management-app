@@ -34,22 +34,32 @@ class RecipeControllerTest {
 
     @Test
     void createsRecipeAndReturnsNewUUID() {
-        var result = recipeController.createRecipe(new Recipe("test"));
+
+        Recipe recipe = new Recipe("test");
+
+        var result = recipeController.createRecipe(recipe);
 
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
-        assertNotNull(result);
+        verify(rService, times(1)).createRecipe(recipe);
     }
 
     @Test
     void createsRecipeAndExists() {
-        assertNotNull(recipeController.createRecipe(new Recipe("test")));
-        verify(rService, times(1)).createRecipe(new Recipe("test"));
+
+        Recipe recipe = new Recipe("test");
+
+        var result = recipeController.createRecipe(recipe);
+
+        assertNotNull(result);
+        verify(rService, times(1)).createRecipe(recipe);
     }
 
     @Test
     void returnsAllRecipesWhenGettingAll() {
         Recipe recipe1 = new Recipe("Recipe 1");
+        recipe1.setRecipeId(1L);
         Recipe recipe2 = new Recipe("Recipe 2");
+        recipe2.setRecipeId(2L);
         List<Recipe> recipes = List.of(recipe1, recipe2);
 
         when(rService.getAllRecipes()).thenReturn(recipes);
@@ -64,6 +74,7 @@ class RecipeControllerTest {
     @Test
     void returnsRecipeWhenFoundByID() {
         Recipe recipe = new Recipe("Test Recipe");
+        recipe.setRecipeId(1L);
         var id = recipe.getRecipeId();
 
         when(rService.getRecipeById(id)).thenReturn(recipe);
@@ -119,6 +130,7 @@ class RecipeControllerTest {
     @Test
     void removesRecipeWhenDeletingExistingOne() {
         Recipe recipe = new Recipe("Test Recipe");
+        recipe.setRecipeId(1L);
         var id = recipe.getRecipeId();
 
         ResponseEntity<Long> result = recipeController.deleteRecipe(id);
