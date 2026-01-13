@@ -99,9 +99,8 @@ public class RecipeShoppingService {
                 item.setAmount(scaledAmount);
                 item.setUnit(ingredient.getUnit());
             } else {
-                // Keep informal ingredients as-is
-                item.setAmount(ingredient.getAmount());
-                item.setUnit(ingredient.getUnit());
+                item.setAmount(0.0);
+                item.setUnit(ingredient.getInformal() != null ? ingredient.getInformal() : "");
             }
 
             shoppingItems.add(item);
