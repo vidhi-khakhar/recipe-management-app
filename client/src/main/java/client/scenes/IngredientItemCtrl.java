@@ -8,6 +8,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Button;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import java.text.NumberFormat;
+import java.text.ParseException;
 
 /**
  * Controller for individual ingredient items in the recipe shopping list.
@@ -32,6 +34,7 @@ public class IngredientItemCtrl {
     private Runnable onChange;
     private java.util.function.Consumer<RecipeIngredientData> onUpdate;
     private boolean updatingFields = false;
+    private final NumberFormat numberFormat = NumberFormat.getNumberInstance();
 
     // Common units for the dropdown
     private static final ObservableList<String> COMMON_UNITS = FXCollections.observableArrayList(
@@ -98,10 +101,16 @@ public class IngredientItemCtrl {
         amountField.textProperty().addListener((obs, oldVal, newVal) -> {
             if (ingredientData != null && !updatingFields) {
                 try {
-                    double amount = Double.parseDouble(newVal);
-                    ingredientData.setAmount(amount);
-                    ingredientData.setFormal(true); // Setting amount makes it formal
-                } catch (NumberFormatException e) {
+                    if (newVal.trim().isEmpty()) {
+                        ingredientData.setAmount(0.0);
+                        ingredientData.setFormal(false);
+                    } else {
+                        Number parsed = numberFormat.parse(newVal);
+                        double amount = parsed.doubleValue();
+                        ingredientData.setAmount(amount);
+                        ingredientData.setFormal(true);
+                    }
+                } catch (ParseException e) {
                     ingredientData.setAmount(0.0);
                     if (newVal.trim().isEmpty()) {
                         ingredientData.setFormal(false);
@@ -151,7 +160,7 @@ public class IngredientItemCtrl {
         nameField.setText(ingredientData.getName());
         
         if (ingredientData.isFormal()) {
-            amountField.setText(String.format("%.1f", ingredientData.getAmount()));
+            amountField.setText(numberFormat.format(ingredientData.getAmount()));
             unitComboBox.setValue(ingredientData.getUnit());
         } else {
             amountField.setText("");
@@ -220,12 +229,13 @@ public class IngredientItemCtrl {
         
         if (ingredientData.isFormal()) {
             try {
-                double amount = Double.parseDouble(amountField.getText());
+                Number parsed = numberFormat.parse(amountField.getText());
+                double amount = parsed.doubleValue();
                 if (amount <= 0) {
                     amountField.setStyle("-fx-border-color: red;");
                     return false;
                 }
-            } catch (NumberFormatException e) {
+            } catch (ParseException e) {
                 amountField.setStyle("-fx-border-color: red;");
                 return false;
             }
