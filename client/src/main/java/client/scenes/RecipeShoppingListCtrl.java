@@ -249,9 +249,6 @@ public class RecipeShoppingListCtrl {
             // Close window
             ((Node) event.getSource()).getScene().getWindow().hide();
             
-            // Show success message
-            showSuccess("Ingredients added to shopping list successfully!");
-            
         } catch (Exception e) {
             showError("Failed to add to shopping list: " + e.getMessage());
         }
