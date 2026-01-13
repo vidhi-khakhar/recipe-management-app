@@ -2,7 +2,9 @@ package client.search;
 
 import client.config.ConfigService;
 import client.favorite.FavoriteService;
+import commons.Ingredient;
 import commons.Recipe;
+import commons.RecipeIngredient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -10,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 
 public class SearchServiceTest {
 
@@ -31,19 +34,33 @@ public class SearchServiceTest {
     public void setup() {
 
 
-        configService = new ConfigService("test-config.json");
+        configService = new ConfigService("config-to-json2");
 
         recipeCollection = new RecipeCollection();
         favoriteService = new FavoriteService(configService);
 
         r1 = new Recipe("Sandwich");
         r1.setRecipeId(1L);
-        r1.setIngredients(Arrays.asList("Cheese", "Bread"));
+
+        Ingredient cheese = new Ingredient("Cheese", 0, 0, 0);
+        cheese.setId(10L);
+        Ingredient bread = new Ingredient("Bread", 0, 0, 0);
+        bread.setId(11L);
+
+        RecipeIngredient riC = RecipeIngredient.informal(r1, cheese, "1 Slice");
+        RecipeIngredient riB = RecipeIngredient.informal(r1, bread, "2 Slice");
+
+        r1.setIngredients(Arrays.asList(riC, riB));
         r1.setInstructions(Arrays.asList("Put bread", "Put cheese"));
 
         r2 = new Recipe("Boiled egg");
         r2.setRecipeId(2L);
-        r2.setIngredients(Arrays.asList("egg"));
+
+        Ingredient egg = new Ingredient("egg", 0, 0, 0);
+        egg.setId(12L);
+
+        RecipeIngredient riE = RecipeIngredient.informal(r2, egg, "1 Large");
+        r2.setIngredients(Arrays.asList(riE));
         r2.setInstructions(Arrays.asList("Boil water", "Put egg in water for 8 min", "Remove egg", "peel egg"));
 
         recipeCollection.add(r1);

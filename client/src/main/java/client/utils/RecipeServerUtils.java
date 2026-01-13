@@ -271,7 +271,7 @@ public class RecipeServerUtils {
     /**
      * Deletes a RecipeIngredient from a recipe.
      */
-    public RecipeIngredientKey deleteRecipeIngredient(
+    public boolean deleteRecipeIngredient(
             Long recipeId,
             Long ingredientId)
             throws ProcessingException, NoSuchElementException {
@@ -283,7 +283,7 @@ public class RecipeServerUtils {
                 .delete()) {
 
             if (response.getStatus() == HTTP_OK) {
-                return response.readEntity(RecipeIngredientKey.class);
+                return true;
             }
 
             if (response.getStatus() == HTTP_NOT_FOUND) {

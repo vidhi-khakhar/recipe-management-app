@@ -370,6 +370,7 @@ public class MainCtrl {
         loadRecipesFromDatabase();
         favoriteService.loadFromConfig();
         sidebarList.refresh();
+        showIngredients(sidebarList.getSelectionModel().getSelectedItem());
     }
 
     // RECIPE INGREDIENTS METHODS
@@ -380,7 +381,7 @@ public class MainCtrl {
     void showIngredients(Recipe recipe) {
         ingredientList.getChildren().clear();
 
-        List<RecipeIngredient> ingredients = this.recipeServerUtils.getRecipeIngredients(recipe.getRecipeId());
+        List<RecipeIngredient> ingredients = recipe.getIngredients();
 
         for (RecipeIngredient ingredient : ingredients) {
             addRecipeIngredientToUI(ingredient);
@@ -426,7 +427,10 @@ public class MainCtrl {
 
         if (newIngredient != null) {
             newIngredient.setRecipe(selectedRecipe);
+
             this.recipeServerUtils.createRecipeIngredient(newIngredient);
+            selectedRecipe.getIngredients().add(newIngredient);
+
         }
 
         showIngredients(selectedRecipe);
@@ -481,12 +485,33 @@ public class MainCtrl {
     private void ingredientRemoveButtonClicked(ActionEvent event) {
         Button removeButton = (Button) event.getSource(); // To identify the button of which ingredient was clicked
         HBox ingredientToRemove = (HBox) removeButton.getParent(); // To delete the whole row
-        ingredientList.getChildren().remove(ingredientToRemove);
-
         RecipeIngredientKey id = (RecipeIngredientKey) ingredientToRemove.getUserData();
-        this.recipeServerUtils.deleteRecipeIngredient(id.getRecipeId(), id.getIngredientId());
 
-        System.out.println("Removed ingredient.");
+        if(id == null) return;
+
+        try{
+            boolean success = this.recipeServerUtils.deleteRecipeIngredient(id.getRecipeId(),
+                    id.getIngredientId());
+
+            if (success) {
+                ingredientList.getChildren().remove(ingredientToRemove);
+
+                if(selectedRecipe != null) {
+                    selectedRecipe.getIngredients().removeIf(ri ->
+                            ri.getId().equals(id)
+                    );
+                }
+            }
+
+            System.out.println("Removed ingredient.");
+
+        } catch (Exception e) {
+            System.err.println("Error deleting recipe ingredient from Database");
+        }
+
+
+
+
     }
 
     /**
@@ -510,12 +535,21 @@ public class MainCtrl {
         addRecipeIngredientCtrl.setRecipe(selectedRecipe);
         showAddRecipeIngredientWindow();
         RecipeIngredient updated = addRecipeIngredientCtrl.getRecipeIngredient();
-        ingredientLabel.setText(
-                updated.toString()
-        );
 
-        RecipeIngredientKey id = (RecipeIngredientKey) ingredientToEdit.getUserData();
-        this.recipeServerUtils.updateRecipeIngredient(id.getRecipeId(), id.getIngredientId(), updated);
+        if(updated != null) {
+            RecipeIngredientKey id = (RecipeIngredientKey) ingredientToEdit.getUserData();
+            this.recipeServerUtils.updateRecipeIngredient(id.getRecipeId(), id.getIngredientId(), updated);
+
+            List<RecipeIngredient> ingredients = selectedRecipe.getIngredients();
+            for(int i = 0; i < ingredients.size(); i++) {
+                if(ingredients.get(i).getId().equals(id)) {
+                    updated.setRecipe(selectedRecipe);
+                    ingredients.set(i, updated);
+                    break;
+                }
+            }
+        }
+
 
         showIngredients(selectedRecipe);
 
@@ -768,10 +802,24 @@ public class MainCtrl {
 
             newRecipe.setServings(original.getServings());
             newRecipe.setInstructions(new ArrayList<>(original.getInstructions()));
-            newRecipe.setIngredients(new ArrayList<>(original.getIngredients()));
 
             Long newId = recipeServerUtils.createRecipe(newRecipe);
             newRecipe.setRecipeId(newId);
+
+            for(RecipeIngredient oldI : original.getIngredients()) {
+                RecipeIngredient newI;
+
+                if(oldI.isFormal()){
+                    newI = RecipeIngredient.formal(newRecipe, oldI.getIngredient(), oldI.getAmount(),  oldI.getUnit());
+                }else{
+                    newI = RecipeIngredient.informal(newRecipe, oldI.getIngredient(), oldI.getInformal());
+                }
+
+                recipeServerUtils.createRecipeIngredient(newI);
+
+                newRecipe.getIngredients().add(newI);
+
+            }
 
             recipesObservableList.add(newRecipe);
 
