@@ -109,7 +109,7 @@ public class NutritionalValueCtrl {
 
         // Listen for selection changes
         sidebarList.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            showIngredientDetails(newSelection);
+            updateSelectedIngredient();
             updateStackPaneVisibility();
         });
 
@@ -123,6 +123,13 @@ public class NutritionalValueCtrl {
 
         loadIngredientsFromServer();
     }
+
+    private void updateSelectedIngredient() {
+        Ingredient selected = sidebarList.getSelectionModel().getSelectedItem();
+        showIngredientDetails(selected);
+        updateUsageLabel(selected);
+    }
+
 
     /**
      * Loads all the ingredients from the server into the UI. It places them in
@@ -138,6 +145,7 @@ public class NutritionalValueCtrl {
                 Ingredient first = ingredients.get(0);
                 sidebarList.getSelectionModel().select(first);
                 showIngredientDetails(first);
+                updateUsageLabel(first);
             } else {
                 showIngredientDetails(null);
             }
@@ -183,7 +191,7 @@ public class NutritionalValueCtrl {
      */
     private void defaultMode() {
         updateStackPaneVisibility();
-        showIngredientDetails(sidebarList.getSelectionModel().getSelectedItem());
+        updateSelectedIngredient();
 
         ingredientName.setDisable(true);
         fatValue.setDisable(true);
@@ -260,7 +268,6 @@ public class NutritionalValueCtrl {
         kcalValueLabel.setText(Double.toString(ingredient.getKcalPer100g()));
 
         updateUsageLabel(ingredient);
-
     }
 
     // Dynamic font sizing.
@@ -331,7 +338,7 @@ public class NutritionalValueCtrl {
             newIngProteins.clear();
             newIngFats.clear();
             newIngCarbs.clear();
-
+            updateSelectedIngredient();
             defaultMode();
 
         } catch (NumberFormatException e) {
@@ -388,7 +395,8 @@ public class NutritionalValueCtrl {
     @FXML
     void editIngredient() {
         Ingredient selected = sidebarList.getSelectionModel().getSelectedItem();
-        showIngredientDetails(selected);
+        updateSelectedIngredient();
+
         if (selected == null) {
             showError("No ingredient selected", "Select an ingredient to edit");
         }
@@ -433,7 +441,7 @@ public class NutritionalValueCtrl {
 
             sidebarList.getSelectionModel().select(selected);
 
-            showIngredientDetails(selected);
+            updateSelectedIngredient();
 
             defaultMode();
 
@@ -452,8 +460,7 @@ public class NutritionalValueCtrl {
      */
     @FXML
     void cancelEdit() {
-        Ingredient selected = sidebarList.getSelectionModel().getSelectedItem();
-        showIngredientDetails(selected);
+        updateSelectedIngredient();
 
         defaultMode();
     }
@@ -479,6 +486,7 @@ public class NutritionalValueCtrl {
             RecipeUsageValueLabel.setText("Used in ? recipes");
         }
     }
+
     private int getUsageCount(Long ingredientId) {
         int usage = 0;
 
@@ -490,13 +498,14 @@ public class NutritionalValueCtrl {
             for (RecipeIngredient rIng : r.getIngredients()) {
                 if (rIng.getIngredient() != null && Objects.equals(rIng.getIngredient().getId(), ingredientId)) {
                     usage++;
-                    break; // count recipe only once
+                    break;
                 }
             }
         }
 
         return usage;
     }
+
 
 
     @FXML

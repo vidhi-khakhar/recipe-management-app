@@ -67,6 +67,7 @@ public class MainCtrl {
     private Scene recipeShoppingListScene;
 
     private AddRecipeIngredientCtrl addRecipeIngredientCtrl;
+    private NutritionalValueCtrl nutritionalValueCtrl;
 
     private final RecipeServerUtils recipeServerUtils;
     private final FavoriteService favoriteService;
@@ -86,10 +87,12 @@ public class MainCtrl {
      * @param recipeAddScene the add recipe scene
      * @param addRecipeIngredientScene the add ingredient to recipe scene
      * @param addRecipeIngredientCtrl the add ingredient to recipe controller
+     * @param nutritionalValueCtrl the nutritional value controller
      */
     public void initScenes(Stage primaryStage, Scene mainUserInterfaceScene, Scene nutritionScene,
             Scene recipeAddScene, Scene addRecipeIngredientScene, AddRecipeIngredientCtrl addRecipeIngredientCtrl,
-            Scene editTitleScene, Scene shoppingListScene, Scene recipeShoppingListScene) {
+            Scene editTitleScene, Scene shoppingListScene, Scene recipeShoppingListScene,
+                           NutritionalValueCtrl nutritionalValueCtrl) {
         this.primaryStage = primaryStage;
         this.nutritionScene = nutritionScene;
         this.recipeAddScene = recipeAddScene; 
@@ -98,6 +101,7 @@ public class MainCtrl {
         this.editTitleScene = editTitleScene;
         this.shoppingListScene = shoppingListScene;
         this.recipeShoppingListScene = recipeShoppingListScene;
+        this.nutritionalValueCtrl = nutritionalValueCtrl;
 
         primaryStage.show();
     }
@@ -718,6 +722,7 @@ public class MainCtrl {
         }
 
         Stage secondaryStage = new Stage();
+        nutritionalValueCtrl.initialize();
         secondaryStage.setTitle("Nutritional Values");
         secondaryStage.setScene(nutritionScene);
         secondaryStage.initOwner(primaryStage); // makes it modal to main window if desired
