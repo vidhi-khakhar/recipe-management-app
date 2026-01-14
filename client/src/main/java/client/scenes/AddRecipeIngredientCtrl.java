@@ -73,7 +73,7 @@ public class AddRecipeIngredientCtrl {
      * whenever a change is observed
      */
     @FXML
-    public void initialize() {
+    public void onStart() {
         infoLabel.setVisible(false);
         pleaseAddIngredientLabel.setVisible(false);
 

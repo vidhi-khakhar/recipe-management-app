@@ -356,10 +356,6 @@ public class NutritionalValueCtrl {
      */
     @FXML
     void removeIngredient() {
-        if (!addIngredientPane.isVisible()) {
-            return;
-        }
-
         Ingredient selected = sidebarList.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showError("No ingredient selected", "Select an ingredient to remove");
@@ -379,11 +375,9 @@ public class NutritionalValueCtrl {
         try {
             ingredientServerUtils.deleteIngredient(selected.getId());
             sidebarList.getItems().remove(selected);
-            updateStackPaneVisibility();
         } catch (NoSuchElementException e) {
             showError("Ingredient not found on server", "It seems the ingredient was already removed");
             sidebarList.getItems().remove(selected);
-            updateStackPaneVisibility();
         } catch (ProcessingException e) {
             showError("Error deleting Ingredient", "Server error" + e.getMessage());
         }

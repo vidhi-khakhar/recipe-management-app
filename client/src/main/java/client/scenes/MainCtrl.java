@@ -383,8 +383,11 @@ public class MainCtrl {
      */
     @FXML
     void showIngredients(Recipe recipe) {
-        ingredientList.getChildren().clear();
+        if (recipe == null) {
+            return;
+        }
 
+        ingredientList.getChildren().clear();
         List<RecipeIngredient> ingredients = recipe.getIngredients();
 
         for (RecipeIngredient ingredient : ingredients) {
@@ -403,7 +406,7 @@ public class MainCtrl {
         }
 
         Stage secondaryStage = new Stage();
-        addRecipeIngredientCtrl.initialize();
+        addRecipeIngredientCtrl.onStart();
         addRecipeIngredientCtrl.initScenes(nutritionScene, addRecipeIngredientScene);
         secondaryStage.setTitle("Add Ingredient to Recipe");
         secondaryStage.setScene(addRecipeIngredientScene);
@@ -726,7 +729,9 @@ public class MainCtrl {
         secondaryStage.setTitle("Nutritional Values");
         secondaryStage.setScene(nutritionScene);
         secondaryStage.initOwner(primaryStage); // makes it modal to main window if desired
-        secondaryStage.show();
+        secondaryStage.showAndWait();
+
+        sidebarList.getSelectionModel().clearSelection();
     }
 
     /**
