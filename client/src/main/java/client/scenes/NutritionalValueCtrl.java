@@ -361,7 +361,8 @@ public class NutritionalValueCtrl {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Delete Ingredient");
         confirm.setHeaderText("Are you sure you want to delete " + selected.getName() + "?");
-        confirm.setContentText("This will remove the ingredient from the database");
+        confirm.setContentText("This will remove the ingredient from the database.\n"
+            + "This ingredient is used in " + getUsageCount(selected.getId()) + " recipes.");
         var result = confirm.showAndWait();
 
         if (result.isEmpty() || result.get() != ButtonType.OK) {
