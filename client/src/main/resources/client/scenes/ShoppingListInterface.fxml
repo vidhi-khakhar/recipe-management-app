@@ -85,7 +85,7 @@
                      <children>
                         <StackPane prefHeight="249.0" prefWidth="584.0" VBox.vgrow="ALWAYS">
                            <children>
-                              <AnchorPane fx:id="emptyShoppingList" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                              <AnchorPane fx:id="emptyShoppingList" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <children>
                                     <VBox prefHeight="240.0" prefWidth="580.0">
                                        <children>
@@ -121,9 +121,9 @@
                                     </VBox>
                                  </children>
                               </AnchorPane>
-                              <AnchorPane fx:id="notEmptyShoppingList" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                              <AnchorPane fx:id="notEmptyShoppingList" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <children>
-                                    <ScrollPane fx:id="shoppingScrollPane" VBox.vgrow="ALWAYS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <ScrollPane fx:id="shoppingScrollPane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="ALWAYS">
                                        <content>
                                           <VBox fx:id="shoppingList" prefHeight="241.0" prefWidth="579.0" />
                                        </content>
@@ -136,7 +136,10 @@
                   </VBox>
                   <HBox prefHeight="40.0" prefWidth="584.0" VBox.vgrow="NEVER">
                      <children>
-                        <Button fx:id="addShoppingItemButton" mnemonicParsing="false" onAction="#addShoppingItem" prefHeight="21.0" prefWidth="48.0" styleClass="roundbutton" text="➕" />
+                        <Button fx:id="addShoppingItemButton" mnemonicParsing="false" onAction="#addShoppingItem" prefHeight="21.0" prefWidth="48.0" styleClass="roundbutton" text="➕">
+                           <HBox.margin>
+                              <Insets top="7.0" />
+                           </HBox.margin></Button>
                      </children>
                   </HBox>
                </children>

@@ -11,17 +11,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ShoppingItem implements Serializable {
 
-    /** Name of the item, e.g. "Milk", "Cereal" */
-    private String name;
+    private String name; // Name of the item, e.g. "Milk", "Cereal" 
+    private double amount; // Amount of the item
+    private String unit; // Unit of the amount
+    private String sourceRecipeName;  // (null if added directly)
+    private boolean bought; // Whether the item has been marked as bought
 
-    /** Amount of the item */
-    private double amount;
-
-    /** Unit of the amount, can be informal like "box" or formal like "g" */
-    private String unit;
-
-    /** Name of the source recipe (null or "Manual" if added directly) */
-    private String sourceRecipeName;
 
     /**
      * Default constructor (required for JSON deserialization)
@@ -53,6 +48,7 @@ public class ShoppingItem implements Serializable {
         this.amount = amount;
         this.unit = unit != null ? unit : "";
         this.sourceRecipeName = sourceRecipeName;
+        this.bought = false;
     }
 
     /**
@@ -110,6 +106,14 @@ public class ShoppingItem implements Serializable {
     public void setSourceRecipeName(String sourceRecipeName) {
         this.sourceRecipeName = sourceRecipeName;
     }
+    
+    public void setBought(boolean bought) {
+        this.bought = bought;
+    }
+
+    public boolean isBought() {
+        return bought;
+    }   
 
     /**
      * String representation for UI / printing
