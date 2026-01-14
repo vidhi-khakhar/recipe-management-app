@@ -1,32 +1,34 @@
 package client.scenes;
 
-import java.util.NoSuchElementException;
-
-import com.google.inject.Inject;
-
 import client.utils.IngredientServerUtils;
+import client.utils.RecipeServerUtils;
+import com.google.inject.Inject;
 import commons.Ingredient;
+import commons.Recipe;
+import commons.RecipeIngredient;
 import jakarta.ws.rs.ProcessingException;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+
 public class NutritionalValueCtrl {
 
     private final IngredientServerUtils ingredientServerUtils;
+    private final RecipeServerUtils recipeServerUtils;
 
     @Inject
-    public NutritionalValueCtrl(IngredientServerUtils ingredientServerUtils) {
+    public NutritionalValueCtrl(IngredientServerUtils ingredientServerUtils,
+                                RecipeServerUtils recipeServerUtils) {
         this.ingredientServerUtils = ingredientServerUtils;
+        this.recipeServerUtils = recipeServerUtils;
     }
     // Buttons
     @FXML
@@ -468,7 +470,7 @@ public class NutritionalValueCtrl {
         }
 
         try {
-            long usage = ingredientServerUtils.getIngredientUsageCount(ingredient.getId());
+            long usage = getUsageCount(ingredient.getId());
             RecipeUsageValueLabel.setText("Used in " + usage + " recipes");
         } catch (NoSuchElementException e) {
             RecipeUsageValueLabel.setText("Used in 0 recipes");
@@ -476,6 +478,25 @@ public class NutritionalValueCtrl {
             RecipeUsageValueLabel.setText("Used in ? recipes");
         }
     }
+    private int getUsageCount(Long ingredientId) {
+        int usage = 0;
+
+        List<Recipe> recipes = recipeServerUtils.getAllRecipes();
+
+        for (Recipe r : recipes) {
+            if (r.getIngredients() == null) continue;
+
+            for (RecipeIngredient rIng : r.getIngredients()) {
+                if (rIng.getIngredient() != null && Objects.equals(rIng.getIngredient().getId(), ingredientId)) {
+                    usage++;
+                    break; // count recipe only once
+                }
+            }
+        }
+
+        return usage;
+    }
+
 
     @FXML
     void updateIngredientName() {

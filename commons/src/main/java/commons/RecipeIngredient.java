@@ -200,7 +200,6 @@ public class RecipeIngredient {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(this.ingredient.getName()).append(" ");
 
         if (this.informal != null) {
             sb.append(this.informal);
@@ -208,6 +207,7 @@ public class RecipeIngredient {
             sb.append(this.amount).append(" ").append(this.unit);
         }
 
+        sb.append(" ").append(this.ingredient.getName());
         return sb.toString();
     }
 

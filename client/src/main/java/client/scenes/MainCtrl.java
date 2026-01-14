@@ -400,6 +400,7 @@ public class MainCtrl {
 
         Stage secondaryStage = new Stage();
         addRecipeIngredientCtrl.initialize();
+        addRecipeIngredientCtrl.initScenes(nutritionScene, addRecipeIngredientScene);
         secondaryStage.setTitle("Add Ingredient to Recipe");
         secondaryStage.setScene(addRecipeIngredientScene);
         secondaryStage.setResizable(false);
@@ -429,6 +430,7 @@ public class MainCtrl {
             newIngredient.setRecipe(selectedRecipe);
 
             this.recipeServerUtils.createRecipeIngredient(newIngredient);
+
             selectedRecipe.getIngredients().add(newIngredient);
 
         }
