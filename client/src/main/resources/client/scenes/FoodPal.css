@@ -184,7 +184,10 @@
     -fx-effect: none;
 }
 
-/*Specific recipe (preparation) item styling*/
-
+/*Recipe (preparation) styling*/
+.scrollPane {
+    -fx-background-radius: 12px;
+    -fx-padding: 5px;
+}
 
 

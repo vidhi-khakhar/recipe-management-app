@@ -215,11 +215,11 @@
                                                           <VBox prefHeight="231.0" prefWidth="639.0" VBox.vgrow="ALWAYS">
                                                               <children>
                                                                   <Label styleClass="h3" text="Ingredients:" />
-                                                                  <VBox fx:id="ingredientList" prefHeight="186.0" prefWidth="582.0" spacing="6.0" VBox.vgrow="ALWAYS">
+                                                                  <VBox fx:id="ingredientList" prefHeight="397.0" prefWidth="595.0" spacing="6.0" VBox.vgrow="ALWAYS">
                                                                       <children>
-                                                                          <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                                                                          <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="266.0" prefWidth="595.0" styleClass="scrollPane" VBox.vgrow="ALWAYS">
                                                                               <content>
-                                                                                    <VBox fx:id="ingredientList" prefHeight="186.0" prefWidth="582.0" spacing="6.0">
+                                                                                    <VBox fx:id="ingredientList" prefHeight="270.0" prefWidth="586.0" spacing="6.0">
                                                                                         <children>
                                                                                             <HBox alignment="CENTER_LEFT" maxHeight="20.0" prefHeight="20.0" prefWidth="582.0" spacing="8.0" styleClass="recipe-item" VBox.vgrow="ALWAYS">
                                                                                                 <children>
@@ -248,14 +248,21 @@
                                                                   </VBox>
                                                                   <HBox fillHeight="false" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                                                                       <children>
-                                                                          <Button fx:id="addIngredientButton" mnemonicParsing="false" onAction="#ingredientAddButtonClicked" styleClass="roundbutton" text="+" HBox.hgrow="ALWAYS">
+                                                                          <Button fx:id="addIngredientButton" mnemonicParsing="false" onAction="#ingredientAddButtonClicked" text="+" HBox.hgrow="ALWAYS">
                                                                               <font>
                                                                                   <Font size="14.0" />
                                                                               </font>
+                                                         <styleClass>
+                                                            <String fx:value="roundbutton" />
+                                                            <String fx:value="h4" />
+                                                         </styleClass>
+                                                         <HBox.margin>
+                                                            <Insets top="3.0" />
+                                                         </HBox.margin>
                                                                           </Button>
-                                                                          <Button fx:id="recipeShoppingButton" mnemonicParsing="false" onAction="#showRecipeShoppingWindow" text="Shop 🛒" HBox.hgrow="ALWAYS">
+                                                                          <Button fx:id="recipeShoppingButton" mnemonicParsing="false" onAction="#showRecipeShoppingWindow" styleClass="h4" text="Shop 🛒" HBox.hgrow="ALWAYS">
                                                                               <HBox.margin>
-                                                                                  <Insets left="20.0" right="5.0" />
+                                                                                  <Insets left="20.0" right="5.0" top="3.0" />
                                                                               </HBox.margin>
                                                                           </Button>
                                                                       </children>
@@ -267,16 +274,20 @@
                                                           </VBox>
                                                           <VBox prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
                                                               <children>
-                                                                  <Label styleClass="h3" text="Preparation" />
-                                                                  <ScrollPane fx:id="prepScrollPane" fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                                                                  <Label styleClass="h3" text="Preparation" VBox.vgrow="ALWAYS" />
+                                                                  <ScrollPane fx:id="prepScrollPane" fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" styleClass="scrollPane" VBox.vgrow="ALWAYS">
                                                                       <content>
-                                                                          <VBox fx:id="preparationList" prefHeight="119.0" prefWidth="579.0" />
+                                                                          <VBox fx:id="preparationList" prefHeight="119.0" prefWidth="579.0" spacing="3.0" />
                                                                       </content>
                                                                   </ScrollPane>
-                                                                  <Button fx:id="addStepButton" mnemonicParsing="false" onAction="#preparationAddButtonClicked" prefHeight="34.0" prefWidth="58.0" styleClass="roundbutton" text="➕" VBox.vgrow="ALWAYS">
+                                                                  <Button fx:id="addStepButton" mnemonicParsing="false" onAction="#preparationAddButtonClicked" prefHeight="34.0" prefWidth="0.0" text="+" VBox.vgrow="ALWAYS">
                                                                       <VBox.margin>
                                                                           <Insets top="3.0" />
                                                                       </VBox.margin>
+                                                   <styleClass>
+                                                      <String fx:value="roundbutton" />
+                                                      <String fx:value="h4" />
+                                                   </styleClass>
                                                                   </Button>
                                                               </children>
                                                           </VBox>
