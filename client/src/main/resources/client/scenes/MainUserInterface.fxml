@@ -265,6 +265,9 @@
                                                                                     </HBox.margin>
                                                                                 </Button>
                                                                             </children>
+                                                         <VBox.margin>
+                                                            <Insets top="5.0" />
+                                                         </VBox.margin>
                                                                         </HBox>
                                                                     </children>
                                                                     <VBox.margin>
@@ -281,7 +284,7 @@
                                                                         </ScrollPane>
                                                                         <Button fx:id="addStepButton" mnemonicParsing="false" onAction="#preparationAddButtonClicked" prefHeight="34.0" prefWidth="58.0" styleClass="roundbutton" text="➕">
                                                                             <VBox.margin>
-                                                                                <Insets top="3.0" />
+                                                                                <Insets top="5.0" />
                                                                             </VBox.margin>
                                                                         </Button>
                                                                     </children>
