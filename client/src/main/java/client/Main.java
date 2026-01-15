@@ -77,11 +77,13 @@ public class Main extends Application {
         // preload shopping list scene
         var shoppingListInterface = fxml.load(ShoppingListCtrl.class, "client", "scenes", "ShoppingListInterface.fxml");
         var shoppingListScene = new Scene(shoppingListInterface.getValue());
+        shoppingListScene.setUserData(shoppingListInterface.getKey()); // Store controller reference
 
         // preload recipe shopping list scene
-        var recipeShoppingListInterface = 
+        var recipeShoppingListInterface =
             fxml.load(RecipeShoppingListCtrl.class, "client", "scenes", "RecipeShoppingList.fxml");
         var recipeShoppingListScene = new Scene(recipeShoppingListInterface.getValue());
+        var recipeShoppingListCtrl = recipeShoppingListInterface.getKey();
 
         // preload nutritional values scene
         var nutritionInterface = 
@@ -130,9 +132,9 @@ public class Main extends Application {
 
         // pass both scenes into controller
         var mainCtrl = injector.getInstance(MainCtrl.class);
-        mainCtrl.initScenes(primaryStage, mainUserInterfaceScene, nutritionScene, recipeAddScene, 
-            recipeIngredientScene, recipeIngredientCtrl, editTitleScene,
-                shoppingListScene, recipeShoppingListScene, nutritionCtrl);
+        mainCtrl.initScenes(primaryStage, nutritionScene, recipeAddScene,
+            recipeIngredientScene, recipeIngredientCtrl, editTitleScene, shoppingListScene,
+            recipeShoppingListScene, nutritionCtrl, recipeShoppingListCtrl);
 
         System.out.println("Window opened with width: " + primaryStage.getWidth()
                 + " and height: " + primaryStage.getHeight());

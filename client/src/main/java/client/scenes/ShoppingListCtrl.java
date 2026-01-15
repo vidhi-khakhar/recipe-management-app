@@ -24,75 +24,67 @@ import javafx.scene.layout.VBox;
 
 public class ShoppingListCtrl {
 
-    @FXML
-    private Button remindMeButton;
-
-    @FXML
-    private Label reminderStatusLabel;
-
-    @FXML
-    private Button addShoppingItemButton;
-
-    @FXML
-    private Button downloadShoppingListButton;
-
-    @FXML
-    private VBox shoppingList;
-
-    @FXML
-    private ScrollPane shoppingScrollPane;
-
-    @FXML
-    private javafx.scene.layout.AnchorPane emptyShoppingList;
-
-    @FXML
-    private javafx.scene.layout.AnchorPane notEmptyShoppingList;
-
-    @FXML
-    private Button resetShoppingListButton;
+    @FXML private Button remindMeButton;
+    @FXML private Label reminderStatusLabel;
+    @FXML private Button addShoppingItemButton;
+    @FXML private Button downloadShoppingListButton;
+    @FXML private VBox shoppingList;
+    @FXML private ScrollPane shoppingScrollPane;
+    @FXML private javafx.scene.layout.AnchorPane emptyShoppingList;
+    @FXML private javafx.scene.layout.AnchorPane notEmptyShoppingList;
+    @FXML private Button resetShoppingListButton;
 
     private ShoppingList shoppingListModel;
-    private ConfigService configService;
+    private final ConfigService configService;
 
     @Inject
     public ShoppingListCtrl(ConfigService configService) {
         this.configService = configService;
     }
 
-    /**
-     * Initializes the shopping list UI and loads existing items from the model.
-     */
+    /** Initialize the shopping list scene */
     @FXML
     public void initialize() {
         shoppingList.setFillWidth(true);
         shoppingList.setPadding(new Insets(10, 15, 10, 15));
         shoppingList.setSpacing(8);
 
-        var config = configService.getConfig();
-        if (config == null) {
-            throw new IllegalStateException("ConfigService returned null config");
-        }
-        shoppingListModel = config.getShoppingList();
-
+        loadShoppingListModel();
         refreshUI();
         scheduleExistingReminderIfAny();
     }
 
+    private void loadShoppingListModel() {
+        shoppingListModel = configService.getConfig().getShoppingList();
+    }
+
+    public void refreshFromConfig() {
+        loadShoppingListModel();
+        refreshUI();
+    }
+
+
     private void refreshUI() {
+        if (shoppingList == null || emptyShoppingList == null || notEmptyShoppingList == null) {
+            return;
+        }
+
         shoppingList.getChildren().clear();
 
         if (shoppingListModel.getShoppingItems().isEmpty()) {
             emptyShoppingList.setVisible(true);
             notEmptyShoppingList.setVisible(false);
-        } else {
-            emptyShoppingList.setVisible(false);
-            notEmptyShoppingList.setVisible(true);
+            return;
+        }
 
-            for (ShoppingItem item : shoppingListModel.getShoppingItems()) {
-                shoppingList.getChildren().add(createShoppingItemRow(item, false));
-            }
+        emptyShoppingList.setVisible(false);
+        notEmptyShoppingList.setVisible(true);
+
+        for (ShoppingItem item : shoppingListModel.getShoppingItems()) {
+            shoppingList.getChildren().add(createShoppingItemRow(item, false));
         }
     }
+
 
     @FXML
     private void addShoppingItem() {
@@ -100,9 +92,7 @@ public class ShoppingListCtrl {
         shoppingListModel.addItem(item);
         saveShoppingList();
 
-        HBox row = createShoppingItemRow(item, true);
-        shoppingList.getChildren().add(row);
-
+        shoppingList.getChildren().add(createShoppingItemRow(item, true));
         emptyShoppingList.setVisible(false);
         notEmptyShoppingList.setVisible(true);
     }
@@ -116,72 +106,29 @@ public class ShoppingListCtrl {
         CheckBox boughtCheckBox = new CheckBox();
         boughtCheckBox.setSelected(item.isBought());
 
-        // Display field for combined text (non-editable to match editing size)
         TextField combinedField = new TextField();
         combinedField.setEditable(false);
         combinedField.setFocusTraversable(false);
         combinedField.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
         HBox.setHgrow(combinedField, Priority.ALWAYS);
 
-        // Text fields with prompt texts
-        TextField nameField = new TextField(item.getName());
+        TextField nameField = new TextField();
         nameField.setPromptText("Item name");
-        HBox.setHgrow(nameField, Priority.ALWAYS);
 
-        TextField amountField = new TextField(item.getAmount() == 0 ? "" : String.valueOf(item.getAmount()));
+        TextField amountField = new TextField();
         amountField.setPromptText("Quantity");
-        HBox.setHgrow(amountField, Priority.ALWAYS);
 
-        TextField unitField = new TextField(item.getUnit() == null ? "" : item.getUnit());
+        TextField unitField = new TextField();
         unitField.setPromptText("Units");
-        HBox.setHgrow(unitField, Priority.ALWAYS);
 
         Button editSaveButton = new Button();
-        editSaveButton.setMinWidth(50);
-
         Button deleteButton = new Button("✖");
-        deleteButton.setMinWidth(50);
-        deleteButton.setOnAction(e -> handleDeleteItem(item, row));
+        deleteButton.setOnAction(e -> {
+            shoppingListModel.removeItem(item);
+            saveShoppingList();
+            refreshUI();
+        });
 
-        setupEditSaveBehavior(
-                row,
-                item,
-                combinedField,
-                nameField,
-                amountField,
-                unitField,
-                editSaveButton,
-                deleteButton,
-                startEditable,
-                boughtCheckBox
-        );
-
-        return row;
-    }
-
-    private void handleDeleteItem(ShoppingItem item, HBox row) {
-        shoppingListModel.removeItem(item);
-        shoppingList.getChildren().remove(row);
-        saveShoppingList();
-
-        if (shoppingListModel.getShoppingItems().isEmpty()) {
-            emptyShoppingList.setVisible(true);
-            notEmptyShoppingList.setVisible(false);
-        }
-    }
-
-    private void setupEditSaveBehavior(
-            HBox row,
-            ShoppingItem item,
-            TextField combinedField,
-            TextField nameField,
-            TextField amountField,
-            TextField unitField,
-            Button editSaveButton,
-            Button deleteButton,
-            boolean startEditable,
-            CheckBox boughtCheckBox
-    ) {
         updateCombinedField(item, combinedField);
 
         boughtCheckBox.setOnAction(e -> {
@@ -190,28 +137,33 @@ public class ShoppingListCtrl {
             saveShoppingList();
         });
 
-        final Runnable[] switchToEdit = new Runnable[1];
+        final Runnable[] editAction = new Runnable[1];
 
-        Runnable saveItem = createSaveAction(
-                row,
-                item,
-                combinedField,
-                nameField,
-                amountField,
-                unitField,
-                editSaveButton,
-                deleteButton,
-                boughtCheckBox,
-                () -> switchToEdit[0].run()
-        );
+        Runnable saveAction = () -> {
+            if (nameField.getText().trim().isEmpty()) return;
 
-        switchToEdit[0] = () -> {
+            item.setName(nameField.getText().trim());
+            try {
+                item.setAmount(Double.parseDouble(amountField.getText().trim()));
+            } catch (Exception ignored) {}
+            item.setUnit(unitField.getText().trim());
+
+            saveShoppingList();
+            updateCombinedField(item, combinedField);
+
+            editSaveButton.setText("✏");
+            editSaveButton.setOnAction(e -> editAction[0].run());
+            row.getChildren().setAll(
+                    boughtCheckBox,
+                    combinedField,
+                    editSaveButton,
+                    deleteButton
+            );
+        };
+
+        editAction[0] = () -> {
             if (item.isBought()) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Cannot Edit Item");
-                alert.setHeaderText(null);
-                alert.setContentText("This item has been marked as bought and cannot be edited.");
-                alert.showAndWait();
+                showInfo("This item is marked as bought and cannot be edited.");
                 return;
             }
 
@@ -220,6 +172,7 @@ public class ShoppingListCtrl {
             unitField.setText(item.getUnit());
 
             editSaveButton.setText("✔");
+            editSaveButton.setOnAction(e -> saveAction.run());
             row.getChildren().setAll(
                     boughtCheckBox,
                     nameField,
@@ -228,107 +181,53 @@ public class ShoppingListCtrl {
                     editSaveButton,
                     deleteButton
             );
-
-            nameField.requestFocus();
-
-            editSaveButton.setOnAction(e -> saveItem.run());
-            nameField.setOnAction(e -> saveItem.run());
-            amountField.setOnAction(e -> saveItem.run());
-            unitField.setOnAction(e -> saveItem.run());
         };
 
-        if (startEditable) {
-            switchToEdit[0].run();
-        } else {
-            editSaveButton.setText("✏");
-            editSaveButton.setOnAction(e -> switchToEdit[0].run());
 
-            row.getChildren().setAll(
-                    boughtCheckBox,
-                    combinedField,
-                    editSaveButton,
-                    deleteButton
-            );
-        }
+        editSaveButton.setText("✏");
+        editSaveButton.setOnAction(e -> editAction[0].run());
+
+        row.getChildren().addAll(boughtCheckBox, combinedField, editSaveButton, deleteButton);
+
+        if (startEditable) editAction[0].run();
+        return row;
     }
 
-    private void updateCombinedField(ShoppingItem item, TextField combinedField) {
-        StringBuilder text = new StringBuilder();
-
-        if (!item.getName().isBlank()) {
-            text.append(item.getName());
-        }
-        if (item.getAmount() > 0) {
-            text.append(" ").append(item.getAmount());
-        }
-        if (item.getUnit() != null && !item.getUnit().isBlank()) {
-            text.append(" ").append(item.getUnit());
-        }
-
-        combinedField.setText(text.toString());
-
-        combinedField.setStyle(
-                item.isBought()
-                ? "-fx-text-fill: grey; -fx-background-color: transparent; -fx-border-color: transparent;"
-                : "-fx-background-color: transparent; -fx-border-color: transparent;"
-        );
+    private void updateCombinedField(ShoppingItem item, TextField field) {
+        String text = buildItemDisplayText(item);
+        field.setText(text);
+        field.setStyle(item.isBought()
+                ? "-fx-text-fill: grey; -fx-background-color: transparent;"
+                : "-fx-background-color: transparent;");
     }
 
-    private Runnable createSaveAction(HBox row, ShoppingItem item, TextField combinedField,
-            TextField nameField, TextField amountField, TextField unitField,
-            Button editSaveButton, Button deleteButton, CheckBox boughtCheckBox,
-            Runnable switchToEdit) {
-        return () -> {
-            String name = nameField.getText().trim();
-            if (name.isEmpty()) {
-                return;
-            }
+    private String buildItemDisplayText(ShoppingItem item) {
+        StringBuilder text = new StringBuilder(item.getName());
+        if (item.getAmount() > 0) text.append(" ").append(item.getAmount());
+        if (item.getUnit() != null && !item.getUnit().isBlank()) text.append(" ").append(item.getUnit());
 
-            double amount = item.getAmount();
-            String amountText = amountField.getText().trim();
-            if (!amountText.isEmpty()) {
-                try {
-                    amount = Double.parseDouble(amountText);
-                } catch (NumberFormatException ignored) {
-                }
-            }
-
-            item.setName(name);
-            item.setAmount(amount);
-            item.setUnit(unitField.getText().trim());
-
-            updateCombinedField(item, combinedField);
-            saveShoppingList();
-
-            editSaveButton.setText("✏");
-            row.getChildren().setAll(
-                    boughtCheckBox,
-                    combinedField,
-                    editSaveButton,
-                    deleteButton
-            );
-
-            editSaveButton.setOnAction(e -> switchToEdit.run());
-        };
-    }
-
-    private void saveShoppingList() {
-        try {
-            configService.getConfig().setShoppingList(shoppingListModel);
-            configService.save();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (hasDuplicateName(item) && item.getSourceRecipeName() != null) {
+            text.append(" [").append(item.getSourceRecipeName()).append("]");
         }
+        return text.toString();
     }
 
+    private boolean hasDuplicateName(ShoppingItem item) {
+        return shoppingListModel.getShoppingItems().stream()
+                .filter(i -> i.getName().equals(item.getName()))
+                .count() > 1;
+    }
+
+
+    
     @FXML
     private void handleRemindMe() {
         Dialog<Void> dialog = new Dialog<>();
         dialog.setTitle("Set Reminder");
         dialog.setHeaderText("Choose reminder date and time");
 
-        ButtonType setButton
-                = new ButtonType("Set Reminder", ButtonBar.ButtonData.OK_DONE);
+        ButtonType setButton =
+                new ButtonType("Set Reminder", ButtonBar.ButtonData.OK_DONE);
 
         dialog.getDialogPane().getButtonTypes().addAll(setButton, ButtonType.CANCEL);
 
@@ -349,14 +248,14 @@ public class ShoppingListCtrl {
         // 🔹 Show existing reminder if any
         Long existingMillis = configService.getConfig().getShoppingListReminder();
         if (existingMillis != null) {
-            java.time.LocalDateTime existing
-                    = java.time.Instant.ofEpochMilli(existingMillis)
+            java.time.LocalDateTime existing =
+                    java.time.Instant.ofEpochMilli(existingMillis)
                             .atZone(java.time.ZoneId.systemDefault())
                             .toLocalDateTime();
             Label warningLabel = new Label(
                     "⚠ Warning: A reminder is already set for "
-                    + existing.toLocalDate() + " at " + existing.toLocalTime()
-                    + ". Setting a new reminder will replace it."
+                            + existing.toLocalDate() + " at " + existing.toLocalTime()
+                            + ".\nSetting a new reminder will replace it."
             );
             warningLabel.setStyle("-fx-text-fill: darkred; -fx-font-weight: bold;");
             content.getChildren().add(warningLabel);
@@ -381,14 +280,14 @@ public class ShoppingListCtrl {
                         return null;
                     }
 
-                    java.time.LocalDateTime reminderTime
-                            = java.time.LocalDateTime.of(
+                    java.time.LocalDateTime reminderTime =
+                            java.time.LocalDateTime.of(
                                     datePicker.getValue(),
                                     java.time.LocalTime.of(hour, minute)
                             );
 
-                    long delayMillis
-                            = java.time.Duration
+                    long delayMillis =
+                            java.time.Duration
                                     .between(java.time.LocalDateTime.now(), reminderTime)
                                     .toMillis();
 
@@ -397,14 +296,13 @@ public class ShoppingListCtrl {
                         return null;
                     }
 
-                    // Persist the reminder
                     configService.getConfig().setShoppingListReminder(
-                            reminderTime.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli());
+                        reminderTime.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli());
                     configService.save();
 
                     reminderStatusLabel.setText(
                             "Reminder set for " + reminderTime.toLocalDate()
-                            + " at " + reminderTime.toLocalTime()
+                                    + " at " + reminderTime.toLocalTime()
                     );
 
                     scheduleReminder(delayMillis);
@@ -419,12 +317,19 @@ public class ShoppingListCtrl {
         dialog.showAndWait();
     }
 
+
+    private void scheduleExistingReminderIfAny() {
+        Long millis = configService.getConfig().getShoppingListReminder();
+        if (millis != null && millis > System.currentTimeMillis()) {
+            scheduleReminder(millis - System.currentTimeMillis());
+        }
+    }
+
     private void scheduleReminder(long delayMillis) {
         new Thread(() -> {
             try {
                 Thread.sleep(delayMillis);
-            } catch (InterruptedException ignored) {
-            }
+            } catch (InterruptedException ignored) {}
 
             StringBuilder message = new StringBuilder(
                     "Reminder to purchase shopping list!\n\nItems to buy:\n"
@@ -432,14 +337,17 @@ public class ShoppingListCtrl {
 
             shoppingListModel.getShoppingItems().stream()
                     .filter(item -> !item.isBought())
-                    .forEach(item
-                            -> message.append("• ")
-                            .append(item.getName())
-                            .append("\n")
+                    .forEach(item ->
+                            message.append("• ")
+                                    .append(item.getName())
+                                    .append(item.getAmount() > 0 ? " " + item.getAmount() : "")
+                                    .append(item.getUnit() != null &&
+                                     !item.getUnit().isBlank() ? " " + item.getUnit() : "")
+                                    .append("\n")
             );
 
             if (message.toString().endsWith("Items to buy:\n")) {
-                message.append("All items have been bought 🎉");
+                message.append("All items have been bought! Hooray! :D");
             }
 
             javafx.application.Platform.runLater(() -> {
@@ -449,7 +357,6 @@ public class ShoppingListCtrl {
                 alert.setContentText(message.toString());
                 alert.showAndWait();
 
-                // reset reminder status & clear from config
                 reminderStatusLabel.setText("No reminder set.");
                 configService.getConfig().setShoppingListReminder(null);
                 configService.save();
@@ -457,52 +364,40 @@ public class ShoppingListCtrl {
         }).start();
     }
 
-    private void scheduleExistingReminderIfAny() {
-        Long millis = configService.getConfig().getShoppingListReminder();
-        if (millis != null) {
-            long delay = millis - System.currentTimeMillis();
-            if (delay > 0) {
-                java.time.LocalDateTime reminderTime
-                        = java.time.Instant.ofEpochMilli(millis)
-                                .atZone(java.time.ZoneId.systemDefault())
-                                .toLocalDateTime();
-                reminderStatusLabel.setText(
-                        "Reminder set for " + reminderTime.toLocalDate()
-                        + " at " + reminderTime.toLocalTime()
-                );
-                scheduleReminder(delay);
-            } else {
-                // past reminder, clear it
-                configService.getConfig().setShoppingListReminder(null);
-                configService.save();
-            }
-        }
+
+ 
+    private void saveShoppingList() {
+        configService.getConfig().setShoppingList(shoppingListModel);
+        configService.save();
     }
 
     private void showError(String msg) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Invalid Reminder");
-        alert.setHeaderText(null);
-        alert.setContentText(msg);
-        alert.showAndWait();
+        new Alert(Alert.AlertType.ERROR, msg).showAndWait();
     }
 
-    @FXML
-    void downloadShoppingList() {
-        System.out.println("Download shopping list button clicked");
+    private void showInfo(String msg) {
+        new Alert(Alert.AlertType.INFORMATION, msg).showAndWait();
     }
 
     @FXML
     void resetShoppingList() {
         shoppingListModel.clear();
-        shoppingList.getChildren().clear();
         saveShoppingList();
+        refreshUI();
+    }
 
-        emptyShoppingList.setVisible(true);
-        notEmptyShoppingList.setVisible(false);
+    @FXML
+    private void downloadShoppingList() {
+        System.out.println("Download shopping list button pressed");
+    }
+
+
+    ShoppingList getShoppingListModelForTest() {
+        return this.shoppingListModel;
     }
 
     void setShoppingListModelForTest(ShoppingList shoppingList) {
         this.shoppingListModel = shoppingList;
     }
+
 }

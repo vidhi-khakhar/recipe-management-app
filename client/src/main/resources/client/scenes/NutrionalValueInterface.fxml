@@ -378,6 +378,5 @@
             </HBox>
          </center>
       </BorderPane>
-      <Button fx:id="addIngredientButton1" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#addIngredient" prefHeight="34.0" prefWidth="136.0" text="Add Ingredient" />
    </children>
 </AnchorPane>
