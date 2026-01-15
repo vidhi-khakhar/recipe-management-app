@@ -1,25 +1,31 @@
 package client.scenes;
 
 import client.utils.IngredientServerUtils;
-import client.utils.RecipeServerUtils;
+import com.google.inject.Inject;
 import commons.Ingredient;
 import commons.Recipe;
 import commons.RecipeIngredient;
 import commons.Unit;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextField;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 public class AddRecipeIngredientCtrl {
+    private Scene nutritionScene;
+    private Scene addRecipeIngredientScene;
 
     private Recipe recipe;
     private RecipeIngredient recipeIngredient;
 
-    private final IngredientServerUtils ingredientServerUtils = new IngredientServerUtils();
-    private final RecipeServerUtils recipeServerUtils = new RecipeServerUtils();
+    private final IngredientServerUtils ingredientServerUtils;
+
+    @Inject
+    public AddRecipeIngredientCtrl(
+            IngredientServerUtils ingredientServerUtils) {
+        this.ingredientServerUtils = ingredientServerUtils;
+    }
 
     // UI Elements
     @FXML
@@ -40,6 +46,25 @@ public class AddRecipeIngredientCtrl {
     @FXML
     private TextField amountTextField;
 
+    @FXML
+    private Label infoLabel;
+
+    @FXML
+    private Button newIngredient;
+
+    @FXML
+    private Label pleaseAddIngredientLabel;
+
+    /**
+     * Initialize the scenes.
+     * @param nutritionScene the nutrition scenes to add a global ingredient
+     * @param addRecipeIngredientScene the current add recipe-ingredient scene
+     */
+    public void initScenes(Scene nutritionScene, Scene addRecipeIngredientScene) {
+        this.nutritionScene = nutritionScene;
+        this.addRecipeIngredientScene = addRecipeIngredientScene;
+    }
+
     /**
      * The ChoiceBoxes have the default value of the first element. Explanation
      * of unitTypeChoiceBox: selectionModel - in the case of a ChoiceBox it is a
@@ -48,14 +73,17 @@ public class AddRecipeIngredientCtrl {
      * whenever a change is observed
      */
     @FXML
-    public void initialize() {
-        // To fetch all global ingredients
-        ingredientChoiceBox.getItems().clear();
-        ingredientChoiceBox.getItems().addAll(
-                ingredientServerUtils.getAllIngredients());
+    public void onStart() {
+        infoLabel.setVisible(false);
+        pleaseAddIngredientLabel.setVisible(false);
+
+        populateIngredientDropdown();
 
         if (!ingredientServerUtils.getAllIngredients().isEmpty()) {
             ingredientChoiceBox.setValue(ingredientChoiceBox.getItems().get(0));
+        } else {
+            showError("No ingredients", "Please add an ingredient.");
+            pleaseAddIngredientLabel.setVisible(true);
         }
 
         unitTypeChoiceBox.getItems().clear();
@@ -76,22 +104,26 @@ public class AddRecipeIngredientCtrl {
     /**
      * Updates the visibility of the unit choice box based on the selected unit
      * type.
-     *
      * @param unitType the selected unit type ("Formal" or "Informal")
      */
     public void updateUnitChoiceBoxVisibility(String unitType) {
+
+        if(unitType == null) {
+            return;
+        }
+
         if (unitType.equals("Formal")) {
             unitChoiceBox.setVisible(true);
+            infoLabel.setVisible(false);
         } else if (unitType.equals("Informal")) {
             unitChoiceBox.setVisible(false);
+            infoLabel.setVisible(true);
         }
     }
 
-    // Button Methods
     /**
      * Create RecipeIngredient entity based on user input. Close the popup and
      * return information to MainCtrl.
-     *
      * @return the created RecipeIngredient instance
      */
     @FXML
@@ -104,21 +136,44 @@ public class AddRecipeIngredientCtrl {
         // Get amount & create recipeIngredient
         String type = unitTypeChoiceBox.getValue();
         if (type.equals("Formal")) {
-            double amount = Double.parseDouble(amountTextField.getText());
-            recipeIngredient = RecipeIngredient.formal(recipe,
-                    ingredient, amount, unitChoiceBox.getValue());
+            String input = amountTextField.getText();
+            if (validateFormalAmount(input)) {
+                double amount = Double.parseDouble(input);
+                recipeIngredient = RecipeIngredient.formal(recipe,
+                        ingredient, amount, unitChoiceBox.getValue());
+                closeWindow();
+            }
         } else {
             String informal = amountTextField.getText();
             recipeIngredient = RecipeIngredient.informal(recipe,
                     ingredient, informal);
+            closeWindow();
         }
-
-        recipeServerUtils.createRecipeIngredient(recipeIngredient);
-        closeWindow();
     }
 
     public void setRecipe(Recipe recipe) {
         this.recipe = recipe;
+    }
+
+    /**
+     * Validates the inputted formal amount.
+     * @param text the user input for formal amount
+     * @return true if amount is a positive number
+     */
+    public boolean validateFormalAmount(String text) {
+        double amount;
+
+        try {
+            amount = Double.parseDouble(text);
+            if (amount < 0)
+                showError("Must be Positive", "Please enter a positive number!");
+
+            return (amount >= 0);
+        } catch (NumberFormatException e) {
+            showError("Wrong Format", "Please input a number!");
+        }
+
+        return false;
     }
 
     /**
@@ -139,6 +194,58 @@ public class AddRecipeIngredientCtrl {
     private void closeWindow() {
         Stage stage = (Stage) cancelButton.getScene().getWindow();
         stage.close();
+        stage.close();
     }
 
+    /**
+     * Creates a new ingredient.
+     */
+    @FXML
+    private void addNewIngredient() {
+        showNutritionWindow();
+    }
+
+    /**
+     * Makes sure the window with the nutrition information is opened once the
+     * nutritional values button is pressed
+     */
+    @FXML
+    void showNutritionWindow() {
+        if (nutritionScene == null) {
+            System.err.println("Nutrition scene not initialized!");
+            return;
+        }
+
+        Stage secondaryStage = new Stage();
+        secondaryStage.setTitle("Nutritional Values");
+        secondaryStage.setScene(nutritionScene);
+        secondaryStage.initOwner(addRecipeIngredientScene.getWindow());
+        secondaryStage.showAndWait();
+
+        populateIngredientDropdown();
+    }
+
+    private void populateIngredientDropdown() {
+        try {
+            ingredientChoiceBox.getItems().clear();
+            ingredientChoiceBox.getItems().addAll(
+                    ingredientServerUtils.getAllIngredients());
+        } catch (Exception e) {
+            showError("Problem with Ingredients",
+                    "Something went wrong with retrieving ingredients!");
+        }
+    }
+
+    /**
+     * A method that creates an error alert with a heading and content
+     * @param header The header of the error
+     * @param content the content of the error
+     */
+    private void showError(String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
 }

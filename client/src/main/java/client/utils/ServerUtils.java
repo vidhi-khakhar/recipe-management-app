@@ -17,6 +17,7 @@ package client.utils;
 
 import java.net.ConnectException;
 
+import com.google.inject.Inject;
 import org.glassfish.jersey.client.ClientConfig;
 
 import client.config.ConfigService;
@@ -25,8 +26,17 @@ import jakarta.ws.rs.client.ClientBuilder;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public class ServerUtils {
-	// The server url from the config.json
-    private static final String server = ConfigService.getConfig().getServerUrl(); 
+    private final ConfigService configService;
+
+    @Inject
+    public ServerUtils(ConfigService configService){
+        this.configService = configService;
+    }
+
+    /** Convenience method */
+    private String server() {
+        return configService.getConfig().getServerUrl();
+    }
 
 	/**
 	 * Checks if the server is available by sending a simple GET request.
@@ -36,7 +46,7 @@ public class ServerUtils {
     public boolean isServerAvailable() {
         try {
             ClientBuilder.newClient(new ClientConfig()) //
-                    .target(server) //
+                    .target(server()) //
                     .request(APPLICATION_JSON) //
                     .get();
         } catch (ProcessingException e) {

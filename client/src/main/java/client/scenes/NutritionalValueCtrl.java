@@ -1,32 +1,34 @@
 package client.scenes;
 
-import java.util.NoSuchElementException;
-
-import com.google.inject.Inject;
-
 import client.utils.IngredientServerUtils;
+import client.utils.RecipeServerUtils;
+import com.google.inject.Inject;
 import commons.Ingredient;
+import commons.Recipe;
+import commons.RecipeIngredient;
 import jakarta.ws.rs.ProcessingException;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+
 public class NutritionalValueCtrl {
 
     private final IngredientServerUtils ingredientServerUtils;
+    private final RecipeServerUtils recipeServerUtils;
 
     @Inject
-    public NutritionalValueCtrl(IngredientServerUtils ingredientServerUtils) {
+    public NutritionalValueCtrl(IngredientServerUtils ingredientServerUtils,
+                                RecipeServerUtils recipeServerUtils) {
         this.ingredientServerUtils = ingredientServerUtils;
+        this.recipeServerUtils = recipeServerUtils;
     }
     // Buttons
     @FXML
@@ -107,7 +109,7 @@ public class NutritionalValueCtrl {
 
         // Listen for selection changes
         sidebarList.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            showIngredientDetails(newSelection);
+            updateSelectedIngredient();
             updateStackPaneVisibility();
         });
 
@@ -121,6 +123,13 @@ public class NutritionalValueCtrl {
 
         loadIngredientsFromServer();
     }
+
+    private void updateSelectedIngredient() {
+        Ingredient selected = sidebarList.getSelectionModel().getSelectedItem();
+        showIngredientDetails(selected);
+        updateUsageLabel(selected);
+    }
+
 
     /**
      * Loads all the ingredients from the server into the UI. It places them in
@@ -136,6 +145,7 @@ public class NutritionalValueCtrl {
                 Ingredient first = ingredients.get(0);
                 sidebarList.getSelectionModel().select(first);
                 showIngredientDetails(first);
+                updateUsageLabel(first);
             } else {
                 showIngredientDetails(null);
             }
@@ -181,7 +191,7 @@ public class NutritionalValueCtrl {
      */
     private void defaultMode() {
         updateStackPaneVisibility();
-        showIngredientDetails(sidebarList.getSelectionModel().getSelectedItem());
+        updateSelectedIngredient();
 
         ingredientName.setDisable(true);
         fatValue.setDisable(true);
@@ -258,7 +268,6 @@ public class NutritionalValueCtrl {
         kcalValueLabel.setText(Double.toString(ingredient.getKcalPer100g()));
 
         updateUsageLabel(ingredient);
-
     }
 
     // Dynamic font sizing.
@@ -329,7 +338,7 @@ public class NutritionalValueCtrl {
             newIngProteins.clear();
             newIngFats.clear();
             newIngCarbs.clear();
-
+            updateSelectedIngredient();
             defaultMode();
 
         } catch (NumberFormatException e) {
@@ -347,10 +356,6 @@ public class NutritionalValueCtrl {
      */
     @FXML
     void removeIngredient() {
-        if (!addIngredientPane.isVisible()) {
-            return;
-        }
-
         Ingredient selected = sidebarList.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showError("No ingredient selected", "Select an ingredient to remove");
@@ -359,7 +364,8 @@ public class NutritionalValueCtrl {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Delete Ingredient");
         confirm.setHeaderText("Are you sure you want to delete " + selected.getName() + "?");
-        confirm.setContentText("This will remove the ingredient from the database");
+        confirm.setContentText("This will remove the ingredient from the database.\n"
+            + "This ingredient is used in " + getUsageCount(selected.getId()) + " recipes.");
         var result = confirm.showAndWait();
 
         if (result.isEmpty() || result.get() != ButtonType.OK) {
@@ -369,11 +375,9 @@ public class NutritionalValueCtrl {
         try {
             ingredientServerUtils.deleteIngredient(selected.getId());
             sidebarList.getItems().remove(selected);
-            updateStackPaneVisibility();
         } catch (NoSuchElementException e) {
             showError("Ingredient not found on server", "It seems the ingredient was already removed");
             sidebarList.getItems().remove(selected);
-            updateStackPaneVisibility();
         } catch (ProcessingException e) {
             showError("Error deleting Ingredient", "Server error" + e.getMessage());
         }
@@ -385,7 +389,8 @@ public class NutritionalValueCtrl {
     @FXML
     void editIngredient() {
         Ingredient selected = sidebarList.getSelectionModel().getSelectedItem();
-        showIngredientDetails(selected);
+        updateSelectedIngredient();
+
         if (selected == null) {
             showError("No ingredient selected", "Select an ingredient to edit");
         }
@@ -430,7 +435,7 @@ public class NutritionalValueCtrl {
 
             sidebarList.getSelectionModel().select(selected);
 
-            showIngredientDetails(selected);
+            updateSelectedIngredient();
 
             defaultMode();
 
@@ -449,8 +454,7 @@ public class NutritionalValueCtrl {
      */
     @FXML
     void cancelEdit() {
-        Ingredient selected = sidebarList.getSelectionModel().getSelectedItem();
-        showIngredientDetails(selected);
+        updateSelectedIngredient();
 
         defaultMode();
     }
@@ -468,7 +472,7 @@ public class NutritionalValueCtrl {
         }
 
         try {
-            long usage = ingredientServerUtils.getIngredientUsageCount(ingredient.getId());
+            long usage = getUsageCount(ingredient.getId());
             RecipeUsageValueLabel.setText("Used in " + usage + " recipes");
         } catch (NoSuchElementException e) {
             RecipeUsageValueLabel.setText("Used in 0 recipes");
@@ -476,6 +480,27 @@ public class NutritionalValueCtrl {
             RecipeUsageValueLabel.setText("Used in ? recipes");
         }
     }
+
+    private int getUsageCount(Long ingredientId) {
+        int usage = 0;
+
+        List<Recipe> recipes = recipeServerUtils.getAllRecipes();
+
+        for (Recipe r : recipes) {
+            if (r.getIngredients() == null) continue;
+
+            for (RecipeIngredient rIng : r.getIngredients()) {
+                if (rIng.getIngredient() != null && Objects.equals(rIng.getIngredient().getId(), ingredientId)) {
+                    usage++;
+                    break;
+                }
+            }
+        }
+
+        return usage;
+    }
+
+
 
     @FXML
     void updateIngredientName() {

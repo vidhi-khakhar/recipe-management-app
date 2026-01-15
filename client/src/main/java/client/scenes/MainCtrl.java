@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import client.config.ConfigService;
 import client.favorite.FavoriteService;
 import client.search.RecipeCollection;
 import client.search.SearchService;
@@ -44,7 +45,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
@@ -67,13 +67,16 @@ public class MainCtrl {
     private Scene recipeShoppingListScene;
 
     private AddRecipeIngredientCtrl addRecipeIngredientCtrl;
+    private NutritionalValueCtrl nutritionalValueCtrl;
 
     private final RecipeServerUtils recipeServerUtils;
+    private final FavoriteService favoriteService;
     private final ObservableList<Recipe> recipesObservableList = FXCollections.observableArrayList();
     private Recipe selectedRecipe;
     private final SearchService searchService;
-    private final FavoriteService favoriteService;
     private final RecipeCollection recipeCollection;
+
+    private ConfigService configService;
 
     /**
      * Initializes the scenes
@@ -84,10 +87,12 @@ public class MainCtrl {
      * @param recipeAddScene the add recipe scene
      * @param addRecipeIngredientScene the add ingredient to recipe scene
      * @param addRecipeIngredientCtrl the add ingredient to recipe controller
+     * @param nutritionalValueCtrl the nutritional value controller
      */
     public void initScenes(Stage primaryStage, Scene mainUserInterfaceScene, Scene nutritionScene,
             Scene recipeAddScene, Scene addRecipeIngredientScene, AddRecipeIngredientCtrl addRecipeIngredientCtrl,
-            Scene editTitleScene, Scene shoppingListScene, Scene recipeShoppingListScene) {
+            Scene editTitleScene, Scene shoppingListScene, Scene recipeShoppingListScene,
+                           NutritionalValueCtrl nutritionalValueCtrl) {
         this.primaryStage = primaryStage;
         this.nutritionScene = nutritionScene;
         this.recipeAddScene = recipeAddScene; 
@@ -96,23 +101,27 @@ public class MainCtrl {
         this.editTitleScene = editTitleScene;
         this.shoppingListScene = shoppingListScene;
         this.recipeShoppingListScene = recipeShoppingListScene;
+        this.nutritionalValueCtrl = nutritionalValueCtrl;
 
         primaryStage.show();
     }
 
     /**
-     * The constructor that connects the ServerUtils to this controller
+     * The constructor that connects the ServerUtils to this controller.
      *
      * @param recipeServerUtils the utility class responsible for server
-     * communication
+     * communication.
+     * @param favoriteService the service class responsible for favoriting
+     * logic.
      */
     @Inject
     public MainCtrl(RecipeServerUtils recipeServerUtils, SearchService searchService,
-                    FavoriteService favoriteService, RecipeCollection recipeCollection) {
+                    FavoriteService favoriteService, RecipeCollection recipeCollection, ConfigService configService) {
         this.recipeServerUtils = recipeServerUtils;
         this.searchService = searchService;
         this.favoriteService = favoriteService;
         this.recipeCollection = recipeCollection;
+        this.configService = configService;
     }
 
     /**
@@ -129,24 +138,11 @@ public class MainCtrl {
     public void initialize() {
         sidebarList.setItems(recipesObservableList);
 
-        // Makes it so that only the title is visible in the list
-        sidebarList.setCellFactory(lv -> new ListCell<>() {
-            @Override
-            protected void updateItem(Recipe item, boolean empty) {
-                super.updateItem(item, empty);
-
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(item.getTitle());
-                }
-            }
-        }
+        sidebarList.setCellFactory(lv ->
+                new RecipeListCell(favoriteService)
         );
 
-        // The listeners for the selected recipe
-        sidebarList
-                .getSelectionModel()
+        sidebarList.getSelectionModel()
                 .selectedItemProperty()
                 .addListener((obs, oldRecipe, newRecipe) -> {
                     if (newRecipe != null) {
@@ -169,6 +165,7 @@ public class MainCtrl {
         loadRecipesFromDatabase();
 
     }
+
 
     /**
      * Loads all recipes from the database. That way once the UI is opened, all
@@ -208,7 +205,6 @@ public class MainCtrl {
     @FXML
     public void updateRecipeStackPane() {
         boolean hasRecipes = !sidebarList.getItems().isEmpty();
-
         System.out.println(hasRecipes);
         if (!hasRecipes) {
             noRecipePane.setVisible(true);
@@ -239,6 +235,7 @@ public class MainCtrl {
         // adds the recipe object to the list!
         recipesObservableList.add(recipe);
         sidebarList.getSelectionModel().select(recipe);
+        loadRecipesFromDatabase();
         updateRecipeStackPane();
     }
 
@@ -259,6 +256,11 @@ public class MainCtrl {
         }
 
         removeRecipe(selected);
+        // If the selected recipe is a favorite, the favorite id gets removed from config
+        if(favoriteService.isFavorite(selected)) {
+            favoriteService.removeFavorite(selected);
+        }
+
         updateRecipeStackPane();
 
         if (!recipesObservableList.isEmpty()) {
@@ -275,6 +277,10 @@ public class MainCtrl {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmation");
         alert.setHeaderText("Are you sure you want to delete this recipe?");
+
+        if(favoriteService.isFavorite(selectedRecipe)) {
+            alert.setContentText("This is one of your favorites!");
+        }
 
         // Wait for the conformation from the user
         Optional<ButtonType> result = alert.showAndWait();
@@ -338,7 +344,12 @@ public class MainCtrl {
 
     @FXML
     private void searchFavorites() {
-        favoriteS.setText("★");
+        if(favoriteS.getText() == "★"){
+            favoriteS.setText("☆");
+        }else{
+            favoriteS.setText("★");
+        }
+
         applySearch();
     }
 
@@ -359,7 +370,11 @@ public class MainCtrl {
      */
     @FXML
     private void refreshButtonClicked() {
+        configService.reload(); // this makes sure the client has the up to date config
         loadRecipesFromDatabase();
+        favoriteService.loadFromConfig();
+        sidebarList.refresh();
+        showIngredients(sidebarList.getSelectionModel().getSelectedItem());
     }
 
     // RECIPE INGREDIENTS METHODS
@@ -368,9 +383,12 @@ public class MainCtrl {
      */
     @FXML
     void showIngredients(Recipe recipe) {
-        ingredientList.getChildren().clear();
+        if (recipe == null) {
+            return;
+        }
 
-        List<RecipeIngredient> ingredients = this.recipeServerUtils.getRecipeIngredients(recipe.getRecipeId());
+        ingredientList.getChildren().clear();
+        List<RecipeIngredient> ingredients = recipe.getIngredients();
 
         for (RecipeIngredient ingredient : ingredients) {
             addRecipeIngredientToUI(ingredient);
@@ -388,7 +406,8 @@ public class MainCtrl {
         }
 
         Stage secondaryStage = new Stage();
-        addRecipeIngredientCtrl.initialize();
+        addRecipeIngredientCtrl.onStart();
+        addRecipeIngredientCtrl.initScenes(nutritionScene, addRecipeIngredientScene);
         secondaryStage.setTitle("Add Ingredient to Recipe");
         secondaryStage.setScene(addRecipeIngredientScene);
         secondaryStage.setResizable(false);
@@ -416,7 +435,11 @@ public class MainCtrl {
 
         if (newIngredient != null) {
             newIngredient.setRecipe(selectedRecipe);
+
             this.recipeServerUtils.createRecipeIngredient(newIngredient);
+
+            selectedRecipe.getIngredients().add(newIngredient);
+
         }
 
         showIngredients(selectedRecipe);
@@ -471,12 +494,33 @@ public class MainCtrl {
     private void ingredientRemoveButtonClicked(ActionEvent event) {
         Button removeButton = (Button) event.getSource(); // To identify the button of which ingredient was clicked
         HBox ingredientToRemove = (HBox) removeButton.getParent(); // To delete the whole row
-        ingredientList.getChildren().remove(ingredientToRemove);
-
         RecipeIngredientKey id = (RecipeIngredientKey) ingredientToRemove.getUserData();
-        this.recipeServerUtils.deleteRecipeIngredient(id.getRecipeId(), id.getIngredientId());
 
-        System.out.println("Removed ingredient.");
+        if(id == null) return;
+
+        try{
+            boolean success = this.recipeServerUtils.deleteRecipeIngredient(id.getRecipeId(),
+                    id.getIngredientId());
+
+            if (success) {
+                ingredientList.getChildren().remove(ingredientToRemove);
+
+                if(selectedRecipe != null) {
+                    selectedRecipe.getIngredients().removeIf(ri ->
+                            ri.getId().equals(id)
+                    );
+                }
+            }
+
+            System.out.println("Removed ingredient.");
+
+        } catch (Exception e) {
+            System.err.println("Error deleting recipe ingredient from Database");
+        }
+
+
+
+
     }
 
     /**
@@ -500,12 +544,21 @@ public class MainCtrl {
         addRecipeIngredientCtrl.setRecipe(selectedRecipe);
         showAddRecipeIngredientWindow();
         RecipeIngredient updated = addRecipeIngredientCtrl.getRecipeIngredient();
-        ingredientLabel.setText(
-                updated.toString()
-        );
 
-        RecipeIngredientKey id = (RecipeIngredientKey) ingredientToEdit.getUserData();
-        this.recipeServerUtils.updateRecipeIngredient(id.getRecipeId(), id.getIngredientId(), updated);
+        if(updated != null) {
+            RecipeIngredientKey id = (RecipeIngredientKey) ingredientToEdit.getUserData();
+            this.recipeServerUtils.updateRecipeIngredient(id.getRecipeId(), id.getIngredientId(), updated);
+
+            List<RecipeIngredient> ingredients = selectedRecipe.getIngredients();
+            for(int i = 0; i < ingredients.size(); i++) {
+                if(ingredients.get(i).getId().equals(id)) {
+                    updated.setRecipe(selectedRecipe);
+                    ingredients.set(i, updated);
+                    break;
+                }
+            }
+        }
+
 
         showIngredients(selectedRecipe);
 
@@ -672,10 +725,13 @@ public class MainCtrl {
         }
 
         Stage secondaryStage = new Stage();
+        nutritionalValueCtrl.initialize();
         secondaryStage.setTitle("Nutritional Values");
         secondaryStage.setScene(nutritionScene);
         secondaryStage.initOwner(primaryStage); // makes it modal to main window if desired
-        secondaryStage.show();
+        secondaryStage.showAndWait();
+
+        sidebarList.getSelectionModel().clearSelection();
     }
 
     /**
@@ -758,10 +814,24 @@ public class MainCtrl {
 
             newRecipe.setServings(original.getServings());
             newRecipe.setInstructions(new ArrayList<>(original.getInstructions()));
-            newRecipe.setIngredients(new ArrayList<>(original.getIngredients()));
 
             Long newId = recipeServerUtils.createRecipe(newRecipe);
             newRecipe.setRecipeId(newId);
+
+            for(RecipeIngredient oldI : original.getIngredients()) {
+                RecipeIngredient newI;
+
+                if(oldI.isFormal()){
+                    newI = RecipeIngredient.formal(newRecipe, oldI.getIngredient(), oldI.getAmount(),  oldI.getUnit());
+                }else{
+                    newI = RecipeIngredient.informal(newRecipe, oldI.getIngredient(), oldI.getInformal());
+                }
+
+                recipeServerUtils.createRecipeIngredient(newI);
+
+                newRecipe.getIngredients().add(newI);
+
+            }
 
             recipesObservableList.add(newRecipe);
 

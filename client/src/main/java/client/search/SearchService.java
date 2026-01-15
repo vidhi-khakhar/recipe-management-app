@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import client.favorite.FavoriteService;
 import commons.Recipe;
 import com.google.inject.Inject;
+import commons.RecipeIngredient;
 
 public class SearchService {
 
@@ -19,7 +20,8 @@ public class SearchService {
      * @param favoriteService the favoriteService for the local machine
      */
     @Inject
-    public SearchService(RecipeCollection recipeCollection, FavoriteService favoriteService) {
+    public SearchService(RecipeCollection recipeCollection,
+                         FavoriteService favoriteService) {
         this.recipeCollection = recipeCollection;
         this.favoriteService = favoriteService;
     }
@@ -35,13 +37,18 @@ public class SearchService {
         String[] terms = query.toLowerCase().split("\\s+");
 
         return recipeCollection.getAll().stream()
-                .filter(r -> !favoritesOnly || favoriteService.isFavorite(r))
+                .filter(r -> !favoritesOnly ||
+                        favoriteService.isFavorite(r))
                 .filter(r -> {
                     if(terms.length == 0){
                         return true;
                     }
+                    String ingredientText = r.getIngredients().stream()
+                            .map(RecipeIngredient::toString)
+                            .collect(Collectors.joining(" "));
+
                     String content = (r.getTitle() + " " +
-                            String.join(" ", r.getIngredients()) + " " +
+                            ingredientText + " " +
                             String.join(" ", r.getInstructions())).toLowerCase();
 
                     return Arrays.stream(terms).allMatch(content::contains);

@@ -3,18 +3,20 @@ package client.config;
 import java.util.List;
 import java.util.Locale;
 
+import client.model.ShoppingList;
+
 public class Config {
 
     private String serverUrl;
     private List<Long> favoriteRecipeIds;
     private Locale language;
-    private List<Long> shoppingListIds;
+    private ShoppingList shoppingList;
 
     /**
-     * Default constructor required for JSON deserialization by Jackson.
-     * Creates an empty Config instance that will be populated when loading from file.
+     * Default constructor for Jackson
      */
-    public Config(){}
+    public Config() {
+    }
 
     public String getServerUrl() {
         return serverUrl;
@@ -40,11 +42,17 @@ public class Config {
         this.language = language;
     }
 
-    public List<Long> getShoppingListIds() {
-        return shoppingListIds;
+    /**
+     * Gets the shopping list, initializing it if necessary.
+     */
+    public ShoppingList getShoppingList() {
+        if (shoppingList == null) {
+            shoppingList = new ShoppingList();
+        }
+        return shoppingList;
     }
 
-    public void setShoppingListIds(List<Long> shoppingListIds) {
-        this.shoppingListIds = shoppingListIds;
+    public void setShoppingList(ShoppingList shoppingList) {
+        this.shoppingList = shoppingList;
     }
 }
