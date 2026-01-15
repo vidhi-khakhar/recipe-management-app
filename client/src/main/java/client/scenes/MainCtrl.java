@@ -91,7 +91,7 @@ public class MainCtrl {
      * @param nutritionalValueCtrl the nutritional value controller
      * @param recipeShoppingListCtrl the recipe shopping list controller    
      */
-    public void initScenes(Stage primaryStage, Scene mainUserInterfaceScene, Scene nutritionScene,
+    public void initScenes(Stage primaryStage, Scene nutritionScene,
             Scene recipeAddScene, Scene addRecipeIngredientScene, AddRecipeIngredientCtrl addRecipeIngredientCtrl,
             Scene editTitleScene, Scene shoppingListScene, Scene recipeShoppingListScene,
             NutritionalValueCtrl nutritionalValueCtrl,
