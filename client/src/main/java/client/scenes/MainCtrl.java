@@ -196,6 +196,8 @@ public class MainCtrl {
                 } else {
                     sidebarList.getSelectionModel().selectFirst();
                 }
+            }else{
+                sidebarList.getSelectionModel().clearSelection();
             }
 
         } catch (Exception e) {
@@ -238,9 +240,9 @@ public class MainCtrl {
      */
     public void addRecipe(Recipe recipe) {
         // adds the recipe object to the list!
-        recipesObservableList.add(recipe);
+        recipeCollection.add(recipe);
+        applySearch();
         sidebarList.getSelectionModel().select(recipe);
-        loadRecipesFromDatabase();
         updateRecipeStackPane();
     }
 
@@ -314,7 +316,9 @@ public class MainCtrl {
         // removes the recipe entity from database
         recipeServerUtils.deleteRecipe(recipe.getRecipeId());
         // removes the recipe object to the list!
-        recipesObservableList.remove(recipe);
+        recipeCollection.remove(recipe.getRecipeId());
+
+        applySearch();
     }
 
     /**

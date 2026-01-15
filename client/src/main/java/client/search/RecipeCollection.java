@@ -108,9 +108,7 @@ public class RecipeCollection {
      */
     public void update(List<Recipe> newRecipes){
         Objects.requireNonNull(newRecipes, "Recipes must not be null");
-        if(newRecipes.isEmpty()){
-            return;
-        }
+
         this.clear();
         newRecipes.forEach(this::add);
     }
