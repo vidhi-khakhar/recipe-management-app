@@ -61,13 +61,25 @@ public class ShoppingListCtrl {
         shoppingList.setPadding(new Insets(10, 15, 10, 15));
         shoppingList.setSpacing(8);
 
+        loadShoppingListModel();
+        refreshUI();
+    }
+
+    /** Loads the latest shopping list from config */
+    private void loadShoppingListModel() {
         var config = configService.getConfig();
         if (config == null) {
             throw new IllegalStateException("ConfigService returned null config");
         }
         shoppingListModel = config.getShoppingList();
+    }
 
-        refreshUI();
+    /** Refreshes the shopping list data and UI - call this when window is opened */
+    public void refreshFromConfig() {
+        loadShoppingListModel();
+        if (shoppingList != null) { // Check if UI is initialized
+            refreshUI();
+        }
     }
 
     /** Rebuilds the shopping list UI from the model */
@@ -149,6 +161,8 @@ public class ShoppingListCtrl {
         if (shoppingListModel.getShoppingItems().isEmpty()) {
             emptyShoppingList.setVisible(true);
             notEmptyShoppingList.setVisible(false);
+        } else {
+            refreshUI();
         }
     }
 
@@ -168,17 +182,8 @@ public class ShoppingListCtrl {
                                       Button editSaveButton, Button deleteButton, boolean startEditable) {
         
         Runnable updateLabel = () -> {
-            StringBuilder text = new StringBuilder();
-            if (!item.getName().isBlank()) {
-                text.append(item.getName());
-            }
-            if (item.getAmount() > 0) {
-                text.append(" ").append(item.getAmount());
-            }
-            if (item.getUnit() != null && !item.getUnit().isBlank()) {
-                text.append(" ").append(item.getUnit());
-            }
-            combinedLabel.setText(text.toString());
+            String text = buildItemDisplayText(item);
+            combinedLabel.setText(text);
         };
 
         updateLabel.run();
@@ -239,6 +244,32 @@ public class ShoppingListCtrl {
         }
     }
 
+    private String buildItemDisplayText(ShoppingItem item) {
+        StringBuilder text = new StringBuilder();
+        if (!item.getName().isBlank()) {
+            text.append(item.getName());
+        }
+        if (item.getAmount() > 0) {
+            text.append(" ").append(item.getAmount());
+        }
+        if (item.getUnit() != null && !item.getUnit().isBlank()) {
+            text.append(" ").append(item.getUnit());
+        }
+        if (hasDuplicateName(item)) {
+            if (item.getSourceRecipeName() != null && !item.getSourceRecipeName().isBlank()) {
+                text.append(" [").append(item.getSourceRecipeName()).append("]");
+            }
+        }
+        return text.toString();
+    }
+
+    private boolean hasDuplicateName(ShoppingItem item) {
+        long count = shoppingListModel.getShoppingItems().stream()
+                .filter(i -> i.getName() != null && i.getName().equals(item.getName()))
+                .count();
+        return count > 1;
+    }
+
     /** Saves the shopping list to config */
     private void saveShoppingList() {
         try {
@@ -268,6 +299,10 @@ public class ShoppingListCtrl {
 
     void setShoppingListModelForTest(ShoppingList shoppingList) {
         this.shoppingListModel = shoppingList;
+    }
+
+    ShoppingList getShoppingListModelForTest() {
+        return this.shoppingListModel;
     }
 
 }
