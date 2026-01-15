@@ -74,32 +74,38 @@ public class RecipeShoppingListCtrl {
     /**
      * Initializes the controller with a recipe
      * This should be called after FXML loading
-     * 
+     *
      * @param recipe the recipe to display ingredients for
      */
     public void initializeWithRecipe(Recipe recipe) {
         this.currentRecipe = recipe;
         this.originalServings = recipe.getServings();
-        
-        // Setup UI
-        recipeTitleLabel.setText("Recipe: " + recipe.getTitle());
-        servingsSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 50, originalServings));
-        
+
+        // Setup UI (only if FXML fields are initialized)
+        if (recipeTitleLabel != null) {
+            recipeTitleLabel.setText("Recipe: " + recipe.getTitle());
+        }
+        if (servingsSpinner != null) {
+            var spinnerFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(
+                    1, 50, originalServings);
+            servingsSpinner.setValueFactory(spinnerFactory);
+
+            // Setup spinner listener for real-time scaling
+            servingsSpinner.valueProperty().addListener((obs, oldValue, newValue) -> {
+                if (newValue != null && !newValue.equals(oldValue)) {
+                    scaleIngredientsToServings(newValue);
+                }
+            });
+        }
+
         // Load ingredients
         loadIngredients();
-        
-        // Setup spinner listener for real-time scaling
-        servingsSpinner.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (newValue != null && !newValue.equals(oldValue)) {
-                scaleIngredientsToServings(newValue);
-            }
-        });
     }
 
     /**
      * Loads ingredients from the recipe and displays them
      */
-    private void loadIngredients() {
+    void loadIngredients() {
         if (currentRecipe == null) return;
         
         try {
@@ -148,10 +154,10 @@ public class RecipeShoppingListCtrl {
 
     /**
      * Scales all formal ingredients to the specified number of servings
-     * 
+     *
      * @param targetServings the target number of servings
      */
-    private void scaleIngredientsToServings(int targetServings) {
+    void scaleIngredientsToServings(int targetServings) {
         if (ingredients.isEmpty()) return;
         
         try {
@@ -176,21 +182,21 @@ public class RecipeShoppingListCtrl {
 
     /**
      * Removes an ingredient from the list
-     * 
+     *
      * @param ingredient the ingredient to remove
      */
-    private void removeIngredient(RecipeIngredientData ingredient) {
+    void removeIngredient(RecipeIngredientData ingredient) {
         ingredients.remove(ingredient);
         displayIngredients();
     }
 
     /**
      * Adds a new custom ingredient.
-     * 
+     *
      * @param event the action event
      */
     @FXML
-    private void addShoppingItem(ActionEvent event) {
+    void addShoppingItem(ActionEvent event) {
         try {
             // Reset servings spinner to original when adding new ingredient
             servingsSpinner.getValueFactory().setValue(originalServings);
@@ -217,12 +223,19 @@ public class RecipeShoppingListCtrl {
     }
 
     /**
+     * Adds a new custom ingredient for testing (no event).
+     */
+    void addShoppingItem() {
+        addShoppingItem(null);
+    }
+
+    /**
      * Adds all ingredients to the shopping list
-     * 
+     *
      * @param event the action event
      */
     @FXML
-    private void addToShoppingList(ActionEvent event) {
+    void addToShoppingList(ActionEvent event) {
         if (currentRecipe == null) {
             showError("No recipe selected");
             return;
@@ -256,20 +269,20 @@ public class RecipeShoppingListCtrl {
 
     /**
      * Cancels the operation and closes the window.
-     * 
+     *
      * @param event the action event
      */
     @FXML
-    private void cancel(ActionEvent event) {
+    void cancel(ActionEvent event) {
         ((Node) event.getSource()).getScene().getWindow().hide();
     }
 
     /**
      * Gets the current ingredient data from the UI
-     * 
+     *
      * @return list of current ingredient data
      */
-    private List<RecipeIngredientData> getCurrentIngredientData() {
+    List<RecipeIngredientData> getCurrentIngredientData() {
         List<RecipeIngredientData> currentData = new ArrayList<>();
         
         for (IngredientItemCtrl ctrl : ingredientCtrls) {
@@ -321,7 +334,7 @@ public class RecipeShoppingListCtrl {
 
     /**
      * Shows a success message dialog.
-     * 
+     *
      * @param message the success message
      */
     private void showSuccess(String message) {
@@ -330,5 +343,54 @@ public class RecipeShoppingListCtrl {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    // Test accessor methods
+    Recipe getCurrentRecipeForTest() {
+        return currentRecipe;
+    }
+
+    void setCurrentRecipeForTest(Recipe recipe) {
+        this.currentRecipe = recipe;
+    }
+
+    int getOriginalServingsForTest() {
+        return originalServings;
+    }
+
+    void setOriginalServingsForTest(int servings) {
+        this.originalServings = servings;
+    }
+
+    List<RecipeIngredientData> getIngredientsForTest() {
+        return ingredients;
+    }
+
+    List<IngredientItemCtrl> getIngredientCtrlsForTest() {
+        return ingredientCtrls;
+    }
+
+    void setRecipeTitleLabelForTest(javafx.scene.control.Label label) {
+        this.recipeTitleLabel = label;
+    }
+
+    void setServingsSpinnerForTest(javafx.scene.control.Spinner<Integer> spinner) {
+        this.servingsSpinner = spinner;
+    }
+
+    void setShoppingListForTest(javafx.scene.layout.VBox vbox) {
+        this.shoppingList = vbox;
+    }
+
+    void setAddShoppingItemButtonForTest(javafx.scene.control.Button button) {
+        this.addShoppingItemButton = button;
+    }
+
+    void setAddToShoppingListButtonForTest(javafx.scene.control.Button button) {
+        this.addToShoppingListButton = button;
+    }
+
+    void setCancelButtonForTest(javafx.scene.control.Button button) {
+        this.cancelButton = button;
     }
 }
