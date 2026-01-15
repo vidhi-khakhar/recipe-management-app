@@ -844,7 +844,7 @@ public class MainCtrl {
 
             }
 
-            recipesObservableList.add(newRecipe);
+            recipeCollection.add(newRecipe);
 
             System.out.println("It worked! Cloned recipe ID: " + newId);
 
@@ -959,10 +959,10 @@ public class MainCtrl {
     private Button addStepButton;
 
     @FXML
-    private AnchorPane noRecipePane;
+    private VBox noRecipePane;
 
     @FXML
-    private AnchorPane allRecipePane;
+    private VBox allRecipePane;
 
     @FXML
     private void downloadButtonClicked() throws IOException {
