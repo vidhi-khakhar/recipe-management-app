@@ -192,13 +192,13 @@ public class RecipeShoppingListCtrl {
     @FXML
     private void addShoppingItem(ActionEvent event) {
         try {
-            int currentServings = servingsSpinner.getValue();
-            double scaleFactor = (double) currentServings / originalServings;
+            // Reset servings spinner to original when adding new ingredient
+            servingsSpinner.getValueFactory().setValue(originalServings);
             
-            // Create new ingredient
+            // Create new ingredient with base amount (no scaling)
             RecipeIngredientData newIngredient = new RecipeIngredientData();
             newIngredient.setName("New Ingredient");
-            newIngredient.setAmount(1.0 * scaleFactor);
+            newIngredient.setAmount(1.0);
             newIngredient.setUnit("unit");
             newIngredient.setFormal(true);
             newIngredient.setCustomAdded(true);
