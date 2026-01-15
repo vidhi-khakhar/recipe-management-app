@@ -47,6 +47,9 @@ class RecipeIngredientServiceTest {
         id = rIng.getId();
     }
 
+    /**
+     * Tests that a RecipeIngredient is correctly created and saved to the database.
+     */
     @Test
     void createRecipeIngredient() {
         when(ingredientRepo.findById(any()))
@@ -59,6 +62,9 @@ class RecipeIngredientServiceTest {
         verify(rIngRepo, times(1)).save(rIng);
     }
 
+    /**
+     * Tests that a RecipeIngredient can be retrieved by its ID and that the correct ingredient is returned.
+     */
     @Test
     void getRecipeIngredient() {
         when(rIngRepo.findById(id))
@@ -69,6 +75,9 @@ class RecipeIngredientServiceTest {
         assertEquals(ingredient, result.getIngredient());
     }
 
+    /**
+     * Tests that all RecipeIngredient objects from the database are correctly returned.
+     */
     @Test
     void getAllRecipeIngredients() {
         RecipeIngredient rIng1 =
@@ -82,6 +91,9 @@ class RecipeIngredientServiceTest {
         assertEquals(2, rIngService.getAllRecipeIngredients().size());
     }
 
+    /**
+     * Tests that an exception is thrown if the ingredient does not exist in the database, and nothing is saved.
+     */
     @Test
     void createRecipeIngredient_ingredientNotFound_throwsException() {
         when(ingredientRepo.findById(any()))
@@ -96,6 +108,9 @@ class RecipeIngredientServiceTest {
         verify(rIngRepo, never()).save(any());
     }
 
+    /**
+     * Tests that an exception is thrown if the recipe does not exist in the database, and nothing is saved.
+     */
     @Test
     void createRecipeIngredient_recipeNotFound_throwsException() {
         when(ingredientRepo.findById(any()))
@@ -112,6 +127,9 @@ class RecipeIngredientServiceTest {
         verify(rIngRepo, never()).save(any());
     }
 
+    /**
+     * Tests that an exception is thrown if a RecipeIngredient with a given ID does not exist.
+     */
     @Test
     void getRecipeIngredient_notFound_throwsException() {
         when(rIngRepo.findById(id))
@@ -123,6 +141,9 @@ class RecipeIngredientServiceTest {
         );
     }
 
+    /**
+     * Tests that only RecipeIngredient objects belonging to a specific recipe are returned (filters by recipeId).
+     */
     @Test
     void getRecipeIngredients_filtersByRecipeId() {
         // Sets an explicit ID
