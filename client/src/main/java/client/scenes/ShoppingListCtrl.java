@@ -161,6 +161,8 @@ public class ShoppingListCtrl {
         if (shoppingListModel.getShoppingItems().isEmpty()) {
             emptyShoppingList.setVisible(true);
             notEmptyShoppingList.setVisible(false);
+        } else {
+            refreshUI();
         }
     }
 
@@ -253,10 +255,19 @@ public class ShoppingListCtrl {
         if (item.getUnit() != null && !item.getUnit().isBlank()) {
             text.append(" ").append(item.getUnit());
         }
-        if (item.getSourceRecipeName() != null && !item.getSourceRecipeName().isBlank()) {
-            text.append(" [").append(item.getSourceRecipeName()).append("]");
+        if (hasDuplicateName(item)) {
+            if (item.getSourceRecipeName() != null && !item.getSourceRecipeName().isBlank()) {
+                text.append(" [").append(item.getSourceRecipeName()).append("]");
+            }
         }
         return text.toString();
+    }
+
+    private boolean hasDuplicateName(ShoppingItem item) {
+        long count = shoppingListModel.getShoppingItems().stream()
+                .filter(i -> i.getName() != null && i.getName().equals(item.getName()))
+                .count();
+        return count > 1;
     }
 
     /** Saves the shopping list to config */
