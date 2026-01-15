@@ -302,8 +302,8 @@ public class ShoppingListCtrl {
         }
         if (hasDuplicateName(item)) {
             if (
-                item.getSourceRecipeName() != null &&
-                !item.getSourceRecipeName().isBlank()
+                    item.getSourceRecipeName() != null &&
+                    !item.getSourceRecipeName().isBlank()
             ) {
                 text
                     .append(" [")
@@ -347,7 +347,7 @@ public class ShoppingListCtrl {
         if (file != null) {
             try {
                 String text = (
-                    new ShoppingListFormatter(shoppingListModel)
+                        new ShoppingListFormatter(shoppingListModel)
                 ).formatPlaintext();
                 FileUtils.writeStringToFile(file, text);
             } catch (java.io.IOException e) {
