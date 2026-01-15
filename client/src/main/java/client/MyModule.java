@@ -25,10 +25,11 @@ import com.google.inject.Module;
 import com.google.inject.Scopes;
 
 import client.scenes.MainCtrl;
+import client.scenes.RecipeShoppingListCtrl;
 import client.utils.IngredientServerUtils;
 import client.utils.ServerUtils;
+import client.shopping.RecipeShoppingService;
 import com.google.inject.name.Names;
-
 public class MyModule implements Module {
     private final String configPath;
 
@@ -49,10 +50,12 @@ public class MyModule implements Module {
         binder.bind(MainCtrl.class).in(Scopes.SINGLETON);
         binder.bind(ServerUtils.class).in(Scopes.SINGLETON);
         binder.bind(IngredientServerUtils.class).in(Scopes.SINGLETON);
+        binder.bind(RecipeServerUtils.class).in(Scopes.SINGLETON);
         binder.bind(FavoriteService.class).in(Scopes.SINGLETON);
         binder.bind(RecipeCollection.class).in(Scopes.SINGLETON);
         binder.bind(SearchService.class).in(Scopes.SINGLETON);
-        binder.bind(RecipeServerUtils.class).in(Scopes.SINGLETON);
+        binder.bind(RecipeShoppingListCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(RecipeShoppingService.class).in(Scopes.SINGLETON);
         binder.bind(AddRecipeIngredientCtrl.class);
     }
 }

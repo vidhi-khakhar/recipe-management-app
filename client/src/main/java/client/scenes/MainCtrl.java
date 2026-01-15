@@ -67,6 +67,7 @@ public class MainCtrl {
     private Scene recipeShoppingListScene;
 
     private AddRecipeIngredientCtrl addRecipeIngredientCtrl;
+    private RecipeShoppingListCtrl recipeShoppingListCtrl;
     private NutritionalValueCtrl nutritionalValueCtrl;
 
     private final RecipeServerUtils recipeServerUtils;
@@ -88,11 +89,14 @@ public class MainCtrl {
      * @param addRecipeIngredientScene the add ingredient to recipe scene
      * @param addRecipeIngredientCtrl the add ingredient to recipe controller
      * @param nutritionalValueCtrl the nutritional value controller
+     * @param recipeShoppingListCtrl the recipe shopping list controller    
      */
-    public void initScenes(Stage primaryStage, Scene mainUserInterfaceScene, Scene nutritionScene,
+    public void initScenes(Stage primaryStage, Scene nutritionScene,
             Scene recipeAddScene, Scene addRecipeIngredientScene, AddRecipeIngredientCtrl addRecipeIngredientCtrl,
             Scene editTitleScene, Scene shoppingListScene, Scene recipeShoppingListScene,
-                           NutritionalValueCtrl nutritionalValueCtrl) {
+            NutritionalValueCtrl nutritionalValueCtrl,
+            RecipeShoppingListCtrl recipeShoppingListCtrl) {
+            
         this.primaryStage = primaryStage;
         this.nutritionScene = nutritionScene;
         this.recipeAddScene = recipeAddScene; 
@@ -101,6 +105,7 @@ public class MainCtrl {
         this.editTitleScene = editTitleScene;
         this.shoppingListScene = shoppingListScene;
         this.recipeShoppingListScene = recipeShoppingListScene;
+        this.recipeShoppingListCtrl = recipeShoppingListCtrl;
         this.nutritionalValueCtrl = nutritionalValueCtrl;
 
         primaryStage.show();
@@ -749,6 +754,12 @@ public class MainCtrl {
             return;
         }
 
+        // Refresh the shopping list data from config before showing
+        ShoppingListCtrl shoppingListCtrl = (ShoppingListCtrl) shoppingListScene.getUserData();
+        if (shoppingListCtrl != null) {
+            shoppingListCtrl.refreshFromConfig();
+        }
+
         Stage secondaryStage = new Stage();
         secondaryStage.setTitle("Shopping List");
         secondaryStage.setScene(shoppingListScene);
@@ -762,15 +773,25 @@ public class MainCtrl {
      */
     @FXML
     void showRecipeShoppingWindow() {
-        if (recipeShoppingListScene == null) {
-            System.err.println("Recipe shopping list scene not initialized!");
+        if (recipeShoppingListScene == null || recipeShoppingListCtrl == null) {
+            System.err.println("Recipe shopping list scene or controller not initialized!");
+            return;
+        }
+
+        // Check if a recipe is selected
+        if (selectedRecipe == null) {
+            showError("Please select a recipe first");
             return;
         }
 
         Stage secondaryStage = new Stage();
-        secondaryStage.setTitle("Recipe Shopping List");
+        secondaryStage.setTitle("Recipe Shopping List - " + selectedRecipe.getTitle());
         secondaryStage.setScene(recipeShoppingListScene);
         secondaryStage.initOwner(primaryStage); // makes it modal to main window if desired
+        
+        // Initialize the controller with the selected recipe
+        recipeShoppingListCtrl.initializeWithRecipe(selectedRecipe);
+        
         secondaryStage.show();
     }
 
@@ -885,6 +906,19 @@ public class MainCtrl {
 
     public void refreshSidebarList() {
         sidebarList.refresh();
+    }
+
+    /**
+     * Shows an error message dialog.
+     * 
+     * @param message error message
+     */
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     public void updateTitleLabel(String title) {
