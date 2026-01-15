@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
 import com.google.inject.Injector;
+import com.google.inject.Inject;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -33,6 +34,7 @@ public class MyFXML {
 
     private Injector injector;
 
+    @Inject
     public MyFXML(Injector injector) {
         this.injector = injector;
     }

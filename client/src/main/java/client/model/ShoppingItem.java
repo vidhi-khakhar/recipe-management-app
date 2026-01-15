@@ -118,6 +118,12 @@ public class ShoppingItem implements Serializable {
     public String toString() {
         String source = sourceRecipeName != null ? " (" + sourceRecipeName + ")" : "";
         String unitPart = (unit != null && !unit.isEmpty()) ? unit : "";
+        
+        if (unitPart.equals("to taste") || unitPart.equals("as needed") 
+                || unitPart.equals("to preference") || amount == 0.0) {
+            return name + " (" + unitPart + ")" + source;
+        }
+        
         return String.format("%s (%.1f %s)%s", name, amount, unitPart, source);
     }
 }
