@@ -229,7 +229,9 @@ public class IngredientItemCtrl {
                 unitComboBox.setValue(ingredientData.getInformal());
                 amountField.setDisable(true);
                 amountField.setStyle("-fx-opacity: 0.5;");
-                helperLabel.setText("Informal: " + ingredientData.getInformal() + " (amount not needed, scaling unavailable)");
+                String info = "Informal: " + ingredientData.getInformal()
+                        + " (amount not needed, scaling unavailable)";
+                helperLabel.setText(info);
             } else {
                 unitComboBox.setValue("");
                 amountField.setDisable(false);
