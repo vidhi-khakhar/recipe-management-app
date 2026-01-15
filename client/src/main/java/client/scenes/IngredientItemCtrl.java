@@ -161,7 +161,7 @@ public class IngredientItemCtrl {
                 ingredientData.setInformal(unit);
                 amountField.setDisable(true);
                 amountField.setStyle("-fx-opacity: 0.5;");
-                helperLabel.setText("Informal: " + unit + " (amount not needed)");
+                helperLabel.setText("Informal: " + unit + " (amount not needed, scaling unavailable)");
             } else {
                 ingredientData.setFormal(true);
                 ingredientData.setInformal(null);
@@ -190,7 +190,7 @@ public class IngredientItemCtrl {
                 ingredientData.setInformal(unit);
                 amountField.setDisable(true);
                 amountField.setStyle("-fx-opacity: 0.5;");
-                helperLabel.setText("Custom informal: " + unit + " (amount not needed)");
+                helperLabel.setText("Custom informal: " + unit + " (amount not needed, scaling unavailable)");
                 notifyChange();
             }
         }
@@ -229,7 +229,7 @@ public class IngredientItemCtrl {
                 unitComboBox.setValue(ingredientData.getInformal());
                 amountField.setDisable(true);
                 amountField.setStyle("-fx-opacity: 0.5;");
-                helperLabel.setText("Informal: " + ingredientData.getInformal() + " (amount not needed)");
+                helperLabel.setText("Informal: " + ingredientData.getInformal() + " (amount not needed, scaling unavailable)");
             } else {
                 unitComboBox.setValue("");
                 amountField.setDisable(false);
