@@ -45,8 +45,7 @@ public class IngredientItemCtrl {
         "g", "kg", "mg", "oz", "lb",
         "ml", "l", "fl oz", "cup", "tsp", "tbsp", "pinch",
         "whole", "piece", "slice", "clove", "dash",
-        "to taste", "as needed",
-        "───",
+        "to taste (informal)", "as needed (informal)",
         "Type custom unit..."
     );
 
@@ -147,9 +146,8 @@ public class IngredientItemCtrl {
             ingredientData.setUnit(unit);
             
             // Check if this should be treated as informal
-            if (isInformalUnit(unit) || unit.equals("Type custom unit...")
-                    || unit.equals("───")) {
-                if (unit.equals("Type custom unit...") || unit.equals("───")) {
+            if (isInformalUnit(unit) || unit.equals("Type custom unit...")) {
+                if (unit.equals("Type custom unit...")) {
                     // Clear and focus for typing
                     updatingFields = true;
                     unitComboBox.getEditor().clear();
@@ -184,7 +182,6 @@ public class IngredientItemCtrl {
             String unit = unitComboBox.getEditor().getText().trim();
             boolean isCustom = !unit.isEmpty()
                     && !unit.equals("Type custom unit...")
-                    && !unit.equals("───")
                     && !COMMON_UNITS.contains(unit);
             if (isCustom) {
                 // Custom unit typed
@@ -250,8 +247,8 @@ public class IngredientItemCtrl {
      * @return true if informal, false if formal
      */
     private boolean isInformalUnit(String unit) {
-        return unit != null && (unit.equals("to taste") || 
-                               unit.equals("as needed") || 
+        return unit != null && (unit.equals("to taste (informal)") || 
+                               unit.equals("as needed (informal)") || 
                                unit.equals("to preference"));
     }
 
