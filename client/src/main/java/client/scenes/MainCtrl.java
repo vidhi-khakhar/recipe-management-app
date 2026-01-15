@@ -619,16 +619,22 @@ public class MainCtrl {
         // [ 1 ][ TextField ][ ✔ ][ ✖ ] when editing
         HBox row = new HBox(10);
         row.setAlignment(Pos.CENTER_LEFT);
+        row.setMaxWidth(Double.MAX_VALUE);
 
         //index
         Label indexLabel = new Label((index + 1) + ".");
         indexLabel.setMinWidth(30);
 
         Label textLabel = new Label(initialText);
-        textLabel.setPrefWidth(400);
+        //textLabel.setPrefWidth(400);
+        textLabel.setMaxWidth(Double.MAX_VALUE);
 
         TextField textField = new TextField(initialText);
-        textField.setPrefWidth(400);
+        //textField.setPrefWidth(400);
+        textField.setMaxWidth(Double.MAX_VALUE);
+
+        HBox.setHgrow(textLabel, Priority.ALWAYS);
+        HBox.setHgrow(textField, Priority.ALWAYS);
 
         Button editSaveButton = new Button();
         Button deleteButton = new Button("✖");
