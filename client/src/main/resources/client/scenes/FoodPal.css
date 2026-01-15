@@ -72,6 +72,15 @@
     -fx-background-color: white;
 }
 
+.refreshButton{
+    -fx-font-size: 20px;
+    -fx-padding: 0 0;
+    -fx-min-width: 34px;
+    -fx-min-height: 34px;
+    -fx-pref-width: 34px;
+    -fx-pref-height: 34px;
+}
+
 /*SIDEBAR STYLING*/
 .sidebar {
     -fx-background-color: #9bacd2;

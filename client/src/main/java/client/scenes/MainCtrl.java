@@ -177,7 +177,14 @@ public class MainCtrl {
                     = sidebarList.getSelectionModel().getSelectedItem();
 
             List<Recipe> recipesFromDB = recipeServerUtils.getAllRecipes();
+            List<Long> removedIDs = favoriteService.removeDeletedFavorites(recipesFromDB);
 
+            //Check if a favorited recipe got deleted
+            if(!removedIDs.isEmpty()) {
+                showFavoriteRemovedAlert(removedIDs);
+            }
+
+            //Update the UI and the collection of recieps to the database version
             recipeCollection.update(recipesFromDB);
 
             favoriteService.removeDeletedFavorites(recipesFromDB);
@@ -198,6 +205,19 @@ public class MainCtrl {
         } catch (Exception e) {
             System.out.println("Failed to load recipes: " + e.getMessage());
         }
+    }
+
+    /**
+     * The alert to let the user know their favorite recipe got deleted by
+     * someone else.
+     * @param removedIds the removed recipes' IDs
+     */
+    private void showFavoriteRemovedAlert(List<Long> removedIds) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Favorite deleted");
+        alert.setHeaderText("A favorite recipe got deleted");
+        alert.setContentText("Helaas pindakaas — one or more favorites are removed by someone else.");
+        alert.showAndWait();
     }
 
     /**
@@ -316,13 +336,6 @@ public class MainCtrl {
         applySearch();
     }
 
-    /**
-     * Changes all the UI elements to be either removed or have default text
-     */
-    public void clearUI() {
-        titleRecipeLabel.setText("No recipe selected!");
-        //TODO remove ingredients and instruction step
-    }
 
     /**
      * The placeholder for the search functionality It checks if there is a
@@ -355,18 +368,6 @@ public class MainCtrl {
         }
 
         applySearch();
-    }
-
-    /**
-     * This method prints out the button name + "is clicked!" to the console
-     * when a button is clicked in the UI.
-     *
-     * @param event the ActionEvent triggered when the button is clicked.
-     */
-    @FXML
-    private void handleClick(ActionEvent event) {
-        Button btn = (Button) event.getSource();
-        System.out.println(btn.getId() + " is clicked!");
     }
 
     /**

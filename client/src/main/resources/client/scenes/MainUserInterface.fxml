@@ -30,7 +30,7 @@
                                             <children>
                                                 <Pane prefHeight="96.0" prefWidth="35.0" HBox.hgrow="ALWAYS" />
                                                 <TextField fx:id="searchBar" prefHeight="31.0" prefWidth="218.0" promptText="Enter your query..." styleClass="searchbar" HBox.hgrow="ALWAYS" />
-                                                <Button fx:id="favoriteS" mnemonicParsing="false" onAction="#searchFavorites" prefHeight="31.0" prefWidth="0.0" styleClass="roundbutton" text="S">
+                                                <Button fx:id="favoriteS" mnemonicParsing="false" onAction="#searchFavorites" prefHeight="31.0" prefWidth="0.0" styleClass="roundbutton" text="☆">
                                                     <HBox.margin>
                                                         <Insets left="4.0" />
                                                     </HBox.margin>
@@ -51,13 +51,17 @@
                                 </Label>
                                 <HBox alignment="BOTTOM_RIGHT" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                                     <children>
-                                        <Button fx:id="refreshButton" mnemonicParsing="false" onAction="#refreshButtonClicked" styleClass="roundbutton" text="R" HBox.hgrow="ALWAYS">
+                                        <Button fx:id="refreshButton" mnemonicParsing="false" onAction="#refreshButtonClicked" text="⟳" HBox.hgrow="ALWAYS">
                                             <HBox.margin>
                                                 <Insets bottom="5.0" right="5.0" />
                                             </HBox.margin>
                                             <font>
                                                 <Font name="System Bold" size="13.0" />
                                             </font>
+                                 <styleClass>
+                                    <String fx:value="roundbutton" />
+                                    <String fx:value="refreshButton" />
+                                 </styleClass>
                                         </Button>
                                     </children>
                                 </HBox>
