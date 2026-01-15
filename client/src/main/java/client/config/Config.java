@@ -11,6 +11,7 @@ public class Config {
     private List<Long> favoriteRecipeIds;
     private Locale language;
     private ShoppingList shoppingList;
+    private Long shoppingListReminder;
 
     /**
      * Default constructor for Jackson
@@ -54,5 +55,13 @@ public class Config {
 
     public void setShoppingList(ShoppingList shoppingList) {
         this.shoppingList = shoppingList;
+    }
+
+    public Long getShoppingListReminder() {
+        return shoppingListReminder;
+    }
+
+    public void setShoppingListReminder(Long shoppingListReminder) {
+        this.shoppingListReminder = shoppingListReminder;
     }
 }

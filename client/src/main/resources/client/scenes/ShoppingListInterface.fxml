@@ -147,11 +147,16 @@
                            <HBox.margin>
                               <Insets top="7.0" />
                            </HBox.margin></Button>
-                        <Button fx:id="remindMeButton" mnemonicParsing="false" prefHeight="34.0" prefWidth="125.0" styleClass="roundbutton" text="Remind me! 🔔">
+                        <Button fx:id="remindMeButton" mnemonicParsing="false" onAction="#handleRemindMe" prefHeight="34.0" prefWidth="125.0" styleClass="roundbutton" text="Remind me! 🔔">
                            <HBox.margin>
                               <Insets left="5.0" right="5.0" top="7.0" />
                            </HBox.margin>
                         </Button>
+                        <Label fx:id="reminderStatusLabel" text="No reminder set.">
+                           <HBox.margin>
+                              <Insets left="5.0" right="5.0" top="15.0" />
+                           </HBox.margin>
+                        </Label>
                      </children>
                      <VBox.margin>
                         <Insets bottom="5.0" />

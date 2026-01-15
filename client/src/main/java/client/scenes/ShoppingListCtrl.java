@@ -8,8 +8,14 @@ import client.model.ShoppingList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -17,6 +23,12 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 public class ShoppingListCtrl {
+
+    @FXML
+    private Button remindMeButton;
+
+    @FXML
+    private Label reminderStatusLabel;
 
     @FXML
     private Button addShoppingItemButton;
@@ -47,7 +59,9 @@ public class ShoppingListCtrl {
         this.configService = configService;
     }
 
-    /** Initializes the shopping list UI */
+    /**
+     * Initializes the shopping list UI and loads existing items from the model.
+     */
     @FXML
     public void initialize() {
         shoppingList.setFillWidth(true);
@@ -61,6 +75,7 @@ public class ShoppingListCtrl {
         shoppingListModel = config.getShoppingList();
 
         refreshUI();
+        scheduleExistingReminderIfAny();
     }
 
     private void refreshUI() {
@@ -192,8 +207,7 @@ public class ShoppingListCtrl {
 
         switchToEdit[0] = () -> {
             if (item.isBought()) {
-                javafx.scene.control.Alert alert =
-                        new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Cannot Edit Item");
                 alert.setHeaderText(null);
                 alert.setContentText("This item has been marked as bought and cannot be edited.");
@@ -255,25 +269,28 @@ public class ShoppingListCtrl {
 
         combinedField.setStyle(
                 item.isBought()
-                        ? "-fx-text-fill: grey; -fx-background-color: transparent; -fx-border-color: transparent;"
-                        : "-fx-background-color: transparent; -fx-border-color: transparent;"
+                ? "-fx-text-fill: grey; -fx-background-color: transparent; -fx-border-color: transparent;"
+                : "-fx-background-color: transparent; -fx-border-color: transparent;"
         );
     }
 
     private Runnable createSaveAction(HBox row, ShoppingItem item, TextField combinedField,
-                                     TextField nameField, TextField amountField, TextField unitField,
-                                     Button editSaveButton, Button deleteButton, CheckBox boughtCheckBox,
-                                     Runnable switchToEdit) {
+            TextField nameField, TextField amountField, TextField unitField,
+            Button editSaveButton, Button deleteButton, CheckBox boughtCheckBox,
+            Runnable switchToEdit) {
         return () -> {
             String name = nameField.getText().trim();
-            if (name.isEmpty()) return;
+            if (name.isEmpty()) {
+                return;
+            }
 
             double amount = item.getAmount();
             String amountText = amountField.getText().trim();
             if (!amountText.isEmpty()) {
                 try {
                     amount = Double.parseDouble(amountText);
-                } catch (NumberFormatException ignored) {}
+                } catch (NumberFormatException ignored) {
+                }
             }
 
             item.setName(name);
@@ -302,6 +319,172 @@ public class ShoppingListCtrl {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    private void handleRemindMe() {
+        Dialog<Void> dialog = new Dialog<>();
+        dialog.setTitle("Set Reminder");
+        dialog.setHeaderText("Choose reminder date and time");
+
+        ButtonType setButton
+                = new ButtonType("Set Reminder", ButtonBar.ButtonData.OK_DONE);
+
+        dialog.getDialogPane().getButtonTypes().addAll(setButton, ButtonType.CANCEL);
+
+        DatePicker datePicker = new DatePicker(java.time.LocalDate.now());
+
+        TextField hourField = new TextField("12");
+        hourField.setPromptText("HH");
+
+        TextField minuteField = new TextField("00");
+        minuteField.setPromptText("MM");
+
+        HBox timeBox = new HBox(10, hourField, minuteField);
+        timeBox.setAlignment(Pos.CENTER_LEFT);
+
+        VBox content = new VBox(10);
+        content.setPadding(new Insets(10));
+
+        // 🔹 Show existing reminder if any
+        Long existingMillis = configService.getConfig().getShoppingListReminder();
+        if (existingMillis != null) {
+            java.time.LocalDateTime existing
+                    = java.time.Instant.ofEpochMilli(existingMillis)
+                            .atZone(java.time.ZoneId.systemDefault())
+                            .toLocalDateTime();
+            Label warningLabel = new Label(
+                    "⚠ Warning: A reminder is already set for "
+                    + existing.toLocalDate() + " at " + existing.toLocalTime()
+                    + ". Setting a new reminder will replace it."
+            );
+            warningLabel.setStyle("-fx-text-fill: darkred; -fx-font-weight: bold;");
+            content.getChildren().add(warningLabel);
+
+            // pre-fill existing values
+            datePicker.setValue(existing.toLocalDate());
+            hourField.setText(String.valueOf(existing.getHour()));
+            minuteField.setText(String.valueOf(existing.getMinute()));
+        }
+
+        content.getChildren().addAll(datePicker, timeBox);
+        dialog.getDialogPane().setContent(content);
+
+        dialog.setResultConverter(btn -> {
+            if (btn == setButton) {
+                try {
+                    int hour = Integer.parseInt(hourField.getText());
+                    int minute = Integer.parseInt(minuteField.getText());
+
+                    if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
+                        showError("Invalid time entered.");
+                        return null;
+                    }
+
+                    java.time.LocalDateTime reminderTime
+                            = java.time.LocalDateTime.of(
+                                    datePicker.getValue(),
+                                    java.time.LocalTime.of(hour, minute)
+                            );
+
+                    long delayMillis
+                            = java.time.Duration
+                                    .between(java.time.LocalDateTime.now(), reminderTime)
+                                    .toMillis();
+
+                    if (delayMillis <= 0) {
+                        showError("Reminder must be set in the future.");
+                        return null;
+                    }
+
+                    // Persist the reminder
+                    configService.getConfig().setShoppingListReminder(
+                            reminderTime.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli());
+                    configService.save();
+
+                    reminderStatusLabel.setText(
+                            "Reminder set for " + reminderTime.toLocalDate()
+                            + " at " + reminderTime.toLocalTime()
+                    );
+
+                    scheduleReminder(delayMillis);
+
+                } catch (NumberFormatException e) {
+                    showError("Please enter valid numbers.");
+                }
+            }
+            return null;
+        });
+
+        dialog.showAndWait();
+    }
+
+    private void scheduleReminder(long delayMillis) {
+        new Thread(() -> {
+            try {
+                Thread.sleep(delayMillis);
+            } catch (InterruptedException ignored) {
+            }
+
+            StringBuilder message = new StringBuilder(
+                    "Reminder to purchase shopping list!\n\nItems to buy:\n"
+            );
+
+            shoppingListModel.getShoppingItems().stream()
+                    .filter(item -> !item.isBought())
+                    .forEach(item
+                            -> message.append("• ")
+                            .append(item.getName())
+                            .append("\n")
+            );
+
+            if (message.toString().endsWith("Items to buy:\n")) {
+                message.append("All items have been bought 🎉");
+            }
+
+            javafx.application.Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Shopping Reminder");
+                alert.setHeaderText(null);
+                alert.setContentText(message.toString());
+                alert.showAndWait();
+
+                // reset reminder status & clear from config
+                reminderStatusLabel.setText("No reminder set.");
+                configService.getConfig().setShoppingListReminder(null);
+                configService.save();
+            });
+        }).start();
+    }
+
+    private void scheduleExistingReminderIfAny() {
+        Long millis = configService.getConfig().getShoppingListReminder();
+        if (millis != null) {
+            long delay = millis - System.currentTimeMillis();
+            if (delay > 0) {
+                java.time.LocalDateTime reminderTime
+                        = java.time.Instant.ofEpochMilli(millis)
+                                .atZone(java.time.ZoneId.systemDefault())
+                                .toLocalDateTime();
+                reminderStatusLabel.setText(
+                        "Reminder set for " + reminderTime.toLocalDate()
+                        + " at " + reminderTime.toLocalTime()
+                );
+                scheduleReminder(delay);
+            } else {
+                // past reminder, clear it
+                configService.getConfig().setShoppingListReminder(null);
+                configService.save();
+            }
+        }
+    }
+
+    private void showError(String msg) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Invalid Reminder");
+        alert.setHeaderText(null);
+        alert.setContentText(msg);
+        alert.showAndWait();
     }
 
     @FXML
