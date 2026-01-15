@@ -153,16 +153,25 @@ public class RecipeShoppingListCtrl {
      */
     private void scaleIngredientsToServings(int targetServings) {
         if (ingredients.isEmpty()) return;
-        
+
         try {
-            List<RecipeIngredientData> scaledIngredients = 
+            List<RecipeIngredientData> scaledIngredients =
                 recipeShoppingService.scaleIngredients(ingredients, originalServings, targetServings);
-            
+
+            // Update the ingredients list with scaled values
+            for (int i = 0; i < ingredients.size() && i < scaledIngredients.size(); i++) {
+                RecipeIngredientData original = ingredients.get(i);
+                RecipeIngredientData scaled = scaledIngredients.get(i);
+                if (original.isFormal() && scaled.isFormal()) {
+                    original.setAmount(scaled.getAmount());
+                }
+            }
+
             // Update UI with scaled values
             for (int i = 0; i < ingredientCtrls.size() && i < scaledIngredients.size(); i++) {
                 IngredientItemCtrl ctrl = ingredientCtrls.get(i);
                 RecipeIngredientData scaledData = scaledIngredients.get(i);
-                
+
                 // Update only formal ingredients to avoid losing user edits
                 RecipeIngredientData currentData = ctrl.getIngredientData();
                 if (currentData.isFormal() && scaledData.isFormal()) {
@@ -194,7 +203,7 @@ public class RecipeShoppingListCtrl {
         try {
             int currentServings = servingsSpinner.getValue();
             double scaleFactor = (double) currentServings / originalServings;
-            
+
             // Create new ingredient
             RecipeIngredientData newIngredient = new RecipeIngredientData();
             newIngredient.setName("New Ingredient");
@@ -202,11 +211,14 @@ public class RecipeShoppingListCtrl {
             newIngredient.setUnit("unit");
             newIngredient.setFormal(true);
             newIngredient.setCustomAdded(true);
-            
+
             // Add to list
             ingredients.add(newIngredient);
+
+            // Scale all ingredients to current servings and redisplay
+            scaleIngredientsToServings(currentServings);
             displayIngredients();
-            
+
             // Focus on the new ingredient for editing
             if (!ingredientCtrls.isEmpty()) {
                 ingredientCtrls.get(ingredientCtrls.size() - 1).focusNameField();
