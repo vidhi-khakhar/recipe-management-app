@@ -180,17 +180,8 @@ public class ShoppingListCtrl {
                                       Button editSaveButton, Button deleteButton, boolean startEditable) {
         
         Runnable updateLabel = () -> {
-            StringBuilder text = new StringBuilder();
-            if (!item.getName().isBlank()) {
-                text.append(item.getName());
-            }
-            if (item.getAmount() > 0) {
-                text.append(" ").append(item.getAmount());
-            }
-            if (item.getUnit() != null && !item.getUnit().isBlank()) {
-                text.append(" ").append(item.getUnit());
-            }
-            combinedLabel.setText(text.toString());
+            String text = buildItemDisplayText(item);
+            combinedLabel.setText(text);
         };
 
         updateLabel.run();
@@ -249,6 +240,23 @@ public class ShoppingListCtrl {
             editSaveButton.setOnAction(e -> switchToEdit[0].run());
             row.getChildren().setAll(combinedLabel, editSaveButton, deleteButton);
         }
+    }
+
+    private String buildItemDisplayText(ShoppingItem item) {
+        StringBuilder text = new StringBuilder();
+        if (!item.getName().isBlank()) {
+            text.append(item.getName());
+        }
+        if (item.getAmount() > 0) {
+            text.append(" ").append(item.getAmount());
+        }
+        if (item.getUnit() != null && !item.getUnit().isBlank()) {
+            text.append(" ").append(item.getUnit());
+        }
+        if (item.getSourceRecipeName() != null && !item.getSourceRecipeName().isBlank()) {
+            text.append(" [").append(item.getSourceRecipeName()).append("]");
+        }
+        return text.toString();
     }
 
     /** Saves the shopping list to config */
