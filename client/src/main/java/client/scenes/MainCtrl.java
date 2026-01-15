@@ -216,7 +216,7 @@ public class MainCtrl {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Favorite deleted");
         alert.setHeaderText("A favorite recipe got deleted");
-        alert.setContentText("Helaas pindakaas — one or more favorites are removed by someone else.");
+        alert.setContentText("Helaas pindakaas — one or more favorites have been removed by someone else.");
         alert.showAndWait();
     }
 
