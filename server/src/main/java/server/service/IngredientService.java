@@ -4,20 +4,28 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import commons.Ingredient;
+import server.database.RecipeIngredientRepository;
 import server.database.RecipeRepository;
 import server.database.IngredientRepository;
 
 
 @Service
 public class IngredientService {
+    @Autowired
+    private EntityManager entityManager;
 
 
     @Autowired
     private IngredientRepository ingredientRepository;
+
+    @Autowired
+    private RecipeIngredientRepository recipeIngredientRepository;
 
     @Autowired
     private RecipeRepository recipeRepository;
@@ -74,16 +82,13 @@ public class IngredientService {
     }
 
     /**
-     * deletes an ingredient
-     * @param id
+     * deletes
+     * @param ingredientId id
      */
-    public void deleteIngredientById(Long id) {
-        if (ingredientRepository.existsById(id)) {
-            ingredientRepository.deleteById(id);
-        } else {
-            throw new NoSuchElementException("Ingredient with id " + id + " not found.");
-        }
+    @Transactional
+    public void deleteIngredientById(Long ingredientId) {
+        recipeIngredientRepository.deleteByIngredientId(ingredientId);
+
+        ingredientRepository.deleteById(ingredientId);
     }
-
-
 }

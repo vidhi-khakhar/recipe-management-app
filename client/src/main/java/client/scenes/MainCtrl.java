@@ -68,6 +68,7 @@ public class MainCtrl {
 
     private AddRecipeIngredientCtrl addRecipeIngredientCtrl;
     private RecipeShoppingListCtrl recipeShoppingListCtrl;
+    private NutritionalValueCtrl nutritionalValueCtrl;
 
     private final RecipeServerUtils recipeServerUtils;
     private final FavoriteService favoriteService;
@@ -87,11 +88,15 @@ public class MainCtrl {
      * @param recipeAddScene the add recipe scene
      * @param addRecipeIngredientScene the add ingredient to recipe scene
      * @param addRecipeIngredientCtrl the add ingredient to recipe controller
+     * @param nutritionalValueCtrl the nutritional value controller
+     * @param recipeShoppingListCtrl the recipe shopping list controller    
      */
     public void initScenes(Stage primaryStage, Scene mainUserInterfaceScene, Scene nutritionScene,
             Scene recipeAddScene, Scene addRecipeIngredientScene, AddRecipeIngredientCtrl addRecipeIngredientCtrl,
-            Scene editTitleScene, Scene shoppingListScene, Scene recipeShoppingListScene, 
+            Scene editTitleScene, Scene shoppingListScene, Scene recipeShoppingListScene,
+            NutritionalValueCtrl nutritionalValueCtrl,
             RecipeShoppingListCtrl recipeShoppingListCtrl) {
+            
         this.primaryStage = primaryStage;
         this.nutritionScene = nutritionScene;
         this.recipeAddScene = recipeAddScene; 
@@ -101,6 +106,7 @@ public class MainCtrl {
         this.shoppingListScene = shoppingListScene;
         this.recipeShoppingListScene = recipeShoppingListScene;
         this.recipeShoppingListCtrl = recipeShoppingListCtrl;
+        this.nutritionalValueCtrl = nutritionalValueCtrl;
 
         primaryStage.show();
     }
@@ -382,8 +388,11 @@ public class MainCtrl {
      */
     @FXML
     void showIngredients(Recipe recipe) {
-        ingredientList.getChildren().clear();
+        if (recipe == null) {
+            return;
+        }
 
+        ingredientList.getChildren().clear();
         List<RecipeIngredient> ingredients = recipe.getIngredients();
 
         for (RecipeIngredient ingredient : ingredients) {
@@ -402,7 +411,8 @@ public class MainCtrl {
         }
 
         Stage secondaryStage = new Stage();
-        addRecipeIngredientCtrl.initialize();
+        addRecipeIngredientCtrl.onStart();
+        addRecipeIngredientCtrl.initScenes(nutritionScene, addRecipeIngredientScene);
         secondaryStage.setTitle("Add Ingredient to Recipe");
         secondaryStage.setScene(addRecipeIngredientScene);
         secondaryStage.setResizable(false);
@@ -432,6 +442,7 @@ public class MainCtrl {
             newIngredient.setRecipe(selectedRecipe);
 
             this.recipeServerUtils.createRecipeIngredient(newIngredient);
+
             selectedRecipe.getIngredients().add(newIngredient);
 
         }
@@ -719,10 +730,13 @@ public class MainCtrl {
         }
 
         Stage secondaryStage = new Stage();
+        nutritionalValueCtrl.initialize();
         secondaryStage.setTitle("Nutritional Values");
         secondaryStage.setScene(nutritionScene);
         secondaryStage.initOwner(primaryStage); // makes it modal to main window if desired
-        secondaryStage.show();
+        secondaryStage.showAndWait();
+
+        sidebarList.getSelectionModel().clearSelection();
     }
 
     /**
