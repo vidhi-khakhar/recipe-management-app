@@ -87,6 +87,7 @@ public class Main extends Application {
         var nutritionInterface = 
             fxml.load(NutritionalValueCtrl.class, "client", "scenes", "NutrionalValueInterface.fxml");
         var nutritionScene = new Scene(nutritionInterface.getValue());
+        var nutritionCtrl = nutritionInterface.getKey();
 
         //preload recipe add scene
         var recipeAddInterface
@@ -130,7 +131,8 @@ public class Main extends Application {
         // pass both scenes into controller
         var mainCtrl = injector.getInstance(MainCtrl.class);
         mainCtrl.initScenes(primaryStage, mainUserInterfaceScene, nutritionScene, recipeAddScene, 
-            recipeIngredientScene, recipeIngredientCtrl, editTitleScene, shoppingListScene, recipeShoppingListScene);
+            recipeIngredientScene, recipeIngredientCtrl, editTitleScene,
+                shoppingListScene, recipeShoppingListScene, nutritionCtrl);
 
         System.out.println("Window opened with width: " + primaryStage.getWidth()
                 + " and height: " + primaryStage.getHeight());

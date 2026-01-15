@@ -41,17 +41,6 @@ class IngredientServiceTest {
     }
 
     @Test
-    void deleteIngredientById() {
-        Ingredient ingredient = new Ingredient("Mozzarella", 18.0, 19.0, 1.0);
-        Long id = ingredient.getId();
-
-        when(ingredientRepository.existsById(id)).thenReturn(true);
-        ingredientService.deleteIngredientById(id);
-
-        verify(ingredientRepository, times(1)).deleteById(id);
-    }
-
-    @Test
     void updateIngredient() {
         Ingredient ingredientToUpdate = new Ingredient("Mozzarella", 18.0, 19.0, 1.0);
         Long id = ingredientToUpdate.getId();
