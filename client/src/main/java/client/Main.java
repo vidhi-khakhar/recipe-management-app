@@ -120,11 +120,13 @@ public class Main extends Application {
         var shoppingListInterface =
                 fxml.load(ShoppingListCtrl.class, "client", "scenes", "ShoppingListInterface.fxml");
         var shoppingListScene = new Scene(shoppingListInterface.getValue());
+        shoppingListScene.setUserData(shoppingListInterface.getKey()); // Store controller reference
 
         // preload recipe shopping list scene
         var recipeShoppingListInterface =
-                fxml.load(RecipeShoppingListCtrl.class, "client", "scenes", "RecipeShoppingList.fxml");
+            fxml.load(RecipeShoppingListCtrl.class, "client", "scenes", "RecipeShoppingList.fxml");
         var recipeShoppingListScene = new Scene(recipeShoppingListInterface.getValue());
+        var recipeShoppingListCtrl = recipeShoppingListInterface.getKey();
 
         // preload nutritional values scene
         var nutritionInterface =
