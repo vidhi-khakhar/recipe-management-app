@@ -136,19 +136,12 @@ public class ShoppingListCtrl {
         boughtCheckBox.setSelected(item.isBought());
 
         TextField combinedField = new TextField();
-        combinedField.setEditable(false);
-        combinedField.setFocusTraversable(false);
-        combinedField.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
-        HBox.setHgrow(combinedField, Priority.ALWAYS);
+        setupCombinedField(combinedField);
 
         TextField nameField = new TextField();
-        nameField.setPromptText("Item name");
-
         TextField amountField = new TextField();
-        amountField.setPromptText("Quantity");
-
         TextField unitField = new TextField();
-        unitField.setPromptText("Units");
+        setupEditFields(nameField, amountField, unitField);
 
         Button editSaveButton = new Button();
         Button deleteButton = new Button("✖");
@@ -162,8 +155,51 @@ public class ShoppingListCtrl {
         });
 
         final Runnable[] editAction = new Runnable[1];
+        Runnable saveAction = createSaveAction(item, row, boughtCheckBox, combinedField,
+                editSaveButton, deleteButton, nameField, amountField, unitField, editAction);
+        editAction[0] = createEditAction(item, editSaveButton, deleteButton, row, boughtCheckBox,
+                nameField, amountField, unitField, saveAction);
 
-        Runnable saveAction = () -> {
+        deleteButton.setOnAction(e -> {
+            shoppingListModel.removeItem(item);
+            saveShoppingList();
+            refreshUI();
+        });
+
+        setupEditButton(editSaveButton, editAction);
+
+        row.getChildren().addAll(boughtCheckBox, combinedField, editSaveButton, deleteButton);
+
+        if (startEditable) editAction[0].run();
+        return row;
+    }
+
+    private void setupCombinedField(TextField field) {
+        field.setEditable(false);
+        field.setFocusTraversable(false);
+        field.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
+        HBox.setHgrow(field, Priority.ALWAYS);
+    }
+
+    private void setupEditFields(TextField nameField, TextField amountField, TextField unitField) {
+        nameField.setPromptText("Item name");
+        amountField.setPromptText("Quantity");
+        unitField.setPromptText("Units");
+    }
+
+    private Runnable createSaveAction(
+        ShoppingItem item,
+        HBox row,
+        CheckBox boughtCheckBox,
+        TextField combinedField,
+        Button editSaveButton,
+        Button deleteButton,
+        TextField nameField,
+        TextField amountField,
+        TextField unitField,
+        Runnable[] editAction
+    ) {
+        return () -> {
             if (nameField.getText().trim().isEmpty()) return;
 
             item.setName(nameField.getText().trim());
@@ -177,36 +213,34 @@ public class ShoppingListCtrl {
 
             editSaveButton.setText("✏");
             editSaveButton.setOnAction(e -> editAction[0].run());
-            row.getChildren().setAll(
-                    boughtCheckBox,
-                    combinedField,
-                    editSaveButton,
-                    deleteButton
-            );
+            row.getChildren().setAll(boughtCheckBox, combinedField, editSaveButton, deleteButton);
         };
+    }
 
-        editAction[0] = () -> {
+    private Runnable createEditAction(
+        ShoppingItem item,
+        Button editSaveButton,
+        Button deleteButton,
+        HBox row,
+        CheckBox boughtCheckBox,
+        TextField nameField,
+        TextField amountField,
+        TextField unitField,
+        Runnable saveAction
+    ) {
+        return () -> {
             if (item.isBought()) {
                 showInfo("This item is marked as bought and cannot be edited.");
                 return;
             }
 
             nameField.setText(item.getName());
-            amountField.setText(
-                item.getAmount() == 0 ? "" : String.valueOf(item.getAmount())
-            );
+            amountField.setText(item.getAmount() == 0 ? "" : String.valueOf(item.getAmount()));
             unitField.setText(item.getUnit());
 
             editSaveButton.setText("✔");
             editSaveButton.setOnAction(e -> saveAction.run());
-            row.getChildren().setAll(
-                    boughtCheckBox,
-                    nameField,
-                    amountField,
-                    unitField,
-                    editSaveButton,
-                    deleteButton
-            );
+            row.getChildren().setAll(boughtCheckBox, nameField, amountField, unitField, editSaveButton, deleteButton);
             nameField.requestFocus();
 
             editSaveButton.setOnAction(e -> saveAction.run());
@@ -214,20 +248,11 @@ public class ShoppingListCtrl {
             amountField.setOnAction(e -> saveAction.run());
             unitField.setOnAction(e -> saveAction.run());
         };
+    }
 
-        deleteButton.setOnAction(e -> {
-            shoppingListModel.removeItem(item);
-            saveShoppingList();
-            refreshUI();
-        });
-
+    private void setupEditButton(Button editSaveButton, Runnable[] editAction) {
         editSaveButton.setText("✏");
         editSaveButton.setOnAction(e -> editAction[0].run());
-
-        row.getChildren().addAll(boughtCheckBox, combinedField, editSaveButton, deleteButton);
-
-        if (startEditable) editAction[0].run();
-        return row;
     }
 
     /** Updates the combined field text and style based on the item's state.
