@@ -173,9 +173,9 @@ public class Main extends Application {
         primaryStage.setTitle("FoodPal");
         primaryStage.show();
 
-        controller.initScenes(primaryStage, mainUserInterfaceScene, nutritionScene, recipeAddScene,
+        controller.initScenes(primaryStage, nutritionScene, recipeAddScene,
                 recipeIngredientScene, recipeIngredientCtrl, editTitleScene,
-                shoppingListScene, recipeShoppingListScene, nutritionCtrl);
+                shoppingListScene, recipeShoppingListScene, nutritionCtrl, recipeShoppingListCtrl);
 
     }
 }
