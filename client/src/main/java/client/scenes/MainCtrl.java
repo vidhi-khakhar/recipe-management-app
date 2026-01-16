@@ -228,7 +228,16 @@ public class MainCtrl {
      */
     private void onRecipeSelected(Recipe recipe) {
         this.selectedRecipe = recipe;
+        String recipeLanguage = recipe.getLanguage();
         titleRecipeLabel.setText(recipe.getTitle());
+
+        String fullLanguage = RecipeFormatter.getFullRecipeLanguage(recipeLanguage);
+        recipeLanguageLabel.setText(fullLanguage);
+
+        String languageColour = RecipeFormatter.getLanguageColour(recipeLanguage);
+        String languageStyle = RecipeFormatter.getLanguageFontStyles(recipeLanguage);
+        recipeLanguageLabel.setStyle(languageColour + " " + languageStyle);
+
         showInstructions(recipe);
         showIngredients(recipe);
     }
@@ -990,6 +999,9 @@ public class MainCtrl {
 
     @FXML
     private AnchorPane allRecipePane;
+
+    @FXML
+    private Label recipeLanguageLabel;
 
     @FXML
     private void downloadButtonClicked() throws IOException {

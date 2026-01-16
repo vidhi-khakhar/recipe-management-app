@@ -53,16 +53,20 @@
                                 </Label>
                                 <HBox alignment="BOTTOM_RIGHT" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                                     <children>
-                              <CheckComboBox prefHeight="30.0" prefWidth="72.0" title="RecipeLanguage">
+                              <CheckComboBox prefHeight="30.0" prefWidth="154.0" title="RecipeLanguage" HBox.hgrow="ALWAYS">
                                  <HBox.margin>
                                     <Insets bottom="7.0" right="10.0" />
                                  </HBox.margin>
                               </CheckComboBox>
-                              <ComboBox prefHeight="30.0" prefWidth="72.0" promptText="AppLanguage">
-                                 <HBox.margin>
-                                    <Insets bottom="7.0" right="20.0" />
-                                 </HBox.margin>
-                              </ComboBox>
+                              <VBox alignment="BOTTOM_RIGHT" prefHeight="96.0" prefWidth="66.0">
+                                 <children>
+                                    <ComboBox prefHeight="30.0" prefWidth="72.0">
+                                       <VBox.margin>
+                                          <Insets bottom="7.0" />
+                                       </VBox.margin>
+                                    </ComboBox>
+                                 </children>
+                              </VBox>
                                         <Button fx:id="refreshButton" mnemonicParsing="false" onAction="#refreshButtonClicked" styleClass="roundbutton" text="R" HBox.hgrow="ALWAYS">
                                             <HBox.margin>
                                                 <Insets bottom="5.0" right="5.0" />
@@ -225,6 +229,19 @@
                                                                         </Button>
                                                                     </children>
                                                                 </HBox>
+                                                <HBox prefHeight="100.0" prefWidth="200.0">
+                                                   <children>
+                                                      <Label styleClass="h3" text="Language:" />
+                                                      <Label fx:id="recipeLanguageLabel" styleClass="h3" text="TheActualLanguage" textFill="WHITE">
+                                                         <HBox.margin>
+                                                            <Insets left="7.0" top="2.0" />
+                                                         </HBox.margin>
+                                                         <font>
+                                                            <Font name="System Bold" size="14.0" />
+                                                         </font>
+                                                      </Label>
+                                                   </children>
+                                                </HBox>
 
                                                                 <VBox prefHeight="231.0" prefWidth="639.0" VBox.vgrow="ALWAYS">
                                                                     <children>
@@ -303,15 +320,6 @@
                                                                 </VBox>
                                                 <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
                                                    <children>
-                                                      <Label styleClass="h3" text="Language:" />
-                                                      <Label styleClass="h3" text="TheActualLanguage" textFill="WHITE">
-                                                         <HBox.margin>
-                                                            <Insets left="7.0" top="2.0" />
-                                                         </HBox.margin>
-                                                         <font>
-                                                            <Font name="System Bold" size="14.0" />
-                                                         </font>
-                                                      </Label>
                                                       <Region prefHeight="55.0" prefWidth="7.0" HBox.hgrow="ALWAYS" />
                                                                         <Button fx:id="downloadButton" alignment="CENTER_RIGHT" contentDisplay="CENTER" mnemonicParsing="false" onAction="#downloadButtonClicked" text="Download" />
                                                    </children>
