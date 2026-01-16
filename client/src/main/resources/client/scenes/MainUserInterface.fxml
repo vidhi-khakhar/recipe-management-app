@@ -28,7 +28,10 @@
                                     <children>
                                         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                                             <children>
-                                                <Pane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="96.0" prefWidth="94.0" HBox.hgrow="NEVER" />
+                                                <Pane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="96.0" prefWidth="94.0" styleClass="spacingPane" HBox.hgrow="NEVER">
+                                       <padding>
+                                          <Insets right="5.0" />
+                                       </padding></Pane>
                                                 <TextField fx:id="searchBar" maxHeight="-Infinity" prefHeight="31.0" prefWidth="271.0" promptText="🔍 Enter your query..." styleClass="searchbar" HBox.hgrow="ALWAYS">
                                        <HBox.margin>
                                           <Insets right="5.0" />

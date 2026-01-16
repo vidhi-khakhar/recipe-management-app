@@ -351,7 +351,7 @@ public class MainCtrl {
         String query = searchBar.getText();
         boolean searchFavorites;
 
-        if(favoriteS.getText() == "★"){
+        if(favoriteS.getText() == "★ Only"){
             searchFavorites = true;
         }else{
             searchFavorites = false;
@@ -365,10 +365,10 @@ public class MainCtrl {
 
     @FXML
     private void searchFavorites() {
-        if(favoriteS.getText() == "★"){
-            favoriteS.setText("☆");
+        if(favoriteS.getText() == "★ Only"){
+            favoriteS.setText("☆ Only");
         }else{
-            favoriteS.setText("★");
+            favoriteS.setText("★ Only");
         }
 
         applySearch();
@@ -865,6 +865,7 @@ public class MainCtrl {
             }
 
             recipeCollection.add(newRecipe);
+            applySearch();
 
             System.out.println("It worked! Cloned recipe ID: " + newId);
 
