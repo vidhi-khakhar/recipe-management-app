@@ -17,14 +17,14 @@ package client.scenes;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import client.config.ConfigService;
 import client.favorite.FavoriteService;
 import client.search.RecipeCollection;
 import client.search.SearchService;
+import commons.*;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import org.apache.commons.io.FileUtils;
 
@@ -32,22 +32,12 @@ import com.google.inject.Inject;
 
 import client.RecipeFormatter;
 import client.utils.RecipeServerUtils;
-import commons.Recipe;
-import commons.RecipeIngredient;
-import commons.RecipeIngredientKey;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -78,6 +68,9 @@ public class MainCtrl {
     private final RecipeCollection recipeCollection;
 
     private ConfigService configService;
+
+    @FXML
+    private Spinner<Integer> scaler;
 
     /**
      * Initializes the scenes
@@ -168,7 +161,13 @@ public class MainCtrl {
         });
 
         loadRecipesFromDatabase();
-
+        scaler.setPromptText("scale");
+        scaler.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 50));
+        scaler.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue != null && !newValue.equals(oldValue)) {
+                scaleRecipe(getSelectedRecipe());
+            }
+        });
     }
 
 
@@ -227,10 +226,17 @@ public class MainCtrl {
      * @param recipe the recipe that is selected
      */
     private void onRecipeSelected(Recipe recipe) {
+        initScalingValues(recipe);
+
+        if (this.selectedRecipe != null && this.selectedRecipe != recipe) {
+            restoreBaseValues(this.selectedRecipe);
+        }
+
         this.selectedRecipe = recipe;
         titleRecipeLabel.setText(recipe.getTitle());
         showInstructions(recipe);
         showIngredients(recipe);
+        showNutritionalValues(recipe);
     }
 
     /**
@@ -992,6 +998,13 @@ public class MainCtrl {
     private AnchorPane allRecipePane;
 
     @FXML
+    private Label servingsValueLabel;
+
+    @FXML
+    private Label inferredKcalsLabel;
+
+
+    @FXML
     private void downloadButtonClicked() throws IOException {
         Recipe selectedRecipe = (Recipe) sidebarList.getSelectionModel().getSelectedItem();
         if (selectedRecipe == null) {
@@ -1004,7 +1017,6 @@ public class MainCtrl {
 
     /**
      * Saves a recipe in chosen path.
-     *
      * @param recipe recipe to be saved
      */
     private void saveRecipe(Recipe recipe) throws IOException {
@@ -1019,6 +1031,85 @@ public class MainCtrl {
                 FileUtils.writeStringToFile(file, text);
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+        }
+    }
+
+    private int baseServings;
+    private final Map<RecipeIngredient, Double> baseAmounts = new HashMap<>();
+    private final Map<RecipeIngredient, Unit> baseUnits = new HashMap<>();
+
+    private void initScalingValues(Recipe recipe) {
+        baseServings = recipe.getServings();
+
+        for (RecipeIngredient ri : recipe.getIngredients()) {
+            if (ri.getAmount() != null && ri.getUnit() != null) {
+                baseAmounts.put(ri, ri.getAmount());
+                baseUnits.put(ri, ri.getUnit());
+            }
+        }
+    }
+
+    private double calculateKcal(Recipe recipe) {
+        List<Ingredient> ingredients = recipe.getIngredients().stream()
+                .map(recipeIngredient -> {
+                    if(recipeIngredient.isFormal()) {
+                        return recipeIngredient.getIngredient();
+                    }
+
+                    return null;
+                }).toList();
+
+        double kcals = 0;
+        for (Ingredient ingredient : ingredients) {
+            kcals += (ingredient.getFatPer100g() + ingredient.getCarbsPer100g() + ingredient.getProteinPer100g());
+        }
+
+        return kcals / ingredients.size();
+    }
+
+    private void showNutritionalValues(Recipe recipe) {
+        inferredKcalsLabel.setText(String.valueOf(calculateKcal(recipe)));
+        servingsValueLabel.setText(String.valueOf(recipe.getServings()));
+    }
+
+    private void scaleRecipe(Recipe recipe) {
+        int factor = scaler.getValue();
+        recipe.setServings(baseServings * factor);
+
+        for (RecipeIngredient ri : recipe.getIngredients()) {
+            if (ri.isFormal()) {
+                ri.setFormal(baseAmounts.get(ri) * factor, baseUnits.get(ri));
+            }
+        }
+
+        normalizeUnits(recipe);
+        showNutritionalValues(recipe);
+        showIngredients(recipe);
+    }
+
+    private void normalizeUnits(Recipe recipe) {
+        for (RecipeIngredient ri : recipe.getIngredients()) {
+            if (!ri.isFormal()) continue;
+
+            if (ri.getUnit() == Unit.G && ri.getAmount() >= 1000) {
+                ri.setFormal(ri.getAmount() / 1000, Unit.KG);
+            }
+            else if (ri.getUnit() == Unit.ML && ri.getAmount() >= 1000) {
+                ri.setFormal(ri.getAmount() / 1000, Unit.L);
+            }
+        }
+    }
+
+    private void restoreBaseValues(Recipe recipe) {
+        recipe.setServings(baseServings);
+
+        for (RecipeIngredient ri : recipe.getIngredients()) {
+            Double baseAmount = baseAmounts.get(ri);
+            Unit baseUnit = baseUnits.get(ri);
+
+            if (baseAmount != null && baseUnit != null) {
+                ri.setFormal(baseAmount, baseUnit);
             }
         }
     }

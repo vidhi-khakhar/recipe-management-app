@@ -6,6 +6,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
@@ -14,6 +16,9 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.paint.RadialGradient?>
+<?import javafx.scene.paint.Stop?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="589.0" prefWidth="905.0" stylesheets="@FoodPal.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MainCtrl">
@@ -196,7 +201,7 @@
                                                     <children>
                                                         <VBox prefHeight="200.0" prefWidth="100.0" styleClass="centerbox" VBox.vgrow="ALWAYS">
                                                             <children>
-
+      
                                                                 <HBox prefHeight="43.0" prefWidth="639.0" styleClass="titlelablebox" VBox.vgrow="NEVER">
                                                                     <children>
                                                                         <Label fx:id="titleRecipeLabel" styleClass="h2" text="titleLabel" />
@@ -213,8 +218,8 @@
                                                                         </Button>
                                                                     </children>
                                                                 </HBox>
-
-                                                                <VBox prefHeight="231.0" prefWidth="639.0" VBox.vgrow="ALWAYS">
+      
+                                                                <VBox prefHeight="187.0" prefWidth="598.0" VBox.vgrow="ALWAYS">
                                                                     <children>
                                                                         <Label styleClass="h3" text="Ingredients:" />
                                                                         <VBox fx:id="ingredientList" prefHeight="186.0" prefWidth="582.0" spacing="6.0" VBox.vgrow="ALWAYS">
@@ -271,12 +276,12 @@
                                                                         <Insets bottom="5.0" top="5.0" />
                                                                     </VBox.margin>
                                                                 </VBox>
-                                                                <VBox prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
+                                                                <VBox prefHeight="169.0" prefWidth="598.0" VBox.vgrow="ALWAYS">
                                                                     <children>
                                                                         <Label styleClass="h3" text="Preparation" />
-                                                                        <ScrollPane fx:id="prepScrollPane" prefHeight="200.0" prefWidth="200.0">
+                                                                        <ScrollPane fx:id="prepScrollPane" prefHeight="76.0" prefWidth="598.0">
                                                                             <content>
-                                                                                <VBox fx:id="preparationList" prefHeight="119.0" prefWidth="579.0" />
+                                                                                <VBox fx:id="preparationList" prefHeight="76.0" prefWidth="579.0" />
                                                                             </content>
                                                                         </ScrollPane>
                                                                         <Button fx:id="addStepButton" mnemonicParsing="false" onAction="#preparationAddButtonClicked" prefHeight="34.0" prefWidth="58.0" styleClass="roundbutton" text="➕">
@@ -286,13 +291,53 @@
                                                                         </Button>
                                                                     </children>
                                                                 </VBox>
-                                                                <VBox prefHeight="40.0" prefWidth="324.0">
+                                                                <VBox prefHeight="95.0" prefWidth="598.0">
                                                                     <children>
-                                                                        <Button fx:id="downloadButton" alignment="TOP_CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#downloadButtonClicked" text="Download">
-                                                                            <VBox.margin>
-                                                                                <Insets left="480.0" />
-                                                                            </VBox.margin>
-                                                                        </Button>
+                                                      <Label styleClass="h3" text="Nutritional Values" />
+                                                      <SplitPane dividerPositions="0.17953020134228187, 0.33557046979865773, 0.5050335570469798, 0.8355704697986577, 0.5" prefHeight="33.0" prefWidth="598.0">
+                                                        <items>
+                                                            <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="34.0" prefWidth="104.0" styleClass="recipe-item" text="kcal/100g: " />
+                                                            <Label fx:id="inferredKcalsLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="34.0" prefWidth="87.0" styleClass="recipe-item" text="value">
+                                                               <textFill>
+                                                                  <RadialGradient centerX="0.5" centerY="0.5" radius="0.5">
+                                                                     <stops>
+                                                                        <Stop>
+                                                                           <color>
+                                                                              <Color green="0.03684210404753685" blue="0.7368420958518982" />
+                                                                           </color>
+                                                                        </Stop>
+                                                                        <Stop offset="1.0">
+                                                                           <color>
+                                                                              <Color red="0.040300000458955765" green="0.13019999861717224" blue="0.3100000023841858" opacity="0.8352490663528442" />
+                                                                           </color>
+                                                                        </Stop>
+                                                                     </stops>
+                                                                  </RadialGradient>
+                                                               </textFill>
+                                                            </Label>
+                                                            <Label alignment="CENTER" contentDisplay="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="34.0" prefWidth="95.0" styleClass="recipe-item" text="servings: " />
+                                                            <Label fx:id="servingsValueLabel" alignment="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="34.0" prefWidth="57.0" styleClass="recipe-item" text="value">
+                                                               <textFill>
+                                                                  <RadialGradient centerX="0.5" centerY="0.5" radius="0.5">
+                                                                     <stops>
+                                                                        <Stop>
+                                                                           <color>
+                                                                              <Color green="0.03684210404753685" blue="0.7368420958518982" />
+                                                                           </color>
+                                                                        </Stop>
+                                                                        <Stop offset="1.0">
+                                                                           <color>
+                                                                              <Color red="0.040300000458955765" green="0.13019999861717224" blue="0.3100000023841858" opacity="0.8352490663528442" />
+                                                                           </color>
+                                                                        </Stop>
+                                                                     </stops>
+                                                                  </RadialGradient>
+                                                               </textFill>
+                                                            </Label>
+                                                            <Spinner fx:id="scaler" />
+                                                                              <Button fx:id="downloadButton" alignment="TOP_CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#downloadButtonClicked" prefHeight="34.0" prefWidth="99.0" text="Download" />
+                                                        </items>
+                                                      </SplitPane>
                                                                     </children>
                                                                 </VBox>
                                                             </children>
