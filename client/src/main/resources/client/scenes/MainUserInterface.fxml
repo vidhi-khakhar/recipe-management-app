@@ -28,14 +28,21 @@
                                     <children>
                                         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                                             <children>
-                                                <Pane prefHeight="96.0" prefWidth="35.0" HBox.hgrow="ALWAYS" />
-                                                <TextField fx:id="searchBar" prefHeight="31.0" prefWidth="218.0" promptText="Enter your query..." styleClass="searchbar" HBox.hgrow="ALWAYS" />
-                                                <Button fx:id="favoriteS" mnemonicParsing="false" onAction="#searchFavorites" prefHeight="31.0" prefWidth="0.0" styleClass="roundbutton" text="☆">
-                                                    <HBox.margin>
-                                                        <Insets left="4.0" />
-                                                    </HBox.margin>
+                                                <Pane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="96.0" prefWidth="94.0" HBox.hgrow="NEVER" />
+                                                <TextField fx:id="searchBar" maxHeight="-Infinity" prefHeight="31.0" prefWidth="271.0" promptText="🔍 Enter your query..." styleClass="searchbar" HBox.hgrow="ALWAYS">
+                                       <HBox.margin>
+                                          <Insets right="5.0" />
+                                       </HBox.margin></TextField>
+                                                <Button fx:id="favoriteS" maxHeight="31.0" maxWidth="145.0" mnemonicParsing="false" onAction="#searchFavorites" prefHeight="31.0" prefWidth="145.0" text="☆ Only" HBox.hgrow="NEVER">
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
+                                       <styleClass>
+                                          <String fx:value="roundbutton" />
+                                          <String fx:value="favoritesOnlyButton" />
+                                       </styleClass>
                                                 </Button>
-                                                <Pane prefHeight="96.0" prefWidth="106.0" HBox.hgrow="ALWAYS" />
+                                                <Pane prefHeight="96.0" prefWidth="106.0" HBox.hgrow="NEVER" />
                                             </children>
                                         </HBox>
                                     </children>
