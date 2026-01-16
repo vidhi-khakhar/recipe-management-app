@@ -9,6 +9,8 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 /**
  * Client-side shopping list.
@@ -20,11 +22,24 @@ public class ShoppingList implements Serializable {
     @JsonProperty("shoppingItems")
     private List<ShoppingItem> shoppingItems;
 
+    private transient ObservableList<ShoppingItem> observableItems;
+
     /**
      * Default constructor
      */
     public ShoppingList() {
         this.shoppingItems = new ArrayList<>();
+        this.observableItems = FXCollections.observableArrayList();
+    }
+
+    /**
+     * Get the observable list for observing changes
+     */
+    public ObservableList<ShoppingItem> getObservableItems() {
+        if (observableItems == null) {
+            observableItems = FXCollections.observableArrayList(shoppingItems);
+        }
+        return observableItems;
     }
 
     /**
@@ -41,6 +56,9 @@ public class ShoppingList implements Serializable {
         if (item != null) {
             shoppingItems.add(item);
             sortAlphabetically();
+            if (observableItems != null) {
+                observableItems.setAll(shoppingItems);
+            }
         }
     }
 
@@ -50,6 +68,9 @@ public class ShoppingList implements Serializable {
     public void removeItemAt(int index) {
         if (index >= 0 && index < shoppingItems.size()) {
             shoppingItems.remove(index);
+            if (observableItems != null) {
+                observableItems.setAll(shoppingItems);
+            }
         }
     }
 
@@ -58,6 +79,9 @@ public class ShoppingList implements Serializable {
      */
     public void removeItem(ShoppingItem item) {
         shoppingItems.remove(item);
+        if (observableItems != null) {
+            observableItems.setAll(shoppingItems);
+        }
     }
 
     /**
@@ -65,6 +89,9 @@ public class ShoppingList implements Serializable {
      */
     public void clear() {
         shoppingItems.clear();
+        if (observableItems != null) {
+            observableItems.setAll(shoppingItems);
+        }
     }
 
     /**
@@ -85,6 +112,9 @@ public class ShoppingList implements Serializable {
                 String.CASE_INSENSITIVE_ORDER
             )
         );
+        if (observableItems != null) {
+            observableItems.setAll(shoppingItems);
+        }
     }
 
     /**

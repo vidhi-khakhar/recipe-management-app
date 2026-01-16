@@ -19,6 +19,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import org.apache.commons.io.FileUtils;
+import javafx.collections.ListChangeListener;
 
 public class ShoppingListCtrl {
 
@@ -66,7 +67,14 @@ public class ShoppingListCtrl {
         shoppingList.setSpacing(8);
 
         loadShoppingListModel();
+        setupChangeListener();
         refreshUI();
+    }
+
+    private void setupChangeListener() {
+        shoppingListModel.getObservableItems().addListener((ListChangeListener<ShoppingItem>) change -> {
+            refreshUI();
+        });
     }
 
     /** Loads the latest shopping list from config */
