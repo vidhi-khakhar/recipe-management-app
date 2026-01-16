@@ -1,7 +1,7 @@
 package client.scenes;
 
 import com.google.inject.Inject;
-
+import client.ShoppingListFormatter;
 import client.config.ConfigService;
 import client.model.ShoppingItem;
 import client.model.ShoppingList;
@@ -21,6 +21,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
+import org.apache.commons.io.FileUtils;
+import javafx.collections.ListChangeListener;
 
 public class ShoppingListCtrl {
 
@@ -50,19 +54,34 @@ public class ShoppingListCtrl {
         shoppingList.setSpacing(8);
 
         loadShoppingListModel();
+        setupChangeListener();
         refreshUI();
         scheduleExistingReminderIfAny();
     }
 
-    /** Load the shopping list model from the config service */
+    private void setupChangeListener() {
+        shoppingListModel.getObservableItems().addListener((ListChangeListener<ShoppingItem>) change -> {
+            refreshUI();
+        });
+    }
+
+    /** Loads the latest shopping list from config */
     private void loadShoppingListModel() {
-        shoppingListModel = configService.getConfig().getShoppingList();
+        var config = configService.getConfig();
+        if (config == null) {
+            throw new IllegalStateException(
+                "ConfigService returned null config"
+            );
+        }
+        shoppingListModel = config.getShoppingList();
     }
 
     /** Refresh the shopping list UI from the model */
     public void refreshFromConfig() {
         loadShoppingListModel();
-        refreshUI();
+        if (shoppingList != null) {
+            refreshUI();
+        }
     }
 
     /** Refreshes the shopping list UI to reflect the current model state */
@@ -104,7 +123,10 @@ public class ShoppingListCtrl {
      * @param startEditable Whether the row should start in editable mode
      * @return The HBox representing the shopping item row
      */
-    private HBox createShoppingItemRow(ShoppingItem item, boolean startEditable) {
+    private HBox createShoppingItemRow(
+        ShoppingItem item,
+        boolean startEditable
+    ) {
         HBox row = new HBox(10);
         row.setAlignment(Pos.CENTER_LEFT);
         row.setPadding(new Insets(5));
@@ -114,27 +136,15 @@ public class ShoppingListCtrl {
         boughtCheckBox.setSelected(item.isBought());
 
         TextField combinedField = new TextField();
-        combinedField.setEditable(false);
-        combinedField.setFocusTraversable(false);
-        combinedField.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
-        HBox.setHgrow(combinedField, Priority.ALWAYS);
+        setupCombinedField(combinedField);
 
         TextField nameField = new TextField();
-        nameField.setPromptText("Item name");
-
         TextField amountField = new TextField();
-        amountField.setPromptText("Quantity");
-
         TextField unitField = new TextField();
-        unitField.setPromptText("Units");
+        setupEditFields(nameField, amountField, unitField);
 
         Button editSaveButton = new Button();
         Button deleteButton = new Button("✖");
-        deleteButton.setOnAction(e -> {
-            shoppingListModel.removeItem(item);
-            saveShoppingList();
-            refreshUI();
-        });
 
         updateCombinedField(item, combinedField);
 
@@ -145,8 +155,51 @@ public class ShoppingListCtrl {
         });
 
         final Runnable[] editAction = new Runnable[1];
+        Runnable saveAction = createSaveAction(item, row, boughtCheckBox, combinedField,
+                editSaveButton, deleteButton, nameField, amountField, unitField, editAction);
+        editAction[0] = createEditAction(item, editSaveButton, deleteButton, row, boughtCheckBox,
+                nameField, amountField, unitField, saveAction);
 
-        Runnable saveAction = () -> {
+        deleteButton.setOnAction(e -> {
+            shoppingListModel.removeItem(item);
+            saveShoppingList();
+            refreshUI();
+        });
+
+        setupEditButton(editSaveButton, editAction);
+
+        row.getChildren().addAll(boughtCheckBox, combinedField, editSaveButton, deleteButton);
+
+        if (startEditable) editAction[0].run();
+        return row;
+    }
+
+    private void setupCombinedField(TextField field) {
+        field.setEditable(false);
+        field.setFocusTraversable(false);
+        field.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
+        HBox.setHgrow(field, Priority.ALWAYS);
+    }
+
+    private void setupEditFields(TextField nameField, TextField amountField, TextField unitField) {
+        nameField.setPromptText("Item name");
+        amountField.setPromptText("Quantity");
+        unitField.setPromptText("Units");
+    }
+
+    private Runnable createSaveAction(
+        ShoppingItem item,
+        HBox row,
+        CheckBox boughtCheckBox,
+        TextField combinedField,
+        Button editSaveButton,
+        Button deleteButton,
+        TextField nameField,
+        TextField amountField,
+        TextField unitField,
+        Runnable[] editAction
+    ) {
+        return () -> {
             if (nameField.getText().trim().isEmpty()) return;
 
             item.setName(nameField.getText().trim());
@@ -160,15 +213,22 @@ public class ShoppingListCtrl {
 
             editSaveButton.setText("✏");
             editSaveButton.setOnAction(e -> editAction[0].run());
-            row.getChildren().setAll(
-                    boughtCheckBox,
-                    combinedField,
-                    editSaveButton,
-                    deleteButton
-            );
+            row.getChildren().setAll(boughtCheckBox, combinedField, editSaveButton, deleteButton);
         };
+    }
 
-        editAction[0] = () -> {
+    private Runnable createEditAction(
+        ShoppingItem item,
+        Button editSaveButton,
+        Button deleteButton,
+        HBox row,
+        CheckBox boughtCheckBox,
+        TextField nameField,
+        TextField amountField,
+        TextField unitField,
+        Runnable saveAction
+    ) {
+        return () -> {
             if (item.isBought()) {
                 showInfo("This item is marked as bought and cannot be edited.");
                 return;
@@ -180,23 +240,19 @@ public class ShoppingListCtrl {
 
             editSaveButton.setText("✔");
             editSaveButton.setOnAction(e -> saveAction.run());
-            row.getChildren().setAll(
-                    boughtCheckBox,
-                    nameField,
-                    amountField,
-                    unitField,
-                    editSaveButton,
-                    deleteButton
-            );
-        };
+            row.getChildren().setAll(boughtCheckBox, nameField, amountField, unitField, editSaveButton, deleteButton);
+            nameField.requestFocus();
 
+            editSaveButton.setOnAction(e -> saveAction.run());
+            nameField.setOnAction(e -> saveAction.run());
+            amountField.setOnAction(e -> saveAction.run());
+            unitField.setOnAction(e -> saveAction.run());
+        };
+    }
+
+    private void setupEditButton(Button editSaveButton, Runnable[] editAction) {
         editSaveButton.setText("✏");
         editSaveButton.setOnAction(e -> editAction[0].run());
-
-        row.getChildren().addAll(boughtCheckBox, combinedField, editSaveButton, deleteButton);
-
-        if (startEditable) editAction[0].run();
-        return row;
     }
 
     /** Updates the combined field text and style based on the item's state.
@@ -217,12 +273,26 @@ public class ShoppingListCtrl {
      * @return The display text for the item
      */
     private String buildItemDisplayText(ShoppingItem item) {
-        StringBuilder text = new StringBuilder(item.getName());
-        if (item.getAmount() > 0) text.append(" ").append(item.getAmount());
-        if (item.getUnit() != null && !item.getUnit().isBlank()) text.append(" ").append(item.getUnit());
-
-        if (hasDuplicateName(item) && item.getSourceRecipeName() != null) {
-            text.append(" [").append(item.getSourceRecipeName()).append("]");
+        StringBuilder text = new StringBuilder();
+        if (!item.getName().isBlank()) {
+            text.append(item.getName());
+        }
+        if (item.getAmount() > 0) {
+            text.append(" ").append(item.getAmount());
+        }
+        if (item.getUnit() != null && !item.getUnit().isBlank()) {
+            text.append(" ").append(item.getUnit());
+        }
+        if (hasDuplicateName(item)) {
+            if (
+                    item.getSourceRecipeName() != null &&
+                    !item.getSourceRecipeName().isBlank()
+            ) {
+                text
+                    .append(" [")
+                    .append(item.getSourceRecipeName())
+                    .append("]");
+            }
         }
         return text.toString();
     }
@@ -232,9 +302,14 @@ public class ShoppingListCtrl {
      * @return true if there are duplicates, false otherwise
      */
     private boolean hasDuplicateName(ShoppingItem item) {
-        return shoppingListModel.getShoppingItems().stream()
-                .filter(i -> i.getName().equals(item.getName()))
-                .count() > 1;
+        long count = shoppingListModel
+            .getShoppingItems()
+            .stream()
+            .filter(
+                i -> i.getName() != null && i.getName().equals(item.getName())
+            )
+            .count();
+        return count > 1;
     }
 
 
@@ -346,6 +421,27 @@ public class ShoppingListCtrl {
         }
     }
 
+    /** Handles downloading the shopping list */
+    @FXML
+    void downloadShoppingList() {
+        Window window = shoppingList.getScene().getWindow();
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save shopping list");
+        fileChooser.setInitialFileName("shopping_list.txt");
+
+        java.io.File file = fileChooser.showSaveDialog(window);
+        if (file != null) {
+            try {
+                String text = (
+                        new ShoppingListFormatter(shoppingListModel)
+                ).formatPlaintext();
+                FileUtils.writeStringToFile(file, text);
+            } catch (java.io.IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     /** Schedules a reminder to show after the specified delay.
      * @param delayMillis Delay in milliseconds before showing the reminder
      */
@@ -416,12 +512,6 @@ public class ShoppingListCtrl {
         refreshUI();
     }
 
-    /** Handles the "Download Shopping List" button click event. */
-    @FXML
-    private void downloadShoppingList() {
-        System.out.println("Download shopping list button pressed");
-    }
-
     /** For testing: gets the shopping list model used by this controller. */
     ShoppingList getShoppingListModelForTest() {
         return this.shoppingListModel;
@@ -431,5 +521,4 @@ public class ShoppingListCtrl {
     void setShoppingListModelForTest(ShoppingList shoppingList) {
         this.shoppingListModel = shoppingList;
     }
-
 }
