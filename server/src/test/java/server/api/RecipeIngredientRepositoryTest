@@ -1,0 +1,115 @@
+package server.database;
+
+import commons.Ingredient;
+import commons.Recipe;
+import commons.RecipeIngredient;
+import commons.Unit;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@DataJpaTest(showSql = true)
+class RecipeIngredientRepositoryTest {
+
+    @Autowired
+    private RecipeIngredientRepository rIngRepo;
+
+    @Autowired
+    private RecipeRepository recipeRepo;
+
+    @Autowired
+    private IngredientRepository ingredientRepo;
+
+    private RecipeIngredient ri1;
+    private RecipeIngredient ri2;
+
+    @BeforeEach
+    void setup() {
+        Recipe recipe1 = recipeRepo.save(new Recipe("Pesto Panini", "EN"));
+        Recipe recipe2 = recipeRepo.save(new Recipe("Tomato Soup", "EN"));
+
+        Ingredient ingredient1 = ingredientRepo.save(new Ingredient("Basil Pesto", 50, 50, 50));
+        Ingredient ingredient2 = ingredientRepo.save(new Ingredient("Tomatoes", 100, 100, 100));
+
+        ri1 = RecipeIngredient.formal(recipe1, ingredient1, 2.0, Unit.GRAM);
+        ri2 = RecipeIngredient.informal(recipe2, ingredient2, "3 tomatoes");
+
+        rIngRepo.save(ri1);
+        rIngRepo.save(ri2);
+        rIngRepo.flush();
+    }
+
+    @Test
+    void testFindAll() {
+        List<RecipeIngredient> recipeIngredients = rIngRepo.findAll();
+        assertEquals(2, recipeIngredients.size());
+    }
+
+    @Test
+    void testFindById() {
+        Optional<RecipeIngredient> found = rIngRepo.findById(ri1.getId());
+        assertTrue(found.isPresent());
+        assertEquals(ri1, found.get());
+    }
+
+    @Test
+    void testExistsById() {
+        assertTrue(rIngRepo.existsById(ri1.getId()));
+        assertTrue(rIngRepo.existsById(ri2.getId()));
+    }
+
+    @Test
+    void testDeleteRecipeIngredient() {
+        rIngRepo.deleteById(ri1.getId());
+        List<RecipeIngredient> recipeIngredients = rIngRepo.findAll();
+        assertEquals(1, recipeIngredients.size());
+        assertEquals(ri2, recipeIngredients.get(0));
+    }
+
+    @Test
+    void testDeleteAll() {
+        rIngRepo.deleteAll();
+        List<RecipeIngredient> recipeIngredients = rIngRepo.findAll();
+        assertTrue(recipeIngredients.isEmpty());
+    }
+
+    @Test
+    void testFindByRecipe() {
+        List<RecipeIngredient> ingredientsForRecipe = rIngRepo.findByRecipe(ri1.getRecipe());
+        assertEquals(1, ingredientsForRecipe.size());
+        assertEquals(ri1, ingredientsForRecipe.get(0));
+    }
+
+    @Test
+    void testFindByIngredient() {
+        List<RecipeIngredient> ingredientsWithIngredient = rIngRepo.findByIngredient(ri2.getIngredient());
+        assertEquals(1, ingredientsWithIngredient.size());
+        assertEquals(ri2, ingredientsWithIngredient.get(0));
+    }
+
+    @Test
+    void testUpdateRecipeIngredient() {
+        ri1.setAmount(3.0);
+        rIngRepo.save(ri1);
+
+        Optional<RecipeIngredient> updated = rIngRepo.findById(ri1.getId());
+        assertTrue(updated.isPresent());
+        assertEquals(3.0, updated.get().getAmount());
+    }
+
+    @Test
+    void testSaveInformalIngredient() {
+        RecipeIngredient newRi = RecipeIngredient.informal(
+                ri1.getRecipe(), ri2.getIngredient(), "a pinch"
+        );
+        RecipeIngredient saved = rIngRepo.save(newRi);
+        assertNotNull(saved.getId());
+        assertEquals("a pinch", saved.getAmountAsString());
+    }
+}

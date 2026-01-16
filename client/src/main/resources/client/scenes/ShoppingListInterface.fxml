@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="600.0" stylesheets="@NutritionalValue.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.ShoppingListCtrl">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="600.0" stylesheets="@NutritionalValue.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.ShoppingListCtrl">
    <children>
       <BorderPane AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
          <top>
@@ -39,10 +39,14 @@
          <bottom>
             <HBox prefHeight="48.0" prefWidth="550.0" BorderPane.alignment="CENTER">
                <children>
-                  <HBox prefHeight="58.0" prefWidth="54.0" HBox.hgrow="ALWAYS" />
-                  <HBox prefHeight="58.0" prefWidth="300.0">
+                  <HBox prefHeight="58.0" prefWidth="300.0" HBox.hgrow="ALWAYS">
                      <children>
-                        <HBox prefHeight="58.0" prefWidth="200.0">
+                        <HBox prefHeight="38.0" prefWidth="36.0" HBox.hgrow="ALWAYS">
+                           <HBox.margin>
+                              <Insets left="5.0" />
+                           </HBox.margin>
+                        </HBox>
+                        <HBox prefHeight="38.0" prefWidth="175.0" HBox.hgrow="ALWAYS">
                            <children>
                               <Button fx:id="resetShoppingListButton" mnemonicParsing="false" onAction="#resetShoppingList" prefHeight="30.0" prefWidth="200.0" text="Reset Shopping List">
                                  <HBox.margin>
@@ -51,7 +55,7 @@
                               </Button>
                            </children>
                         </HBox>
-                        <HBox prefHeight="58.0" prefWidth="200.0">
+                        <HBox prefHeight="38.0" prefWidth="166.0" HBox.hgrow="ALWAYS">
                            <children>
                               <Button fx:id="downloadShoppingListButton" mnemonicParsing="false" onAction="#downloadShoppingList" prefHeight="30.0" prefWidth="200.0" text="Download">
                                  <HBox.margin>
@@ -59,13 +63,16 @@
                                  </HBox.margin>
                               </Button>
                            </children>
+                           <HBox.margin>
+                              <Insets right="5.0" />
+                           </HBox.margin>
                         </HBox>
+                        <HBox layoutX="15.0" layoutY="10.0" prefHeight="38.0" prefWidth="36.0" HBox.hgrow="ALWAYS" />
                      </children>
                      <HBox.margin>
                         <Insets bottom="5.0" top="5.0" />
                      </HBox.margin>
                   </HBox>
-                  <HBox prefHeight="58.0" prefWidth="78.0" HBox.hgrow="ALWAYS" />
                </children>
             </HBox>
          </bottom>
@@ -85,7 +92,7 @@
                      <children>
                         <StackPane prefHeight="249.0" prefWidth="584.0" VBox.vgrow="ALWAYS">
                            <children>
-                              <AnchorPane fx:id="emptyShoppingList" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                              <AnchorPane fx:id="emptyShoppingList" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <children>
                                     <VBox prefHeight="240.0" prefWidth="580.0">
                                        <children>
@@ -121,9 +128,9 @@
                                     </VBox>
                                  </children>
                               </AnchorPane>
-                              <AnchorPane fx:id="notEmptyShoppingList" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                              <AnchorPane fx:id="notEmptyShoppingList" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <children>
-                                    <ScrollPane fx:id="shoppingScrollPane" VBox.vgrow="ALWAYS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <ScrollPane fx:id="shoppingScrollPane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="ALWAYS">
                                        <content>
                                           <VBox fx:id="shoppingList" prefHeight="241.0" prefWidth="579.0" />
                                        </content>
@@ -136,8 +143,24 @@
                   </VBox>
                   <HBox prefHeight="40.0" prefWidth="584.0" VBox.vgrow="NEVER">
                      <children>
-                        <Button fx:id="addShoppingItemButton" mnemonicParsing="false" onAction="#addShoppingItem" prefHeight="21.0" prefWidth="48.0" styleClass="roundbutton" text="➕" />
+                        <Button fx:id="addShoppingItemButton" mnemonicParsing="false" onAction="#addShoppingItem" prefHeight="21.0" prefWidth="48.0" styleClass="roundbutton" text="➕">
+                           <HBox.margin>
+                              <Insets top="7.0" />
+                           </HBox.margin></Button>
+                        <Button fx:id="remindMeButton" mnemonicParsing="false" onAction="#handleRemindMe" prefHeight="34.0" prefWidth="125.0" styleClass="roundbutton" text="Remind me! 🔔">
+                           <HBox.margin>
+                              <Insets left="5.0" right="5.0" top="7.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Label fx:id="reminderStatusLabel" text="No reminder set.">
+                           <HBox.margin>
+                              <Insets left="5.0" right="5.0" top="15.0" />
+                           </HBox.margin>
+                        </Label>
                      </children>
+                     <VBox.margin>
+                        <Insets bottom="5.0" />
+                     </VBox.margin>
                   </HBox>
                </children>
                <BorderPane.margin>
