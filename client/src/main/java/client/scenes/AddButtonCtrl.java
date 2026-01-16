@@ -6,6 +6,7 @@ import client.utils.RecipeServerUtils;
 import commons.Recipe;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -24,6 +25,12 @@ public class AddButtonCtrl {
 
     @FXML
     private Label statusLabel;
+
+    @FXML
+    private TextField servingsInput;
+
+    @FXML
+    private Button setServingsButton;
 
     /**
      * Constructs an AddButtonCtrl and injects the necessary dependencies.
@@ -60,6 +67,14 @@ public class AddButtonCtrl {
 
         query = query.substring(0, 1).toUpperCase() + query.substring(1);
         Recipe recipe = new Recipe(query);
+
+        int servings = validateServings(servingsInput.getText());
+        if (servings == -1) {
+            return;
+        } else {
+            recipe.setServings(servings);
+            servingsInput.clear();
+        }
 
         try {
             recipe.setRecipeId(recipeServerUtils.createRecipe(recipe));
@@ -107,6 +122,43 @@ public class AddButtonCtrl {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Validates servings input.
+     * @param text the user input to be converted
+     * @return -1 if invalid, number of servings otherwise
+     */
+    @FXML
+    private int validateServings(String text) {
+        try {
+            int servings = Integer.parseInt(text);
+
+            if (servings < 1) {
+                showError("More Than 0", "Servings must be an integer more than 0.");
+                return -1;
+            }
+
+            return servings;
+
+        } catch (NumberFormatException e) {
+            showError("Must Be Number", "Servings must be a number.");
+            return -1;
+        }
+    }
+
+
+    /**
+     * A method that creates an error alert with a heading and content
+     * @param header The header of the error
+     * @param content the content of the error
+     */
+    private void showError(String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }
 
