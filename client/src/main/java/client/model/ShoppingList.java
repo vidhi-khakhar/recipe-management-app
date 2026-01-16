@@ -22,6 +22,7 @@ public class ShoppingList implements Serializable {
     @JsonProperty("shoppingItems")
     private List<ShoppingItem> shoppingItems;
 
+    @JsonIgnore
     private transient ObservableList<ShoppingItem> observableItems;
 
     /**
