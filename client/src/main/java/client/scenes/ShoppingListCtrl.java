@@ -54,16 +54,18 @@ public class ShoppingListCtrl {
         scheduleExistingReminderIfAny();
     }
 
+    /** Load the shopping list model from the config service */
     private void loadShoppingListModel() {
         shoppingListModel = configService.getConfig().getShoppingList();
     }
 
+    /** Refresh the shopping list UI from the model */
     public void refreshFromConfig() {
         loadShoppingListModel();
         refreshUI();
     }
 
-
+    /** Refreshes the shopping list UI to reflect the current model state */
     private void refreshUI() {
         if (shoppingList == null || emptyShoppingList == null || notEmptyShoppingList == null) {
             return;
@@ -85,7 +87,7 @@ public class ShoppingListCtrl {
         }
     }
 
-
+    /** Adds a new shopping item to the list with default values */
     @FXML
     private void addShoppingItem() {
         ShoppingItem item = new ShoppingItem("", 0, "", null);
@@ -97,6 +99,11 @@ public class ShoppingListCtrl {
         notEmptyShoppingList.setVisible(true);
     }
 
+    /** Creates a UI row for a shopping item, dynamically generating FXML components.
+     * @param item The shopping item
+     * @param startEditable Whether the row should start in editable mode
+     * @return The HBox representing the shopping item row
+     */
     private HBox createShoppingItemRow(ShoppingItem item, boolean startEditable) {
         HBox row = new HBox(10);
         row.setAlignment(Pos.CENTER_LEFT);
@@ -183,7 +190,6 @@ public class ShoppingListCtrl {
             );
         };
 
-
         editSaveButton.setText("✏");
         editSaveButton.setOnAction(e -> editAction[0].run());
 
@@ -193,6 +199,9 @@ public class ShoppingListCtrl {
         return row;
     }
 
+    /** Updates the combined field text and style based on the item's state.
+    * If an item is bought, grey it out.
+    */
     private void updateCombinedField(ShoppingItem item, TextField field) {
         String text = buildItemDisplayText(item);
         field.setText(text);
@@ -201,6 +210,12 @@ public class ShoppingListCtrl {
                 : "-fx-background-color: transparent;");
     }
 
+    /**
+     * Builds the display text for a shopping item, including name, amount, unit,
+     * and source recipe name if there are duplicate names.
+     * @param item The shopping item
+     * @return The display text for the item
+     */
     private String buildItemDisplayText(ShoppingItem item) {
         StringBuilder text = new StringBuilder(item.getName());
         if (item.getAmount() > 0) text.append(" ").append(item.getAmount());
@@ -212,6 +227,10 @@ public class ShoppingListCtrl {
         return text.toString();
     }
 
+    /** Checks if there are multiple items with the same name in the shopping list.
+     * @param item The shopping item to check
+     * @return true if there are duplicates, false otherwise
+     */
     private boolean hasDuplicateName(ShoppingItem item) {
         return shoppingListModel.getShoppingItems().stream()
                 .filter(i -> i.getName().equals(item.getName()))
@@ -219,7 +238,9 @@ public class ShoppingListCtrl {
     }
 
 
-    
+    /** Handles the "Remind Me" button click event.
+     * Has error handling for invalid inputs and schedules the reminder if valid.
+     */
     @FXML
     private void handleRemindMe() {
         Dialog<Void> dialog = new Dialog<>();
@@ -245,7 +266,7 @@ public class ShoppingListCtrl {
         VBox content = new VBox(10);
         content.setPadding(new Insets(10));
 
-        // 🔹 Show existing reminder if any
+        // Show existing reminder if any
         Long existingMillis = configService.getConfig().getShoppingListReminder();
         if (existingMillis != null) {
             java.time.LocalDateTime existing =
@@ -260,7 +281,7 @@ public class ShoppingListCtrl {
             warningLabel.setStyle("-fx-text-fill: darkred; -fx-font-weight: bold;");
             content.getChildren().add(warningLabel);
 
-            // pre-fill existing values
+            // pre-fill existing values of any prev reminder.
             datePicker.setValue(existing.toLocalDate());
             hourField.setText(String.valueOf(existing.getHour()));
             minuteField.setText(String.valueOf(existing.getMinute()));
@@ -317,7 +338,7 @@ public class ShoppingListCtrl {
         dialog.showAndWait();
     }
 
-
+    /** Schedules an existing reminder if one exists. */
     private void scheduleExistingReminderIfAny() {
         Long millis = configService.getConfig().getShoppingListReminder();
         if (millis != null && millis > System.currentTimeMillis()) {
@@ -325,6 +346,9 @@ public class ShoppingListCtrl {
         }
     }
 
+    /** Schedules a reminder to show after the specified delay.
+     * @param delayMillis Delay in milliseconds before showing the reminder
+     */
     private void scheduleReminder(long delayMillis) {
         new Thread(() -> {
             try {
@@ -364,21 +388,27 @@ public class ShoppingListCtrl {
         }).start();
     }
 
-
- 
+    /** Saves the current shopping list model to the config service */
     private void saveShoppingList() {
         configService.getConfig().setShoppingList(shoppingListModel);
         configService.save();
     }
 
+    /** Displays an error alert with the specified message.
+     * @param msg The error message to display
+     */
     private void showError(String msg) {
         new Alert(Alert.AlertType.ERROR, msg).showAndWait();
     }
 
+    /** Displays an information alert with the specified message.
+     * @param msg The information message to display
+     */
     private void showInfo(String msg) {
         new Alert(Alert.AlertType.INFORMATION, msg).showAndWait();
     }
 
+    /** Resets the shopping list by clearing all items */
     @FXML
     void resetShoppingList() {
         shoppingListModel.clear();
@@ -386,16 +416,18 @@ public class ShoppingListCtrl {
         refreshUI();
     }
 
+    /** Handles the "Download Shopping List" button click event. */
     @FXML
     private void downloadShoppingList() {
         System.out.println("Download shopping list button pressed");
     }
 
-
+    /** For testing: gets the shopping list model used by this controller. */
     ShoppingList getShoppingListModelForTest() {
         return this.shoppingListModel;
     }
 
+    /** For testing: sets the shopping list model used by this controller. */
     void setShoppingListModelForTest(ShoppingList shoppingList) {
         this.shoppingListModel = shoppingList;
     }
