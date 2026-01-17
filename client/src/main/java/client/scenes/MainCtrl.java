@@ -48,7 +48,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -182,7 +181,14 @@ public class MainCtrl {
                     = sidebarList.getSelectionModel().getSelectedItem();
 
             List<Recipe> recipesFromDB = recipeServerUtils.getAllRecipes();
+            List<Long> removedIDs = favoriteService.removeDeletedFavorites(recipesFromDB);
 
+            //Check if a favorited recipe got deleted
+            if(!removedIDs.isEmpty()) {
+                showFavoriteRemovedAlert(removedIDs);
+            }
+
+            //Update the UI and the collection of recieps to the database version
             recipeCollection.update(recipesFromDB);
 
             favoriteService.removeDeletedFavorites(recipesFromDB);
@@ -203,6 +209,19 @@ public class MainCtrl {
         } catch (Exception e) {
             System.out.println("Failed to load recipes: " + e.getMessage());
         }
+    }
+
+    /**
+     * The alert to let the user know their favorite recipe got deleted by
+     * someone else.
+     * @param removedIds the removed recipes' IDs
+     */
+    private void showFavoriteRemovedAlert(List<Long> removedIds) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Favorite deleted");
+        alert.setHeaderText("A favorite recipe got deleted");
+        alert.setContentText("Helaas pindakaas — one or more favorites have been removed by someone else.");
+        alert.showAndWait();
     }
 
     /**
@@ -321,13 +340,6 @@ public class MainCtrl {
         applySearch();
     }
 
-    /**
-     * Changes all the UI elements to be either removed or have default text
-     */
-    public void clearUI() {
-        titleRecipeLabel.setText("No recipe selected!");
-        //TODO remove ingredients and instruction step
-    }
 
     /**
      * The placeholder for the search functionality It checks if there is a
@@ -339,7 +351,7 @@ public class MainCtrl {
         String query = searchBar.getText();
         boolean searchFavorites;
 
-        if(favoriteS.getText() == "★"){
+        if(favoriteS.getText() == "★ Only"){
             searchFavorites = true;
         }else{
             searchFavorites = false;
@@ -353,25 +365,13 @@ public class MainCtrl {
 
     @FXML
     private void searchFavorites() {
-        if(favoriteS.getText() == "★"){
-            favoriteS.setText("☆");
+        if(favoriteS.getText() == "★ Only"){
+            favoriteS.setText("☆ Only");
         }else{
-            favoriteS.setText("★");
+            favoriteS.setText("★ Only");
         }
 
         applySearch();
-    }
-
-    /**
-     * This method prints out the button name + "is clicked!" to the console
-     * when a button is clicked in the UI.
-     *
-     * @param event the ActionEvent triggered when the button is clicked.
-     */
-    @FXML
-    private void handleClick(ActionEvent event) {
-        Button btn = (Button) event.getSource();
-        System.out.println(btn.getId() + " is clicked!");
     }
 
     /**
@@ -623,16 +623,22 @@ public class MainCtrl {
         // [ 1 ][ TextField ][ ✔ ][ ✖ ] when editing
         HBox row = new HBox(10);
         row.setAlignment(Pos.CENTER_LEFT);
+        row.setMaxWidth(Double.MAX_VALUE);
 
         //index
         Label indexLabel = new Label((index + 1) + ".");
         indexLabel.setMinWidth(30);
 
         Label textLabel = new Label(initialText);
-        textLabel.setPrefWidth(400);
+        //textLabel.setPrefWidth(400);
+        textLabel.setMaxWidth(Double.MAX_VALUE);
 
         TextField textField = new TextField(initialText);
-        textField.setPrefWidth(400);
+        //textField.setPrefWidth(400);
+        textField.setMaxWidth(Double.MAX_VALUE);
+
+        HBox.setHgrow(textLabel, Priority.ALWAYS);
+        HBox.setHgrow(textField, Priority.ALWAYS);
 
         Button editSaveButton = new Button();
         Button deleteButton = new Button("✖");
@@ -858,7 +864,8 @@ public class MainCtrl {
 
             }
 
-            recipesObservableList.add(newRecipe);
+            recipeCollection.add(newRecipe);
+            applySearch();
 
             System.out.println("It worked! Cloned recipe ID: " + newId);
 
@@ -986,10 +993,10 @@ public class MainCtrl {
     private Button addStepButton;
 
     @FXML
-    private AnchorPane noRecipePane;
+    private VBox noRecipePane;
 
     @FXML
-    private AnchorPane allRecipePane;
+    private VBox allRecipePane;
 
     @FXML
     private void downloadButtonClicked() throws IOException {

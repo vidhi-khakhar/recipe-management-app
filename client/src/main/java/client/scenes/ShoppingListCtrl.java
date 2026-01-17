@@ -102,20 +102,34 @@ public class ShoppingListCtrl {
         notEmptyShoppingList.setVisible(true);
 
         for (ShoppingItem item : shoppingListModel.getShoppingItems()) {
-            shoppingList.getChildren().add(createShoppingItemRow(item, false));
+            boolean startEditable = item.getName() == null || item.getName().isBlank();
+            shoppingList.getChildren().add(createShoppingItemRow(item, startEditable));
         }
     }
 
     /** Adds a new shopping item to the list with default values */
     @FXML
     private void addShoppingItem() {
+        if (hasIncompleteItem()) {
+            showInfo(
+                    "Please finish editing the current item before adding a new one."
+            );
+            return;
+        }
+
         ShoppingItem item = new ShoppingItem("", 0, "", null);
         shoppingListModel.addItem(item);
         saveShoppingList();
+    }
 
-        shoppingList.getChildren().add(createShoppingItemRow(item, true));
-        emptyShoppingList.setVisible(false);
-        notEmptyShoppingList.setVisible(true);
+
+    /** Checks if there is any incomplete item in the shopping list */
+    private boolean hasIncompleteItem() {
+        return shoppingListModel.getShoppingItems().stream()
+                .anyMatch(item ->
+                        item.getName() == null ||
+                                item.getName().trim().isEmpty()
+                );
     }
 
     /** Creates a UI row for a shopping item, dynamically generating FXML components.

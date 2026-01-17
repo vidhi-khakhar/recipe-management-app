@@ -28,14 +28,24 @@
                                     <children>
                                         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                                             <children>
-                                                <Pane prefHeight="96.0" prefWidth="35.0" HBox.hgrow="ALWAYS" />
-                                                <TextField fx:id="searchBar" prefHeight="31.0" prefWidth="218.0" promptText="Enter your query..." styleClass="searchbar" HBox.hgrow="ALWAYS" />
-                                                <Button fx:id="favoriteS" mnemonicParsing="false" onAction="#searchFavorites" prefHeight="31.0" prefWidth="0.0" styleClass="roundbutton" text="S">
-                                                    <HBox.margin>
-                                                        <Insets left="4.0" />
-                                                    </HBox.margin>
+                                                <Pane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="96.0" prefWidth="94.0" styleClass="spacingPane" HBox.hgrow="NEVER">
+                                       <padding>
+                                          <Insets right="5.0" />
+                                       </padding></Pane>
+                                                <TextField fx:id="searchBar" maxHeight="-Infinity" prefHeight="31.0" prefWidth="271.0" promptText="🔍 Enter your query..." styleClass="searchbar" HBox.hgrow="ALWAYS">
+                                       <HBox.margin>
+                                          <Insets right="5.0" />
+                                       </HBox.margin></TextField>
+                                                <Button fx:id="favoriteS" maxHeight="31.0" maxWidth="145.0" mnemonicParsing="false" onAction="#searchFavorites" prefHeight="31.0" prefWidth="145.0" text="☆ Only" HBox.hgrow="NEVER">
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
+                                       <styleClass>
+                                          <String fx:value="roundbutton" />
+                                          <String fx:value="favoritesOnlyButton" />
+                                       </styleClass>
                                                 </Button>
-                                                <Pane prefHeight="96.0" prefWidth="106.0" HBox.hgrow="ALWAYS" />
+                                                <Pane prefHeight="96.0" prefWidth="106.0" HBox.hgrow="NEVER" />
                                             </children>
                                         </HBox>
                                     </children>
@@ -51,13 +61,17 @@
                                 </Label>
                                 <HBox alignment="BOTTOM_RIGHT" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                                     <children>
-                                        <Button fx:id="refreshButton" mnemonicParsing="false" onAction="#refreshButtonClicked" styleClass="roundbutton" text="R" HBox.hgrow="ALWAYS">
+                                        <Button fx:id="refreshButton" mnemonicParsing="false" onAction="#refreshButtonClicked" text="⟳" HBox.hgrow="ALWAYS">
                                             <HBox.margin>
                                                 <Insets bottom="5.0" right="5.0" />
                                             </HBox.margin>
                                             <font>
                                                 <Font name="System Bold" size="13.0" />
                                             </font>
+                                 <styleClass>
+                                    <String fx:value="roundbutton" />
+                                    <String fx:value="refreshButton" />
+                                 </styleClass>
                                         </Button>
                                     </children>
                                 </HBox>
@@ -150,163 +164,160 @@
             <center>
                 <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                     <children>
-                        <VBox prefHeight="490.0" prefWidth="638.0">
+                        <VBox prefHeight="490.0" prefWidth="638.0" HBox.hgrow="ALWAYS">
                             <children>
-                                <StackPane prefHeight="510.0" prefWidth="634.0">
+                                <StackPane prefHeight="510.0" prefWidth="634.0" VBox.vgrow="ALWAYS">
                                     <children>
-                                        <AnchorPane fx:id="noRecipePane" prefHeight="200.0" prefWidth="200.0" visible="false">
-                                            <children>
-                                                <VBox AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
-                                                    <children>
-                                                        <HBox prefHeight="114.0" prefWidth="316.0" VBox.vgrow="ALWAYS">
-                                                            <VBox.margin>
-                                                                <Insets />
-                                                            </VBox.margin>
-                                                        </HBox>
-                                                        <HBox layoutX="10.0" layoutY="10.0" prefHeight="100.0" prefWidth="320.0" VBox.vgrow="SOMETIMES">
-                                                            <children>
-                                                                <VBox prefHeight="98.0" prefWidth="316.0" HBox.hgrow="ALWAYS">
-                                                                    <children>
-                                                                        <HBox prefHeight="42.0" prefWidth="318.0">
-                                                                            <children>
-                                                                                <HBox prefHeight="21.0" prefWidth="62.0" HBox.hgrow="ALWAYS" />
-                                                                                <Label fx:id="noIngredientTitle" text="No Recipes Created!" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
-                                                                                <HBox prefHeight="21.0" prefWidth="82.0" HBox.hgrow="ALWAYS" />
-                                                                            </children>
-                                                                        </HBox>
-                                                                        <HBox prefHeight="100.0" prefWidth="200.0">
-                                                                            <children>
-                                                                                <HBox prefHeight="79.0" prefWidth="10.0" HBox.hgrow="ALWAYS" />
-                                                                                <Label fx:id="noIngredientSubtitle" alignment="CENTER" contentDisplay="CENTER" text="Please create or select a recipe to view its ingredients and instructions. ⸜(｡˃ ᵕ ˂ )⸝♡" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
-                                                                                <HBox layoutX="10.0" layoutY="10.0" prefHeight="79.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
-                                                                            </children>
-                                                                        </HBox>
-                                                                    </children>
-                                                                </VBox>
-                                                            </children>
-                                                        </HBox>
-                                                        <HBox layoutX="10.0" layoutY="110.0" prefHeight="110.0" prefWidth="316.0" VBox.vgrow="ALWAYS" />
-                                                    </children>
-                                                </VBox>
-                                            </children>
-                                        </AnchorPane>
-                                        <AnchorPane fx:id="allRecipePane" prefHeight="200.0" prefWidth="200.0">
-                                            <children>
-                                                <VBox prefHeight="490.0" prefWidth="637.0">
-                                                    <children>
-                                                        <VBox prefHeight="200.0" prefWidth="100.0" styleClass="centerbox" VBox.vgrow="ALWAYS">
-                                                            <children>
+                                          <VBox fx:id="noRecipePane">
+                                              <children>
+                                                  <HBox prefHeight="114.0" prefWidth="316.0" VBox.vgrow="ALWAYS">
+                                                      <VBox.margin>
+                                                          <Insets />
+                                                      </VBox.margin>
+                                                  </HBox>
+                                                  <HBox layoutX="10.0" layoutY="10.0" prefHeight="100.0" prefWidth="320.0" VBox.vgrow="ALWAYS">
+                                                      <children>
+                                                          <VBox prefHeight="98.0" prefWidth="316.0" HBox.hgrow="SOMETIMES">
+                                                              <children>
+                                                                  <HBox prefHeight="42.0" prefWidth="318.0">
+                                                                      <children>
+                                                                          <HBox prefHeight="21.0" prefWidth="62.0" HBox.hgrow="ALWAYS" />
+                                                                          <Label fx:id="noIngredientTitle" text="No Recipes Created!" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
+                                                                          <HBox prefHeight="21.0" prefWidth="82.0" HBox.hgrow="ALWAYS" />
+                                                                      </children>
+                                                                  </HBox>
+                                                                  <HBox prefHeight="100.0" prefWidth="200.0">
+                                                                      <children>
+                                                                          <HBox prefHeight="79.0" prefWidth="10.0" HBox.hgrow="ALWAYS" />
+                                                                          <Label fx:id="noIngredientSubtitle" alignment="CENTER" contentDisplay="CENTER" text="Please create or select a recipe to view its ingredients and instructions. ⸜(｡˃ ᵕ ˂ )⸝♡" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
+                                                                          <HBox layoutX="10.0" layoutY="10.0" prefHeight="79.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                                                                      </children>
+                                                                  </HBox>
+                                                              </children>
+                                                          </VBox>
+                                                      </children>
+                                                  </HBox>
+                                                  <HBox layoutX="10.0" layoutY="110.0" prefHeight="110.0" prefWidth="316.0" VBox.vgrow="ALWAYS" />
+                                              </children>
+                                          </VBox>
+                                          <VBox fx:id="allRecipePane" prefHeight="490.0" prefWidth="637.0" StackPane.alignment="CENTER">
+                                              <children>
+                                                  <VBox prefHeight="474.0" prefWidth="650.0" styleClass="centerbox" VBox.vgrow="ALWAYS">
+                                                      <children>
 
-                                                                <HBox prefHeight="43.0" prefWidth="639.0" styleClass="titlelablebox" VBox.vgrow="NEVER">
-                                                                    <children>
-                                                                        <Label fx:id="titleRecipeLabel" styleClass="h2" text="titleLabel" />
-                                                                        <Button fx:id="editRecipeTitleButton" mnemonicParsing="false" onAction="#editRecipeTitleButtonClicked" prefHeight="31.0" prefWidth="63.0" styleClass="roundbutton" text="edit">
-                                                                            <HBox.margin>
-                                                                                <Insets bottom="5.0" left="5.0" />
-                                                                            </HBox.margin>
-                                                                        </Button>
-                                                                        <Region HBox.hgrow="ALWAYS" />
-                                                                        <Button fx:id="cloneRecipeButton" mnemonicParsing="false" onAction="#cloneRecipe" prefHeight="31.0" prefWidth="70" styleClass="clonebutton" text="clone">
-                                                                            <HBox.margin>
-                                                                                <Insets bottom="5.0" left="5.0" />
-                                                                            </HBox.margin>
-                                                                        </Button>
-                                                                    </children>
-                                                                </HBox>
+                                                          <HBox prefHeight="43.0" prefWidth="639.0" styleClass="titlelablebox" VBox.vgrow="NEVER">
+                                                              <children>
+                                                                  <Label fx:id="titleRecipeLabel" styleClass="h2" text="titleLabel" />
+                                                                  <Button fx:id="editRecipeTitleButton" mnemonicParsing="false" onAction="#editRecipeTitleButtonClicked" prefHeight="31.0" prefWidth="63.0" styleClass="roundbutton" text="edit">
+                                                                      <HBox.margin>
+                                                                          <Insets bottom="5.0" left="5.0" />
+                                                                      </HBox.margin>
+                                                                  </Button>
+                                                                  <Region HBox.hgrow="ALWAYS" />
+                                                                  <Button fx:id="cloneRecipeButton" mnemonicParsing="false" onAction="#cloneRecipe" prefHeight="31.0" prefWidth="70" styleClass="clonebutton" text="clone">
+                                                                      <HBox.margin>
+                                                                          <Insets bottom="5.0" left="5.0" />
+                                                                      </HBox.margin>
+                                                                  </Button>
+                                                              </children>
+                                                          </HBox>
 
-                                                                <VBox prefHeight="231.0" prefWidth="639.0" VBox.vgrow="ALWAYS">
-                                                                    <children>
-                                                                        <Label styleClass="h3" text="Ingredients:" />
-                                                                        <VBox fx:id="ingredientList" prefHeight="186.0" prefWidth="582.0" spacing="6.0" VBox.vgrow="ALWAYS">
-                                                                            <children>
-                                                                                <ScrollPane prefHeight="200.0" prefWidth="200.0">
-                                                                                    <content>
-                                                                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
-                                                                                            <children>
-                                                                                                <VBox fx:id="ingredientList" prefHeight="186.0" prefWidth="582.0" spacing="6.0">
-                                                                                                    <children>
-                                                                                                        <HBox alignment="CENTER_LEFT" prefHeight="20.0" prefWidth="582.0" spacing="8.0" styleClass="recipe-item">
-                                                                                                            <children>
-                                                                                                                <Label fx:id="itemLabel" text="HelloWorld">
-                                                                                                                    <HBox.margin>
-                                                                                                                        <Insets left="9.0" />
-                                                                                                                    </HBox.margin>
-                                                                                                                </Label>
-                                                                                                                <Region prefHeight="31.0" prefWidth="242.0" HBox.hgrow="ALWAYS" />
-                                                                                                                <Button fx:id="editItemButton" mnemonicParsing="false" onAction="#editIngredientButtonClicked" text="edit">
-                                                                                                                    <font>
-                                                                                                                        <Font name="Cascadia Code Regular" size="12.0" />
-                                                                                                                    </font>
-                                                                                                                </Button>
-                                                                                                                <Button fx:id="removeItemButton" mnemonicParsing="false" onAction="#ingredientRemoveButtonClicked" text="remove" />
-                                                                                                            </children>
-                                                                                                        </HBox>
-                                                                                                    </children>
-                                                                                                </VBox>
-                                                                                            </children>
-                                                                                        </AnchorPane>
-                                                                                    </content>
-                                                                                </ScrollPane>
-                                                                            </children>
-                                                                            <VBox.margin>
-                                                                                <Insets top="3.0" />
-                                                                            </VBox.margin>
-                                                                        </VBox>
-                                                                        <HBox prefHeight="100.0" prefWidth="200.0">
-                                                                            <children>
-                                                                                <Button fx:id="addIngredientButton" mnemonicParsing="false" onAction="#ingredientAddButtonClicked" styleClass="roundbutton" text="+">
-                                                                                    <font>
-                                                                                        <Font size="14.0" />
-                                                                                    </font>
-                                                                                </Button>
-                                                                                <Button fx:id="recipeShoppingButton" mnemonicParsing="false" onAction="#showRecipeShoppingWindow" text="Shop 🛒">
-                                                                                    <HBox.margin>
-                                                                                        <Insets left="20.0" right="5.0" />
-                                                                                    </HBox.margin>
-                                                                                </Button>
-                                                                            </children>
-                                                         <VBox.margin>
-                                                            <Insets top="5.0" />
-                                                         </VBox.margin>
-                                                                        </HBox>
-                                                                    </children>
-                                                                    <VBox.margin>
-                                                                        <Insets bottom="5.0" top="5.0" />
-                                                                    </VBox.margin>
-                                                                </VBox>
-                                                                <VBox prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
-                                                                    <children>
-                                                                        <Label styleClass="h3" text="Preparation" />
-                                                                        <ScrollPane fx:id="prepScrollPane" prefHeight="200.0" prefWidth="200.0">
-                                                                            <content>
-                                                                                <VBox fx:id="preparationList" prefHeight="119.0" prefWidth="579.0" />
-                                                                            </content>
-                                                                        </ScrollPane>
-                                                                        <Button fx:id="addStepButton" mnemonicParsing="false" onAction="#preparationAddButtonClicked" prefHeight="34.0" prefWidth="58.0" styleClass="roundbutton" text="➕">
-                                                                            <VBox.margin>
-                                                                                <Insets top="5.0" />
-                                                                            </VBox.margin>
-                                                                        </Button>
-                                                                    </children>
-                                                                </VBox>
-                                                                <VBox prefHeight="40.0" prefWidth="324.0">
-                                                                    <children>
-                                                                        <Button fx:id="downloadButton" alignment="TOP_CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#downloadButtonClicked" text="Download">
-                                                                            <VBox.margin>
-                                                                                <Insets left="480.0" />
-                                                                            </VBox.margin>
-                                                                        </Button>
-                                                                    </children>
-                                                                </VBox>
-                                                            </children>
-                                                            <VBox.margin>
-                                                                <Insets bottom="8.0" right="9.0" top="8.0" />
-                                                            </VBox.margin>
-                                                        </VBox>
-                                                    </children>
-                                                </VBox>
-                                            </children>
-                                        </AnchorPane>
+                                                          <VBox prefHeight="231.0" prefWidth="639.0" VBox.vgrow="ALWAYS">
+                                                              <children>
+                                                                  <Label styleClass="h3" text="Ingredients:" />
+                                                                  <VBox fx:id="ingredientList" prefHeight="397.0" prefWidth="595.0" spacing="6.0" VBox.vgrow="ALWAYS">
+                                                                      <children>
+                                                                          <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="266.0" prefWidth="595.0" styleClass="scrollPane" VBox.vgrow="ALWAYS">
+                                                                              <content>
+                                                                                    <VBox fx:id="ingredientList" prefHeight="270.0" prefWidth="586.0" spacing="6.0">
+                                                                                        <children>
+                                                                                            <HBox alignment="CENTER_LEFT" maxHeight="20.0" prefHeight="20.0" prefWidth="582.0" spacing="8.0" styleClass="recipe-item" VBox.vgrow="ALWAYS">
+                                                                                                <children>
+                                                                                                    <Label fx:id="itemLabel" text="HelloWorld">
+                                                                                                        <HBox.margin>
+                                                                                                            <Insets left="9.0" />
+                                                                                                        </HBox.margin>
+                                                                                                    </Label>
+                                                                                                    <Region prefHeight="31.0" prefWidth="242.0" HBox.hgrow="ALWAYS" />
+                                                                                                    <Button fx:id="editItemButton" mnemonicParsing="false" onAction="#editIngredientButtonClicked" text="edit">
+                                                                                                        <font>
+                                                                                                            <Font name="Cascadia Code Regular" size="12.0" />
+                                                                                                        </font>
+                                                                                                    </Button>
+                                                                                                    <Button fx:id="removeItemButton" mnemonicParsing="false" onAction="#ingredientRemoveButtonClicked" text="remove" />
+                                                                                                </children>
+                                                                                            </HBox>
+                                                                                        </children>
+                                                                                    </VBox>
+                                                                              </content>
+                                                                          </ScrollPane>
+                                                                      </children>
+                                                                      <VBox.margin>
+                                                                          <Insets top="3.0" />
+                                                                      </VBox.margin>
+                                                                  </VBox>
+                                                                  <HBox fillHeight="false" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                                                                      <children>
+                                                                          <Button fx:id="addIngredientButton" mnemonicParsing="false" onAction="#ingredientAddButtonClicked" text="+" HBox.hgrow="ALWAYS">
+                                                                              <font>
+                                                                                  <Font size="14.0" />
+                                                                              </font>
+                                                         <styleClass>
+                                                            <String fx:value="roundbutton" />
+                                                            <String fx:value="h4" />
+                                                         </styleClass>
+                                                         <HBox.margin>
+                                                            <Insets top="3.0" />
+                                                         </HBox.margin>
+                                                                          </Button>
+                                                                          <Button fx:id="recipeShoppingButton" mnemonicParsing="false" onAction="#showRecipeShoppingWindow" styleClass="h4" text="Shop 🛒" HBox.hgrow="ALWAYS">
+                                                                              <HBox.margin>
+                                                                                  <Insets left="20.0" right="5.0" top="3.0" />
+                                                                              </HBox.margin>
+                                                                          </Button>
+                                                                      </children>
+                                                                  </HBox>
+                                                              </children>
+                                                              <VBox.margin>
+                                                                  <Insets bottom="5.0" top="5.0" />
+                                                              </VBox.margin>
+                                                          </VBox>
+                                                          <VBox prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
+                                                              <children>
+                                                                  <Label styleClass="h3" text="Preparation" VBox.vgrow="ALWAYS" />
+                                                                  <ScrollPane fx:id="prepScrollPane" fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" styleClass="scrollPane" VBox.vgrow="ALWAYS">
+                                                                      <content>
+                                                                          <VBox fx:id="preparationList" prefHeight="119.0" prefWidth="579.0" spacing="3.0" />
+                                                                      </content>
+                                                                  </ScrollPane>
+                                                                  <Button fx:id="addStepButton" mnemonicParsing="false" onAction="#preparationAddButtonClicked" prefHeight="34.0" prefWidth="0.0" text="+" VBox.vgrow="ALWAYS">
+                                                                      <VBox.margin>
+                                                                          <Insets top="3.0" />
+                                                                      </VBox.margin>
+                                                   <styleClass>
+                                                      <String fx:value="roundbutton" />
+                                                      <String fx:value="h4" />
+                                                   </styleClass>
+                                                                  </Button>
+                                                              </children>
+                                                          </VBox>
+                                                          <VBox maxHeight="-Infinity" prefHeight="40.0" prefWidth="324.0" VBox.vgrow="ALWAYS">
+                                                              <children>
+                                                <HBox>
+                                                   <children>
+                                                      <Pane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+                                                                        <Button fx:id="downloadButton" alignment="TOP_CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#downloadButtonClicked" text="Download" />
+                                                   </children>
+                                                </HBox>
+                                                              </children>
+                                                          </VBox>
+                                                      </children>
+                                                      <VBox.margin>
+                                                          <Insets bottom="8.0" right="9.0" top="8.0" />
+                                                      </VBox.margin>
+                                                  </VBox>
+                                              </children>
+                                          </VBox>
                                     </children>
                                 </StackPane>
                             </children>
