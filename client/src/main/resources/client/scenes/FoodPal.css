@@ -64,12 +64,30 @@
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 6, 0.3, 0, 2);
 }
 
-.searchbar{
+.searchbar {
     -fx-background-radius: 8;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0.2, 0, 0);
     -fx-focus-color: transparent;
     -fx-border-color: transparant;
     -fx-background-color: white;
+}
+
+.favoritesOnlyButton {
+    -fx-font-size: 12px;
+    -fx-padding: 0 0;
+    -fx-min-width: 80px;
+    -fx-min-height: 34px;
+    -fx-pref-width: 80px;
+    -fx-pref-height: 34px;
+}
+
+.refreshButton {
+    -fx-font-size: 20px;
+    -fx-padding: 0 0;
+    -fx-min-width: 34px;
+    -fx-min-height: 34px;
+    -fx-pref-width: 34px;
+    -fx-pref-height: 34px;
 }
 
 /*SIDEBAR STYLING*/
@@ -175,7 +193,10 @@
     -fx-effect: none;
 }
 
-/*Specific recipe (preparation) item styling*/
-
+/*Recipe (preparation) styling*/
+.scrollPane {
+    -fx-background-radius: 12px;
+    -fx-padding: 5px;
+}
 
 
