@@ -20,6 +20,7 @@ public class RecipeFormatter {
         // Recipe: recipe_name (language)
         text.append("Recipe: " + recipe.getTitle());
         text.append(" (" + recipe.getLanguage() + ")\n");
+        text.append("Servings: " + recipe.getServings() + "\n");
 
         // Ingredients:
         // - ingredient_1
