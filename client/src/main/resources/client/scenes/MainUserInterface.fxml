@@ -6,6 +6,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
@@ -14,6 +16,9 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.paint.RadialGradient?>
+<?import javafx.scene.paint.Stop?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="589.0" prefWidth="905.0" stylesheets="@FoodPal.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MainCtrl">
@@ -168,6 +173,7 @@
                             <children>
                                 <StackPane prefHeight="510.0" prefWidth="634.0" VBox.vgrow="ALWAYS">
                                     <children>
+
                                           <VBox fx:id="noRecipePane">
                                               <children>
                                                   <HBox prefHeight="114.0" prefWidth="316.0" VBox.vgrow="ALWAYS">
@@ -299,16 +305,84 @@
                                                       <String fx:value="h4" />
                                                    </styleClass>
                                                                   </Button>
+                                                 <Label styleClass="h3" text="Nutritional Values" />
                                                               </children>
                                                           </VBox>
                                                           <VBox maxHeight="-Infinity" prefHeight="40.0" prefWidth="324.0" VBox.vgrow="ALWAYS">
                                                               <children>
-                                                <HBox>
+                                                <VBox prefHeight="200.0" prefWidth="100.0">
                                                    <children>
-                                                      <Pane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
-                                                                        <Button fx:id="downloadButton" alignment="TOP_CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#downloadButtonClicked" text="Download" />
+
+                                                             <SplitPane dividerPositions="0.19256756756756757, 0.2989864864864865, 0.46452702702702703, 0.5658783783783784, 0.7905405405405406" prefHeight="33.0" prefWidth="598.0">
+                                                           <items>
+                                                            <VBox prefHeight="200.0" prefWidth="100.0">
+                                                               <children>
+                                                                     <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="34.0" prefWidth="115.0" styleClass="recipe-item" text="kcal/100g: " />
+                                                               </children>
+                                                            </VBox>
+                                                            <VBox prefHeight="200.0" prefWidth="100.0">
+                                                               <children>
+                                                                     <Label fx:id="inferredKcalsLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="34.0" prefWidth="60.0" styleClass="recipe-item" text="value">
+                                                                         <textFill>
+                                                                             <RadialGradient centerX="0.5" centerY="0.5" radius="0.5">
+                                                                                 <stops>
+                                                                                     <Stop>
+                                                                                         <color>
+                                                                                             <Color green="0.03684210404753685" blue="0.7368420958518982" />
+                                                                                         </color>
+                                                                                     </Stop>
+                                                                                     <Stop offset="1.0">
+                                                                                         <color>
+                                                                                             <Color red="0.040300000458955765" green="0.13019999861717224" blue="0.3100000023841858" opacity="0.8352490663528442" />
+                                                                                         </color>
+                                                                                     </Stop>
+                                                                                 </stops>
+                                                                             </RadialGradient>
+                                                                         </textFill>
+                                                                     </Label>
+                                                               </children>
+                                                            </VBox>
+                                                            <VBox prefHeight="200.0" prefWidth="100.0">
+                                                               <children>
+                                                                     <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="34.0" prefWidth="110.0" styleClass="recipe-item" text="servings: " />
+                                                               </children>
+                                                            </VBox>
+                                                            <VBox prefHeight="200.0" prefWidth="100.0">
+                                                               <children>
+                                                                     <Label fx:id="servingsValueLabel" alignment="CENTER" prefHeight="34.0" prefWidth="57.0" styleClass="recipe-item" text="value">
+                                                                         <textFill>
+                                                                             <RadialGradient centerX="0.5" centerY="0.5" radius="0.5">
+                                                                                 <stops>
+                                                                                     <Stop>
+                                                                                         <color>
+                                                                                             <Color green="0.03684210404753685" blue="0.7368420958518982" />
+                                                                                         </color>
+                                                                                     </Stop>
+                                                                                     <Stop offset="1.0">
+                                                                                         <color>
+                                                                                             <Color red="0.040300000458955765" green="0.13019999861717224" blue="0.3100000023841858" opacity="0.8352490663528442" />
+                                                                                         </color>
+                                                                                     </Stop>
+                                                                                 </stops>
+                                                                             </RadialGradient>
+                                                                         </textFill>
+                                                                     </Label>
+                                                               </children>
+                                                            </VBox>
+                                                            <VBox alignment="CENTER" prefHeight="34.0" prefWidth="89.0">
+                                                               <children>
+                                                                     <Spinner fx:id="scaler" prefHeight="26.0" prefWidth="137.0" />
+                                                               </children>
+                                                            </VBox>
+                                                            <VBox alignment="CENTER" fillWidth="false" prefHeight="34.0" prefWidth="0.0">
+                                                               <children>
+                                                                     <Button fx:id="downloadButton" alignment="TOP_CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#downloadButtonClicked" prefHeight="34.0" prefWidth="99.0" text="Download" />
+                                                               </children>
+                                                            </VBox>
+                                                           </items>
+                                                       </SplitPane>
                                                    </children>
-                                                </HBox>
+                                                </VBox>
                                                               </children>
                                                           </VBox>
                                                       </children>
