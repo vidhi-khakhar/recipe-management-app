@@ -480,6 +480,10 @@ public class MainCtrl {
 
             selectedRecipe.getIngredients().add(newIngredient);
 
+            if (newIngredient.isFormal()) {
+                baseAmounts.put(newIngredient, newIngredient.getAmount());
+                baseUnits.put(newIngredient, newIngredient.getUnit());
+            }
         }
 
         showIngredients(selectedRecipe);
@@ -1172,6 +1176,10 @@ public class MainCtrl {
     }
 
     private void scaleRecipe(Recipe recipe) {
+        if (recipe == null) {
+            return;
+        }
+
         int factor = scaler.getValue();
         recipe.setServings(baseServings * factor);
 
