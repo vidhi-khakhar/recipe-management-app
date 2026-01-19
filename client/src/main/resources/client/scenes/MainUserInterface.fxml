@@ -6,7 +6,6 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.MenuButton?>
-<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.SplitPane?>
@@ -76,13 +75,9 @@
                               </CheckComboBox>
                               <VBox alignment="BOTTOM_RIGHT" prefHeight="96.0" prefWidth="66.0">
                                  <children>
-                                    <MenuButton fx:id="languageSetter" mnemonicParsing="false" text="Select Lanuage" VBox.vgrow="ALWAYS">
-                                      <items>
-                                        <MenuItem mnemonicParsing="false" text="Action 1" />
-                                        <MenuItem mnemonicParsing="false" text="Action 2" />
-                                      </items>
+                                    <MenuButton fx:id="languageSetter" mnemonicParsing="false" prefHeight="30.0" prefWidth="200.0" text="Select Lanuage">
                                        <VBox.margin>
-                                          <Insets bottom="7.0" />
+                                          <Insets bottom="7.0" right="7.0" />
                                        </VBox.margin>
                                     </MenuButton>
                                  </children>

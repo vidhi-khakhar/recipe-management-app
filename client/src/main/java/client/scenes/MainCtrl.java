@@ -150,14 +150,9 @@ public class MainCtrl {
         MenuItem romanianFlag = makeLanguageImage("Romanian", "RomanianFlag.png");
         MenuItem spanishFlag = makeLanguageImage("Spanish", "SpanishFlag.png");
 
-        setLanguageAction(englishFlag);
-        setLanguageAction(dutchFlag);
-        setLanguageAction(romanianFlag);
-        setLanguageAction(spanishFlag);
-
         languageSetter.getItems().addAll(englishFlag, dutchFlag, romanianFlag, spanishFlag);
 
-
+        updateLanguageButton("/images/EnglishFlag.png"); //this needs to be a config thing later"
 
         sidebarList.setItems(recipesObservableList);
 
@@ -573,6 +568,8 @@ public class MainCtrl {
 
     }
 
+
+
     /**
      * Edit an ingredient of a selected recipe.
      */
@@ -969,6 +966,13 @@ public class MainCtrl {
         alert.showAndWait();
     }
 
+    @FXML
+    private void editRecipeLanguage() {
+        List<String> languages = List.of("English", "Dutch", "Romanian", "Spanish");
+
+//        selectedRecipe.setLanguage();
+    }
+
     public void updateTitleLabel(String title) {
         titleRecipeLabel.setText(title);
     }
@@ -1085,14 +1089,33 @@ public class MainCtrl {
         imageView.setFitHeight(20);
         imageView.setFitWidth(20);
 
-        return new MenuItem(languageName, imageView);
+
+        MenuItem flag = new MenuItem(languageName, imageView);
+
+        flag.setOnAction(e -> {
+            updateLanguageButton(path);
+        });
+
+        return flag;
     }
 
-    private void setLanguageAction(MenuItem flag) {
-        flag.setOnAction(e -> {
-            languageSetter.setText(flag.getText());
-        });
+    /**
+     * A method that sets the buttonIcon that displays the language that the app is working in
+     * @param path the path to the image that will be displayed
+     */
+    private void updateLanguageButton(String path) {
+        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(path)));
+
+        ImageView buttonIcon = new ImageView(image);
+        buttonIcon.setFitWidth(20);
+        buttonIcon.setFitHeight(20);
+
+        languageSetter.setGraphic(buttonIcon);
+        languageSetter.setText(""); // this dumb ass line is neccesary bc otherwise you still get ... next to the flag.
+
+
     }
+
     /**
      * Saves a recipe in chosen path.
      * @param recipe recipe to be saved
