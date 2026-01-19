@@ -970,6 +970,7 @@ public class MainCtrl {
                     original.getLanguage()
             );  
 
+
             newRecipe.setServings(original.getServings());
             newRecipe.setInstructions(new ArrayList<>(original.getInstructions()));
 
@@ -1003,31 +1004,52 @@ public class MainCtrl {
 
     /**
      * Generates a new title for a cloned recipe based on the original title.
+     * Checks existing recipes so that clone numbers increment correctly.
      *
      * @param originalTitle the title of the original recipe
      * @return the generated title for the cloned recipe
      */
     private String generateCloneTitle(String originalTitle) {
+        // Extract base title
         var pattern = java.util.regex.Pattern.compile(
                 "^(.*?)(?:\\s*\\(Clone(?:\\s*(\\d+))?\\))?$"
         );
-
         var matcher = pattern.matcher(originalTitle.trim());
 
-        if (!matcher.matches()) {
-            return originalTitle + " (Clone 1)";
+        String baseTitle = originalTitle;
+        if (matcher.matches()) {
+            baseTitle = matcher.group(1).trim();
         }
 
-        String baseTitle = matcher.group(1).trim();
-        String numberGroup = matcher.group(2);
+        int maxCloneNumber = 0;
 
-        int nextNumber = 1;
-        if (numberGroup != null) {
-            nextNumber = Integer.parseInt(numberGroup) + 1;
+        // Loop through all existing recipes to find the highest clone number
+        for (Recipe r : recipesObservableList) {
+            String title = r.getTitle().trim();
+            var m = pattern.matcher(title);
+            if (m.matches()) {
+                String candidateBase = m.group(1).trim();
+                String numGroup = m.group(2);
+
+                if (!candidateBase.equals(baseTitle)) continue;
+
+                int num = 0;
+                if (numGroup != null) {
+                    num = Integer.parseInt(numGroup);
+                } else if (title.endsWith("(Clone)")) {
+                    num = 1;
+                }
+
+                if (num > maxCloneNumber) {
+                    maxCloneNumber = num;
+                }
+            }
         }
 
+        int nextNumber = maxCloneNumber + 1;
         return baseTitle + " (Clone " + nextNumber + ")";
     }
+
 
 
 
