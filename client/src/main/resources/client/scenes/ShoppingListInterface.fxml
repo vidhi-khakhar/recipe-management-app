@@ -92,9 +92,9 @@
                      <children>
                         <StackPane prefHeight="249.0" prefWidth="584.0" VBox.vgrow="ALWAYS">
                            <children>
-                              <AnchorPane fx:id="emptyShoppingList" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                              <VBox fx:id="emptyShoppingList" StackPane.alignment="CENTER">
                                  <children>
-                                    <VBox prefHeight="240.0" prefWidth="580.0">
+                                    <VBox prefHeight="240.0" prefWidth="580.0" VBox.vgrow="ALWAYS">
                                        <children>
                                           <HBox prefHeight="114.0" prefWidth="316.0" VBox.vgrow="ALWAYS">
                                              <VBox.margin>
@@ -127,16 +127,16 @@
                                        </children>
                                     </VBox>
                                  </children>
-                              </AnchorPane>
-                              <AnchorPane fx:id="notEmptyShoppingList" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                              </VBox>
+                              <VBox fx:id="notEmptyShoppingList">
                                  <children>
-                                    <ScrollPane fx:id="shoppingScrollPane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="ALWAYS">
+                                    <ScrollPane fx:id="shoppingScrollPane" fitToHeight="true" fitToWidth="true" VBox.vgrow="ALWAYS">
                                        <content>
                                           <VBox fx:id="shoppingList" prefHeight="241.0" prefWidth="579.0" />
                                        </content>
                                     </ScrollPane>
                                  </children>
-                              </AnchorPane>
+                              </VBox>
                            </children>
                         </StackPane>
                      </children>
