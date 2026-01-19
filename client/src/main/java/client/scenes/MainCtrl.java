@@ -17,23 +17,29 @@ package client.scenes;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
-import client.config.ConfigService;
-import client.favorite.FavoriteService;
-import client.search.RecipeCollection;
-import client.search.SearchService;
-import commons.*;
-import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.input.KeyCode;
 import org.apache.commons.io.FileUtils;
+import org.controlsfx.control.CheckComboBox;
 
 import com.google.inject.Inject;
 
 import client.RecipeFormatter;
+import client.config.ConfigService;
+import client.favorite.FavoriteService;
+import client.search.RecipeCollection;
+import client.search.SearchService;
 import client.utils.RecipeServerUtils;
+import commons.Ingredient;
+import commons.Recipe;
+import commons.RecipeIngredient;
+import commons.RecipeIngredientKey;
+import commons.Unit;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -45,16 +51,21 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.controlsfx.control.CheckComboBox;
-import javafx.scene.image.ImageView;
 
 
 public class MainCtrl {
@@ -82,6 +93,89 @@ public class MainCtrl {
 
     @FXML
     private Spinner<Integer> scaler;
+
+    @FXML
+    private ListView<Recipe> sidebarList;
+
+    @FXML
+    private Button favoriteS;
+
+    @FXML
+    private Button addIngredientButton;
+
+    @FXML
+    private Button shoppingListButton;
+
+    @FXML
+    private Button addRecipeButton;
+
+    @FXML
+    private Button recipeShoppingButton;
+
+    @FXML
+    private Button editItemButton;
+
+    @FXML
+    private Button editRecipeTitleButton;
+
+    @FXML
+    private VBox ingredientList;
+
+    @FXML
+    private Label itemLabel;
+
+    @FXML
+    private Button refreshButton;
+
+    @FXML
+    private Button removeItemButton;
+
+    @FXML
+    private Button removeRecipeButton;
+
+    @FXML
+    private Button nutritionalValueButton;
+
+    @FXML
+    private TextField searchBar;
+
+
+    @FXML
+    private Label titleRecipeLabel;
+
+    @FXML
+    private Button downloadButton;
+    @FXML
+    private ScrollPane prepScrollPane;
+
+    @FXML
+    private VBox preparationList;
+
+    @FXML
+    private Button addStepButton;
+
+    @FXML
+    private VBox noRecipePane;
+
+    @FXML
+    private VBox allRecipePane;
+
+    @FXML
+    private Label servingsValueLabel;
+
+    @FXML
+    private Label inferredKcalsLabel;
+
+    @FXML
+    private MenuButton languageSetter;
+
+    @FXML
+    private CheckComboBox<String> languageCheckBox;
+
+
+    @FXML
+    private Label recipeLanguageLabel;
+
 
     /**
      * Initializes the scenes
@@ -251,7 +345,6 @@ public class MainCtrl {
     @FXML
     public void updateRecipeStackPane() {
         boolean hasRecipes = !sidebarList.getItems().isEmpty();
-        System.out.println(hasRecipes);
         if (!hasRecipes) {
             noRecipePane.setVisible(true);
             allRecipePane.setVisible(false);
@@ -303,10 +396,7 @@ public class MainCtrl {
     private void recipeRemoveButtonClicked() {
         Recipe selected = sidebarList.getSelectionModel().getSelectedItem();
 
-        if (selected == null) {
-            System.out.println("No recipe selected!");
-            return;
-        }
+        requireSelectedRecipe();
 
         if (!deleteConfirmation()) {
             return;
@@ -379,20 +469,23 @@ public class MainCtrl {
      */
     @FXML
     private void applySearch() {
-        String query = searchBar.getText();
-        boolean searchFavorites;
+        Recipe previouslySelected = getSelectedRecipe();
 
-        if(favoriteS.getText() == "★ Only"){
-            searchFavorites = true;
-        }else{
-            searchFavorites = false;
-        }
+        String query = searchBar.getText();
+        boolean searchFavorites = "★ Only".equals(favoriteS.getText());
 
         List<Recipe> filtered = searchService.search(query, searchFavorites);
 
         recipesObservableList.setAll(filtered);
         updateRecipeStackPane();
+
+        if (previouslySelected != null && filtered.contains(previouslySelected)) {
+            sidebarList.getSelectionModel().select(previouslySelected);
+        } else if (!filtered.isEmpty()) {
+            sidebarList.getSelectionModel().selectFirst();
+        }
     }
+
 
     @FXML
     private void searchFavorites() {
@@ -462,10 +555,7 @@ public class MainCtrl {
     private void ingredientAddButtonClicked() throws IOException {
         Recipe selectedRecipe = getSelectedRecipe();
 
-        if (selectedRecipe == null) {
-            System.out.println("No recipe selected!");
-            return;
-        }
+        requireSelectedRecipe();
 
         addRecipeIngredientCtrl.setRecipe(selectedRecipe);
         showAddRecipeIngredientWindow();
@@ -532,6 +622,9 @@ public class MainCtrl {
      */
     @FXML
     private void ingredientRemoveButtonClicked(ActionEvent event) {
+        selectedRecipe = getSelectedRecipe();
+        requireSelectedRecipe();
+
         Button removeButton = (Button) event.getSource(); // To identify the button of which ingredient was clicked
         HBox ingredientToRemove = (HBox) removeButton.getParent(); // To delete the whole row
         RecipeIngredientKey id = (RecipeIngredientKey) ingredientToRemove.getUserData();
@@ -779,7 +872,6 @@ public class MainCtrl {
         secondaryStage.initOwner(primaryStage); // makes it modal to main window if desired
         secondaryStage.showAndWait();
 
-        sidebarList.getSelectionModel().clearSelection();
     }
 
     /**
@@ -871,10 +963,12 @@ public class MainCtrl {
         try {
             Recipe original = recipeServerUtils.getRecipe(currentRecipeId);
 
+            String clonedTitle = generateCloneTitle(original.getTitle());
+
             Recipe newRecipe = new Recipe(
-                    original.getTitle() + " (Clone)",
+                    clonedTitle,
                     original.getLanguage()
-            );
+            );  
 
             newRecipe.setServings(original.getServings());
             newRecipe.setInstructions(new ArrayList<>(original.getInstructions()));
@@ -905,8 +999,37 @@ public class MainCtrl {
         } catch (Exception e) {
             System.err.println("Clone failed: " + e.getMessage());
         }
-
     }
+
+    /**
+     * Generates a new title for a cloned recipe based on the original title.
+     *
+     * @param originalTitle the title of the original recipe
+     * @return the generated title for the cloned recipe
+     */
+    private String generateCloneTitle(String originalTitle) {
+        var pattern = java.util.regex.Pattern.compile(
+                "^(.*?)(?:\\s*\\(Clone(?:\\s*(\\d+))?\\))?$"
+        );
+
+        var matcher = pattern.matcher(originalTitle.trim());
+
+        if (!matcher.matches()) {
+            return originalTitle + " (Clone 1)";
+        }
+
+        String baseTitle = matcher.group(1).trim();
+        String numberGroup = matcher.group(2);
+
+        int nextNumber = 1;
+        if (numberGroup != null) {
+            nextNumber = Integer.parseInt(numberGroup) + 1;
+        }
+
+        return baseTitle + " (Clone " + nextNumber + ")";
+    }
+
+
 
     /**
      * Shows edit title of recipe window.
@@ -974,88 +1097,7 @@ public class MainCtrl {
         recipeLanguageLabel.setText(fullLanguage);
     }
 
-    @FXML
-    private ListView<Recipe> sidebarList;
-
-    @FXML
-    private Button favoriteS;
-
-    @FXML
-    private Button addIngredientButton;
-
-    @FXML
-    private Button shoppingListButton;
-
-    @FXML
-    private Button addRecipeButton;
-
-    @FXML
-    private Button recipeShoppingButton;
-
-    @FXML
-    private Button editItemButton;
-
-    @FXML
-    private Button editRecipeTitleButton;
-
-    @FXML
-    private VBox ingredientList;
-
-    @FXML
-    private Label itemLabel;
-
-    @FXML
-    private Button refreshButton;
-
-    @FXML
-    private Button removeItemButton;
-
-    @FXML
-    private Button removeRecipeButton;
-
-    @FXML
-    private Button nutritionalValueButton;
-
-    @FXML
-    private TextField searchBar;
-
-
-    @FXML
-    private Label titleRecipeLabel;
-
-    @FXML
-    private Button downloadButton;
-    @FXML
-    private ScrollPane prepScrollPane;
-
-    @FXML
-    private VBox preparationList;
-
-    @FXML
-    private Button addStepButton;
-
-    @FXML
-    private VBox noRecipePane;
-
-    @FXML
-    private VBox allRecipePane;
-
-    @FXML
-    private Label servingsValueLabel;
-
-    @FXML
-    private Label inferredKcalsLabel;
-
-    @FXML
-    private MenuButton languageSetter;
-
-    @FXML
-    private CheckComboBox<String> languageCheckBox;
-
-
-    @FXML
-    private Label recipeLanguageLabel;
-
+    
     @FXML
     private void downloadButtonClicked() throws IOException {
         Recipe selectedRecipe = (Recipe) sidebarList.getSelectionModel().getSelectedItem();
@@ -1211,5 +1253,18 @@ public class MainCtrl {
             }
         }
     }
+    
+    /**
+     * Ensures a recipe is selected; shows an error if not.
+     * @return true if a recipe is selected, false otherwise
+     */
+    private boolean requireSelectedRecipe() {
+        if (getSelectedRecipe() == null) {
+            showError("Please select a recipe first.");
+            return false;
+        }
+        return true;
+    }
+
 
 }
