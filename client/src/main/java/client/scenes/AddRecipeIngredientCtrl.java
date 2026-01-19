@@ -133,6 +133,12 @@ public class AddRecipeIngredientCtrl {
         // Get ingredient
         Ingredient ingredient = ingredientChoiceBox.getSelectionModel().getSelectedItem();
 
+        if (duplicateIngredient(recipe, ingredient)) {
+            showError("Duplicate Ingredient", "Ingredient " + ingredient.getName()
+                    + " is already added to recipe " + recipe.getTitle() + ".\n Please select a different ingredient.");
+            return;
+        }
+
         // Get amount & create recipeIngredient
         String type = unitTypeChoiceBox.getValue();
         if (type.equals("Formal")) {
@@ -149,6 +155,22 @@ public class AddRecipeIngredientCtrl {
                     ingredient, informal);
             closeWindow();
         }
+    }
+
+    /**
+     * Checks if an ingredient is already added to a recipe.
+     * @param recipe the recipe to be checked for duplicate ingredients
+     * @param ingredient the ingredient
+     * @return true if it is already contained, false if not
+     */
+    public boolean duplicateIngredient(Recipe recipe, Ingredient ingredient) {
+        for (RecipeIngredient ri : recipe.getIngredients()) {
+            if (ri.getIngredient().equals(ingredient)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void setRecipe(Recipe recipe) {
