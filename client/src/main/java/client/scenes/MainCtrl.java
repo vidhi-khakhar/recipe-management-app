@@ -966,13 +966,6 @@ public class MainCtrl {
         alert.showAndWait();
     }
 
-    @FXML
-    private void editRecipeLanguage() {
-        List<String> languages = List.of("English", "Dutch", "Romanian", "Spanish");
-
-//        selectedRecipe.setLanguage();
-    }
-
     public void updateTitleLabel(String title) {
         titleRecipeLabel.setText(title);
     }
@@ -1090,7 +1083,7 @@ public class MainCtrl {
         imageView.setFitWidth(20);
 
 
-        MenuItem flag = new MenuItem(languageName, imageView);
+        MenuItem flag = new MenuItem("", imageView);
 
         flag.setOnAction(e -> {
             updateLanguageButton(path);
