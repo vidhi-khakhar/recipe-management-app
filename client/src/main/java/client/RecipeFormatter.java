@@ -65,4 +65,27 @@ public class RecipeFormatter {
 
         return text.toString();
     }
+
+    /**
+     * Method that returns the Full name of the language, instead of the abbriviated one from the recipe entity
+     * @param RecipeLanguage: the abriviated language from the recipe entity
+     * @return: The full name of the recipe language
+     */
+    public static String getFullRecipeLanguage(String recipeLanguage) {
+        String fullRecipeLanguage = recipeLanguage;
+        if (recipeLanguage.isEmpty()) {
+            return fullRecipeLanguage;
+        } if (recipeLanguage.toLowerCase().trim().equals("en")) {
+            fullRecipeLanguage = "English";
+        } else if (recipeLanguage.toLowerCase().trim().equals("nl")) {
+            fullRecipeLanguage = "Nederlands";
+        } else if (recipeLanguage.toLowerCase().trim().equals("es")) {
+            fullRecipeLanguage = "Españiol";
+        } else if (recipeLanguage.toLowerCase().trim().equals("ro")) {
+            fullRecipeLanguage = "română";
+        }
+
+        return fullRecipeLanguage;
+    }
+
 }

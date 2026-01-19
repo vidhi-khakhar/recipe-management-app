@@ -8,10 +8,12 @@ import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
 
 public class AddButtonCtrl {
     private final MainCtrl mainCtrl;
@@ -31,6 +33,9 @@ public class AddButtonCtrl {
 
     @FXML
     private Button setServingsButton;
+
+    @FXML
+    private ChoiceBox<String> languageChoiceBox;
 
     /**
      * Constructs an AddButtonCtrl and injects the necessary dependencies.
@@ -74,6 +79,17 @@ public class AddButtonCtrl {
         } else {
             recipe.setServings(servings);
             servingsInput.clear();
+        }
+
+        String selectedLanguage = languageChoiceBox.getValue().toLowerCase().trim();
+        if (selectedLanguage.equals("english")) {
+            recipe.setLanguage("En");
+        } else if (selectedLanguage.equals("dutch")) {
+            recipe.setLanguage("NL");
+        } else if (selectedLanguage.equals("romanian")) {
+            recipe.setLanguage("Ro");
+        } else if (selectedLanguage.equals("spanish")) {
+            recipe.setLanguage("Es");
         }
 
         try {
@@ -145,6 +161,12 @@ public class AddButtonCtrl {
             showError("Must Be Number", "Servings must be a number.");
             return -1;
         }
+    }
+
+    @FXML
+    public void initialize() {
+        languageChoiceBox.getItems().addAll("English", "Dutch", "Romanian", "Spanish");
+        languageChoiceBox.getSelectionModel().selectFirst();
     }
 
 

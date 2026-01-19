@@ -17,6 +17,8 @@ package client;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.nio.file.Paths;
 
 import static com.google.inject.Guice.createInjector;
@@ -32,12 +34,20 @@ import client.scenes.NutritionalValueCtrl;
 import client.scenes.RecipeShoppingListCtrl;
 import client.scenes.ShoppingListCtrl;
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class Main extends Application {
 
+    /**
+     * the main method of the application
+     * @param args
+     * @throws URISyntaxException
+     * @throws IOException
+     */
     public static void main(String[] args) throws URISyntaxException, IOException {
         launch(args); // args should be passed as a parameter
     }
@@ -50,9 +60,10 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
-
         // Filepath for the config.json
         String configPath = Paths.get("client", "config.json").toString();
+
+        ResourceBundle bundle = ResourceBundle.getBundle("client.scenes.Translations", new Locale("en"));
 
         // Check whether the user has entered their own directory for the config file
         var args = getParameters().getRaw();
@@ -65,17 +76,49 @@ public class Main extends Application {
         Injector injector = createInjector(new MyModule(configPath));
         MyFXML fxml = new MyFXML(injector);
 
-        ConfigService configService = injector.getInstance(ConfigService.class);
-        Config config = configService.getConfig();
+        Config config = injector.getInstance(ConfigService.class).getConfig();
+
 
 
         System.out.println("Using server: " + config.getServerUrl()); // Feedback to see which server (url) we are using
 
-        var mainUserInterface = fxml.load(MainCtrl.class, "client", "scenes", "MainUserInterface.fxml");
+
+        var loader = new FXMLLoader(getClass().getResource("/client/scenes/MainUserInterface.fxml"));
+        loader.setResources(bundle);
+        loader.setControllerFactory(injector::getInstance);
+        Parent root = loader.load();
+
+        MainCtrl controller = loader.getController();
+        var mainUserInterface = new javafx.util.Pair<>(controller, root);
+
         var mainUserInterfaceScene = new Scene(mainUserInterface.getValue());
 
+
+
+        loadScenesAndStyles(fxml, mainUserInterfaceScene, primaryStage, controller);
+
+        // pass both scenes into controller
+
+
+        System.out.println("Window opened with width: " + primaryStage.getWidth()
+                + " and height: " + primaryStage.getHeight());
+
+        primaryStage.widthProperty().addListener((obs, oldWidth, newWidth) -> {
+            System.out.println("Window width changed from " + oldWidth + " to " + newWidth);
+        });
+
+        primaryStage.heightProperty().addListener((obs, oldHeight, newHeight) -> {
+            System.out.println("Window height changed from " + oldHeight + " to " + newHeight);
+        });
+
+    }
+
+
+    private void loadScenesAndStyles(
+            MyFXML fxml, Scene mainUserInterfaceScene, Stage primaryStage, MainCtrl controller) {
         // preload shopping list scene
-        var shoppingListInterface = fxml.load(ShoppingListCtrl.class, "client", "scenes", "ShoppingListInterface.fxml");
+        var shoppingListInterface =
+                fxml.load(ShoppingListCtrl.class, "client", "scenes", "ShoppingListInterface.fxml");
         var shoppingListScene = new Scene(shoppingListInterface.getValue());
         shoppingListScene.setUserData(shoppingListInterface.getKey()); // Store controller reference
 
@@ -86,28 +129,28 @@ public class Main extends Application {
         var recipeShoppingListCtrl = recipeShoppingListInterface.getKey();
 
         // preload nutritional values scene
-        var nutritionInterface = 
-            fxml.load(NutritionalValueCtrl.class, "client", "scenes", "NutrionalValueInterface.fxml");
+        var nutritionInterface =
+                fxml.load(NutritionalValueCtrl.class, "client", "scenes", "NutrionalValueInterface.fxml");
         var nutritionScene = new Scene(nutritionInterface.getValue());
         var nutritionCtrl = nutritionInterface.getKey();
 
         //preload recipe add scene
-        var recipeAddInterface
-                = fxml.load(AddButtonCtrl.class, "client", "scenes", "AddRecipeInterface.fxml");
+        var recipeAddInterface =
+                fxml.load(AddButtonCtrl.class, "client", "scenes", "AddRecipeInterface.fxml");
         var recipeAddScene = new Scene(recipeAddInterface.getValue());
-        var recipeAddCtrl = recipeAddInterface.getKey(); // The instance of the controller
+//        var recipeAddCtrl = recipeAddInterface.getKey(); // The instance of the controller
 
         // Load AddRecipeIngredientScene
-        var recipeIngredientInterface
-                = fxml.load(AddRecipeIngredientCtrl.class, "client", "scenes", "AddRecipeIngredientScene.fxml");
+        var recipeIngredientInterface =
+                fxml.load(AddRecipeIngredientCtrl.class, "client", "scenes", "AddRecipeIngredientScene.fxml");
         var recipeIngredientScene = new Scene(recipeIngredientInterface.getValue());
         var recipeIngredientCtrl = recipeIngredientInterface.getKey();
 
         // Load EditTitleScene
-        var editTitleInterface
-                = fxml.load(EditTitleCtrl.class, "client", "scenes", "EditTitleScene.fxml");
+        var editTitleInterface =
+                fxml.load(EditTitleCtrl.class, "client", "scenes", "EditTitleScene.fxml");
         var editTitleScene = new Scene(editTitleInterface.getValue());
-        var editTitleCtrl = editTitleInterface.getKey();
+//        var editTitleCtrl = editTitleInterface.getKey();
 
         // add stylesheets if needed
         String cssPath = getClass().getResource("/client/scenes/FoodPal.css").toExternalForm();
@@ -130,22 +173,9 @@ public class Main extends Application {
         primaryStage.setTitle("FoodPal");
         primaryStage.show();
 
-        // pass both scenes into controller
-        var mainCtrl = injector.getInstance(MainCtrl.class);
-        mainCtrl.initScenes(primaryStage, nutritionScene, recipeAddScene,
-            recipeIngredientScene, recipeIngredientCtrl, editTitleScene, shoppingListScene,
-            recipeShoppingListScene, nutritionCtrl, recipeShoppingListCtrl);
-
-        System.out.println("Window opened with width: " + primaryStage.getWidth()
-                + " and height: " + primaryStage.getHeight());
-
-        primaryStage.widthProperty().addListener((obs, oldWidth, newWidth) -> {
-            System.out.println("Window width changed from " + oldWidth + " to " + newWidth);
-        });
-
-        primaryStage.heightProperty().addListener((obs, oldHeight, newHeight) -> {
-            System.out.println("Window height changed from " + oldHeight + " to " + newHeight);
-        });
+        controller.initScenes(primaryStage, nutritionScene, recipeAddScene,
+                recipeIngredientScene, recipeIngredientCtrl, editTitleScene,
+                shoppingListScene, recipeShoppingListScene, nutritionCtrl, recipeShoppingListCtrl);
 
     }
 }

@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.SplitPane?>
@@ -20,6 +21,7 @@
 <?import javafx.scene.paint.RadialGradient?>
 <?import javafx.scene.paint.Stop?>
 <?import javafx.scene.text.Font?>
+<?import org.controlsfx.control.CheckComboBox?>
 
 <AnchorPane prefHeight="589.0" prefWidth="905.0" stylesheets="@FoodPal.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MainCtrl">
     <children>
@@ -66,6 +68,21 @@
                                 </Label>
                                 <HBox alignment="BOTTOM_RIGHT" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                                     <children>
+                              <CheckComboBox fx:id="languageCheckBox" prefHeight="30.0" prefWidth="154.0" title="RecipeLanguage" HBox.hgrow="ALWAYS">
+                                 <HBox.margin>
+                                    <Insets bottom="7.0" right="10.0" />
+                                 </HBox.margin>
+                              </CheckComboBox>
+                              <VBox alignment="BOTTOM_RIGHT" prefHeight="96.0" prefWidth="66.0">
+                                 <children>
+                                    <MenuButton fx:id="languageSetter" mnemonicParsing="false" prefHeight="30.0" prefWidth="200.0" text="Select Lanuage">
+                                       <VBox.margin>
+                                          <Insets bottom="7.0" right="7.0" />
+                                       </VBox.margin>
+                                    </MenuButton>
+                                 </children>
+                              </VBox>
+<!--                                        <Button fx:id="refreshButton" mnemonicParsing="false" onAction="#refreshButtonClicked" styleClass="roundbutton" text="R" HBox.hgrow="ALWAYS"> </Button>-->
                                         <Button fx:id="refreshButton" mnemonicParsing="false" onAction="#refreshButtonClicked" text="⟳" HBox.hgrow="ALWAYS">
                                             <HBox.margin>
                                                 <Insets bottom="5.0" right="5.0" />
@@ -210,7 +227,6 @@
                                               <children>
                                                   <VBox prefHeight="474.0" prefWidth="650.0" styleClass="centerbox" VBox.vgrow="ALWAYS">
                                                       <children>
-
                                                           <HBox prefHeight="43.0" prefWidth="639.0" styleClass="titlelablebox" VBox.vgrow="NEVER">
                                                               <children>
                                                                   <Label fx:id="titleRecipeLabel" styleClass="h2" text="titleLabel" />
@@ -227,6 +243,22 @@
                                                                   </Button>
                                                               </children>
                                                           </HBox>
+                                                <HBox prefHeight="100.0" prefWidth="200.0">
+                                                   <children>
+                                                      <Label styleClass="h3" text="Language:">
+                                                   <HBox.margin>
+                                                      <Insets top="2.0" />
+                                                   </HBox.margin></Label>
+                                                      <Label fx:id="recipeLanguageLabel" styleClass="h3" text="TheActualLanguage" textFill="WHITE">
+                                                         <HBox.margin>
+                                                            <Insets bottom="7.0" left="7.0" top="2.0" />
+                                                         </HBox.margin>
+                                                         <font>
+                                                            <Font name="System Bold" size="14.0" />
+                                                         </font>
+                                                      </Label>
+                                                   </children>
+                                                </HBox>
 
                                                           <VBox prefHeight="231.0" prefWidth="639.0" VBox.vgrow="ALWAYS">
                                                               <children>
