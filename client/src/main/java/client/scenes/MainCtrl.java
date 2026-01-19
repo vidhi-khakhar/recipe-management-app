@@ -18,6 +18,7 @@ package client.scenes;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
 
 import client.config.ConfigService;
 import client.favorite.FavoriteService;
@@ -25,6 +26,7 @@ import client.search.RecipeCollection;
 import client.search.SearchService;
 import commons.*;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import org.apache.commons.io.FileUtils;
 
@@ -51,6 +53,9 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.controlsfx.control.CheckComboBox;
+import javafx.scene.image.ImageView;
+
 
 public class MainCtrl {
 
@@ -140,6 +145,15 @@ public class MainCtrl {
      */
     @FXML
     public void initialize() {
+        MenuItem englishFlag = makeLanguageImage("English", "EnglishFlag.png");
+        MenuItem dutchFlag = makeLanguageImage("Dutch", "DutchFlag.png");
+        MenuItem romanianFlag = makeLanguageImage("Romanian", "RomanianFlag.png");
+        MenuItem spanishFlag = makeLanguageImage("Spanish", "SpanishFlag.png");
+
+        languageSetter.getItems().addAll(englishFlag, dutchFlag, romanianFlag, spanishFlag);
+
+        updateLanguageButton("/images/EnglishFlag.png"); //this needs to be a config thing later"
+
         sidebarList.setItems(recipesObservableList);
 
         sidebarList.setCellFactory(lv ->
@@ -259,7 +273,11 @@ public class MainCtrl {
         }
 
         this.selectedRecipe = recipe;
+        String recipeLanguage = recipe.getLanguage();
+        updateRecipeLanguageLabel(recipeLanguage);
         titleRecipeLabel.setText(recipe.getTitle());
+
+
         showInstructions(recipe);
         showIngredients(recipe);
         showNutritionalValues(recipe);
@@ -544,6 +562,8 @@ public class MainCtrl {
 
 
     }
+
+
 
     /**
      * Edit an ingredient of a selected recipe.
@@ -945,6 +965,15 @@ public class MainCtrl {
         titleRecipeLabel.setText(title);
     }
 
+    /**
+     * changing the Recipe language
+     * @param recipeLanguage
+     */
+    public void updateRecipeLanguageLabel(String recipeLanguage) {
+        String fullLanguage = RecipeFormatter.getFullRecipeLanguage(recipeLanguage);
+        recipeLanguageLabel.setText(fullLanguage);
+    }
+
     @FXML
     private ListView<Recipe> sidebarList;
 
@@ -1017,6 +1046,15 @@ public class MainCtrl {
     @FXML
     private Label inferredKcalsLabel;
 
+    @FXML
+    private MenuButton languageSetter;
+
+    @FXML
+    private CheckComboBox<String> languageCheckBox;
+
+
+    @FXML
+    private Label recipeLanguageLabel;
 
     @FXML
     private void downloadButtonClicked() throws IOException {
@@ -1027,6 +1065,52 @@ public class MainCtrl {
         }
 
         saveRecipe(selectedRecipe);
+    }
+
+
+    /**
+     * creates a menuitem for all flags
+     * @param languageName the name of the language
+     * @param imagePath the path to the flag
+     * @return a menuitem with the flag
+     */
+    private MenuItem makeLanguageImage(String languageName, String imagePath) {
+        String path = "/images/" + imagePath;
+        var stream = getClass().getResourceAsStream(path);
+        if (stream == null) {
+            return new MenuItem(languageName + " (no icon)");
+        }
+        Image image = new Image (Objects.requireNonNull(getClass().getResourceAsStream(path)));
+        ImageView imageView = new ImageView(image);
+
+        imageView.setFitHeight(20);
+        imageView.setFitWidth(20);
+
+
+        MenuItem flag = new MenuItem("", imageView);
+
+        flag.setOnAction(e -> {
+            updateLanguageButton(path);
+        });
+
+        return flag;
+    }
+
+    /**
+     * A method that sets the buttonIcon that displays the language that the app is working in
+     * @param path the path to the image that will be displayed
+     */
+    private void updateLanguageButton(String path) {
+        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(path)));
+
+        ImageView buttonIcon = new ImageView(image);
+        buttonIcon.setFitWidth(20);
+        buttonIcon.setFitHeight(20);
+
+        languageSetter.setGraphic(buttonIcon);
+        languageSetter.setText(""); // this dumb ass line is neccesary bc otherwise you still get ... next to the flag.
+
+
     }
 
     /**
