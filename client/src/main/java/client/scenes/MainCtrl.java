@@ -972,10 +972,6 @@ public class MainCtrl {
     public void updateRecipeLanguageLabel(String recipeLanguage) {
         String fullLanguage = RecipeFormatter.getFullRecipeLanguage(recipeLanguage);
         recipeLanguageLabel.setText(fullLanguage);
-
-        String languageColour = RecipeFormatter.getLanguageColour(recipeLanguage);
-        String languageStyle = RecipeFormatter.getLanguageFontStyles(recipeLanguage);
-        recipeLanguageLabel.setStyle(languageColour + " " + languageStyle);
     }
 
     @FXML

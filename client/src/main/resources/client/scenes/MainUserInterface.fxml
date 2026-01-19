@@ -245,7 +245,10 @@
                                                           </HBox>
                                                 <HBox prefHeight="100.0" prefWidth="200.0">
                                                    <children>
-                                                      <Label styleClass="h3" text="Language:" />
+                                                      <Label styleClass="h3" text="Language:">
+                                                   <HBox.margin>
+                                                      <Insets top="2.0" />
+                                                   </HBox.margin></Label>
                                                       <Label fx:id="recipeLanguageLabel" styleClass="h3" text="TheActualLanguage" textFill="WHITE">
                                                          <HBox.margin>
                                                             <Insets bottom="7.0" left="7.0" top="2.0" />
