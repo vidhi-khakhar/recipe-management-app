@@ -72,7 +72,7 @@ public class RecipeFormatter {
      * @return: The full name of the recipe language
      */
     public static String getFullRecipeLanguage(String recipeLanguage) {
-        String fullRecipeLanguage = "No language found";
+        String fullRecipeLanguage = recipeLanguage;
         if (recipeLanguage.isEmpty()) {
             return fullRecipeLanguage;
         } if (recipeLanguage.toLowerCase().trim().equals("en")) {

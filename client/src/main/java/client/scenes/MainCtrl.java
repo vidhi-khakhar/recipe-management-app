@@ -274,14 +274,9 @@ public class MainCtrl {
 
         this.selectedRecipe = recipe;
         String recipeLanguage = recipe.getLanguage();
+        updateRecipeLanguageLabel(recipeLanguage);
         titleRecipeLabel.setText(recipe.getTitle());
 
-        String fullLanguage = RecipeFormatter.getFullRecipeLanguage(recipeLanguage);
-        recipeLanguageLabel.setText(fullLanguage);
-
-        String languageColour = RecipeFormatter.getLanguageColour(recipeLanguage);
-        String languageStyle = RecipeFormatter.getLanguageFontStyles(recipeLanguage);
-        recipeLanguageLabel.setStyle(languageColour + " " + languageStyle);
 
         showInstructions(recipe);
         showIngredients(recipe);
@@ -968,6 +963,19 @@ public class MainCtrl {
 
     public void updateTitleLabel(String title) {
         titleRecipeLabel.setText(title);
+    }
+
+    /**
+     * changing the Recipe language
+     * @param recipeLanguage
+     */
+    public void updateRecipeLanguageLabel(String recipeLanguage) {
+        String fullLanguage = RecipeFormatter.getFullRecipeLanguage(recipeLanguage);
+        recipeLanguageLabel.setText(fullLanguage);
+
+        String languageColour = RecipeFormatter.getLanguageColour(recipeLanguage);
+        String languageStyle = RecipeFormatter.getLanguageFontStyles(recipeLanguage);
+        recipeLanguageLabel.setStyle(languageColour + " " + languageStyle);
     }
 
     @FXML

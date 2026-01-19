@@ -5,6 +5,7 @@ import commons.Recipe;
 import jakarta.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
@@ -39,13 +40,27 @@ public class EditTitleCtrl {
 
                 try{
                     recipe.setTitle(query);
+
+                    String selectedLanguage = languageChoiceBox.getValue().toLowerCase().trim();
+                    if (selectedLanguage.equals("english")) {
+                        recipe.setLanguage("En");
+                    } else if (selectedLanguage.equals("dutch")) {
+                        recipe.setLanguage("NL");
+                    } else if (selectedLanguage.equals("romanian")) {
+                        recipe.setLanguage("Ro");
+                    } else if (selectedLanguage.equals("spanish")) {
+                        recipe.setLanguage("Es");
+                    }
+
                     recipeServerUtils.replaceRecipe(recipe.getRecipeId(), recipe);
 
                     title.clear();
                     statusLabel.setText("Title has been edited!");
 
+
                     mainCtrl.refreshSidebarList();
                     mainCtrl.updateTitleLabel(query);
+                    mainCtrl.updateRecipeLanguageLabel(recipe.getLanguage());
 
                     statusLabel.setStyle("-fx-text-fill: green;");
 
@@ -55,6 +70,8 @@ public class EditTitleCtrl {
                 }
             }
         }
+
+
     }
 
     /**
@@ -76,6 +93,16 @@ public class EditTitleCtrl {
         return true;
     }
 
+    @FXML
+    public void initialize() {
+        languageChoiceBox.getItems().addAll("English", "Dutch", "Romanian", "Spanish");
+        languageChoiceBox.getSelectionModel().selectFirst();
+    }
+
+
+
+    @FXML
+    private ChoiceBox<String> languageChoiceBox;
     @FXML
     private Button editTitleButton;
 

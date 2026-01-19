@@ -227,36 +227,6 @@
                                               <children>
                                                   <VBox prefHeight="474.0" prefWidth="650.0" styleClass="centerbox" VBox.vgrow="ALWAYS">
                                                       <children>
-
-                                                                <HBox prefHeight="43.0" prefWidth="639.0" styleClass="titlelablebox" VBox.vgrow="NEVER">
-                                                                    <children>
-                                                                        <Label fx:id="titleRecipeLabel" styleClass="h2" text="titleLabel" />
-                                                                        <Button fx:id="editRecipeTitleButton" mnemonicParsing="false" onAction="#editRecipeTitleButtonClicked" prefHeight="31.0" prefWidth="63.0" styleClass="roundbutton" text="edit">
-                                                                            <HBox.margin>
-                                                                                <Insets bottom="5.0" left="5.0" />
-                                                                            </HBox.margin>
-                                                                        </Button>
-                                                                        <Region HBox.hgrow="ALWAYS" />
-                                                                        <Button fx:id="cloneRecipeButton" mnemonicParsing="false" onAction="#cloneRecipe" prefHeight="31.0" prefWidth="70" styleClass="clonebutton" text="clone">
-                                                                            <HBox.margin>
-                                                                                <Insets bottom="5.0" left="5.0" />
-                                                                            </HBox.margin>
-                                                                        </Button>
-                                                                    </children>
-                                                                </HBox>
-                                                <HBox prefHeight="100.0" prefWidth="200.0">
-                                                   <children>
-                                                      <Label styleClass="h3" text="Language:" />
-                                                      <Label fx:id="recipeLanguageLabel" styleClass="h3" text="TheActualLanguage" textFill="WHITE">
-                                                         <HBox.margin>
-                                                            <Insets bottom="7.0" left="7.0" top="2.0" />
-                                                         </HBox.margin>
-                                                         <font>
-                                                            <Font name="System Bold" size="14.0" />
-                                                         </font>
-                                                      </Label>
-                                                   </children>
-                                                </HBox>
                                                           <HBox prefHeight="43.0" prefWidth="639.0" styleClass="titlelablebox" VBox.vgrow="NEVER">
                                                               <children>
                                                                   <Label fx:id="titleRecipeLabel" styleClass="h2" text="titleLabel" />
@@ -273,6 +243,19 @@
                                                                   </Button>
                                                               </children>
                                                           </HBox>
+                                                <HBox prefHeight="100.0" prefWidth="200.0">
+                                                   <children>
+                                                      <Label styleClass="h3" text="Language:" />
+                                                      <Label fx:id="recipeLanguageLabel" styleClass="h3" text="TheActualLanguage" textFill="WHITE">
+                                                         <HBox.margin>
+                                                            <Insets bottom="7.0" left="7.0" top="2.0" />
+                                                         </HBox.margin>
+                                                         <font>
+                                                            <Font name="System Bold" size="14.0" />
+                                                         </font>
+                                                      </Label>
+                                                   </children>
+                                                </HBox>
 
                                                           <VBox prefHeight="231.0" prefWidth="639.0" VBox.vgrow="ALWAYS">
                                                               <children>

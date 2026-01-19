@@ -50,14 +50,14 @@ public class RecipeFormatterTest {
     public void emptyLanguageTest() {
         String emptyInput1 = "";
         String emptyInput2 = "   ";
-        assertEquals("No language found", RecipeFormatter.getFullRecipeLanguage(emptyInput1));
-        assertEquals("No language found", RecipeFormatter.getFullRecipeLanguage(emptyInput2));
+        assertEquals("", RecipeFormatter.getFullRecipeLanguage(emptyInput1));
+        assertEquals("   ", RecipeFormatter.getFullRecipeLanguage(emptyInput2));
     }
 
     @Test
     public void unknownLanguageTest() {
         String unknownInput = "fr";
-        assertEquals("No language found", RecipeFormatter.getFullRecipeLanguage(unknownInput));
+        assertEquals("fr", RecipeFormatter.getFullRecipeLanguage(unknownInput));
     }
 
     @Test
