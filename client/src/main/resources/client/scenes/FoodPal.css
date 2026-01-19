@@ -199,4 +199,12 @@
     -fx-padding: 5px;
 }
 
+/*Nutritional Values Selector*/
+.splitLaneNutri {
+    -fx-border-color: #f5f4f5;
+    -fx-border-width: 2;
+    -fx-border-radius: 50;
+    -fx-background-radius: 50;
+}
+
 
