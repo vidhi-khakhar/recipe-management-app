@@ -464,6 +464,9 @@ public class MainCtrl {
         if (filtered.isEmpty() && searchFavorites) {
             updateRecipeStackPane(EmptyStateReason.NO_FAVORITES);
         }
+        else if(filtered.isEmpty() && query.trim().equals("")) {
+            updateRecipeStackPane(EmptyStateReason.NO_RECIPES_EXIST);
+        }
         else if(filtered.isEmpty()) {
             updateRecipeStackPane(EmptyStateReason.NO_SEARCH_RESULTS);
         }
