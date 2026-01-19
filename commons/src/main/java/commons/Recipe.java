@@ -35,7 +35,8 @@ public class Recipe {
      * Currently for basic functionality, ingredients are just stored as strings...
      * Later (for nutritional values), this will change to a structured IngredientAmount entity.
      */
-    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "recipe", cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+            orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<RecipeIngredient> ingredients = new ArrayList<>();
 
