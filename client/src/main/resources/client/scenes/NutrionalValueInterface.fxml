@@ -17,7 +17,7 @@
    <children>
       <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
-            <HBox prefHeight="64.0" prefWidth="600.0" styleClass="headerlabel" BorderPane.alignment="CENTER">
+            <HBox prefHeight="64.0" prefWidth="600.0" styleClass="header" BorderPane.alignment="CENTER">
                <children>
                   <HBox layoutX="394.0" layoutY="18.0" prefHeight="63.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
                   <HBox prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
@@ -30,6 +30,9 @@
                               <String fx:value="h1" />
                               <String fx:value="headerlabel" />
                            </styleClass>
+                           <HBox.margin>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </HBox.margin>
                         </Label>
                      </children>
                   </HBox>

@@ -67,6 +67,7 @@ public class EditTitleCtrl {
                 } catch (Exception e) {
                     statusLabel.setText("Error editing title of recipe.");
                     statusLabel.setStyle("-fx-text-fill: red;");
+                    mainCtrl.recoverFromError("Error editing title of recipe!");
                 }
             }
         }
