@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import client.favorite.RecipeSortingService;
+import javafx.scene.control.*;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.CheckComboBox;
 
@@ -46,17 +48,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -87,7 +78,8 @@ public class MainCtrl {
     private final ObservableList<Recipe> recipesObservableList = FXCollections.observableArrayList();
     private Recipe selectedRecipe;
     private final SearchService searchService;
-    private final RecipeCollection recipeCollection;
+    private final RecipeSortingService recipeSortingService;
+    private RecipeCollection recipeCollection;
 
     private ConfigService configService;
 
@@ -176,6 +168,12 @@ public class MainCtrl {
     @FXML
     private Label recipeLanguageLabel;
 
+    @FXML
+    private ComboBox<String> sortComboBox;
+
+    @FXML
+    private Button sortButton;
+
 
     /**
      * Initializes the scenes
@@ -219,12 +217,14 @@ public class MainCtrl {
      */
     @Inject
     public MainCtrl(RecipeServerUtils recipeServerUtils, SearchService searchService,
-                    FavoriteService favoriteService, RecipeCollection recipeCollection, ConfigService configService) {
+                    FavoriteService favoriteService, RecipeCollection recipeCollection,
+                    RecipeSortingService recipeSortingService, ConfigService configService) {
         this.recipeServerUtils = recipeServerUtils;
         this.searchService = searchService;
         this.favoriteService = favoriteService;
         this.recipeCollection = recipeCollection;
         this.configService = configService;
+        this.recipeSortingService = recipeSortingService;
     }
 
     /**
@@ -271,6 +271,16 @@ public class MainCtrl {
         searchBar.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ESCAPE) {
                 searchBar.clear();
+            }
+        });
+
+        ObservableList<String> sortItems =  FXCollections.observableArrayList("A-Z", "Newest");
+        sortComboBox.setItems(sortItems);
+        sortComboBox.getSelectionModel().select(0);
+
+        sortComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue != null) {
+                applySearch();
             }
         });
 
@@ -476,6 +486,18 @@ public class MainCtrl {
 
         List<Recipe> filtered = searchService.search(query, searchFavorites);
 
+        String sortType = sortComboBox.getValue();
+
+        if(sortType.equals("A-Z")){
+            filtered = recipeSortingService.sortByTitle(filtered);
+        }else if(sortType.equals("Newest")){
+            filtered = recipeSortingService.sortByDate(filtered);
+        }
+
+        if(sortButton.getText().equals("↑☰")){
+            filtered = filtered.reversed();
+        }
+
         recipesObservableList.setAll(filtered);
         updateRecipeStackPane();
 
@@ -484,6 +506,16 @@ public class MainCtrl {
         } else if (!filtered.isEmpty()) {
             sidebarList.getSelectionModel().selectFirst();
         }
+    }
+
+    @FXML
+    private void changeSort(){
+        if(sortButton.getText().equals("↑☰")){
+            sortButton.setText("↓☰");
+        }else{
+            sortButton.setText("↑☰");
+        }
+        applySearch();
     }
 
 

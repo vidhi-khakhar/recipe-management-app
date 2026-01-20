@@ -1,17 +1,17 @@
 package client.favorite;
 
-import client.search.RecipeCollection;
 import commons.Recipe;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class RecipeSortingServiceTest {
     private RecipeSortingService service;
-    private RecipeCollection collection;
+    private List<Recipe> collection;
 
     private Recipe recipeA;
     private Recipe recipeB;
@@ -35,7 +35,7 @@ class RecipeSortingServiceTest {
         recipeC = new Recipe("Carrot Cake");
         recipeC.setRecipeId(3L);
 
-        collection = new RecipeCollection(
+        collection = new ArrayList<>(
                 List.of(recipeC, recipeA, recipeB)
         );
     }
