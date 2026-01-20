@@ -154,6 +154,9 @@ public class MainCtrl {
     @FXML
     private Pane healthStatus;
 
+    @FXML
+    private Label healthyStatus;
+
     /**
      * The constructor that connects the ServerUtils to this controller.
      *
@@ -184,7 +187,8 @@ public class MainCtrl {
      * @param recipeShoppingListCtrl   the recipe shopping list controller
      */
     public void initScenes(Stage primaryStage, Scene nutritionScene,
-                           Scene recipeAddScene, Scene addRecipeIngredientScene, AddRecipeIngredientCtrl addRecipeIngredientCtrl,
+                           Scene recipeAddScene, Scene addRecipeIngredientScene,
+                           AddRecipeIngredientCtrl addRecipeIngredientCtrl,
                            Scene editTitleScene, Scene shoppingListScene, Scene recipeShoppingListScene,
                            NutritionalValueCtrl nutritionalValueCtrl,
                            RecipeShoppingListCtrl recipeShoppingListCtrl) {
@@ -515,14 +519,14 @@ public class MainCtrl {
      * Opens the add ingredient to recipe popup window.
      */
     @FXML
-    void showAddRecipeIngredientWindow() {
+    void showAddRecipeIngredientWindow(boolean isAdd) {
         if (addRecipeIngredientScene == null) {
             System.err.println("AddRecipeIngredientScene not initialized!");
             return;
         }
 
         Stage secondaryStage = new Stage();
-        addRecipeIngredientCtrl.onStart();
+        addRecipeIngredientCtrl.onStart(isAdd);
         addRecipeIngredientCtrl.initScenes(nutritionScene, addRecipeIngredientScene);
         secondaryStage.setTitle("Add Ingredient to Recipe");
         secondaryStage.setScene(addRecipeIngredientScene);
@@ -541,7 +545,7 @@ public class MainCtrl {
         requireSelectedRecipe();
 
         addRecipeIngredientCtrl.setRecipe(selectedRecipe);
-        showAddRecipeIngredientWindow();
+        showAddRecipeIngredientWindow(true);
 
         RecipeIngredient newIngredient =
                 addRecipeIngredientCtrl.getRecipeIngredient();
@@ -660,13 +664,13 @@ public class MainCtrl {
         }
 
         addRecipeIngredientCtrl.setRecipe(selectedRecipe);
-        showAddRecipeIngredientWindow();
+        showAddRecipeIngredientWindow(false);
         RecipeIngredient updated = addRecipeIngredientCtrl.getRecipeIngredient();
 
         if (updated != null) {
             RecipeIngredientKey id = (RecipeIngredientKey) ingredientToEdit.getUserData();
-            this.recipeServerUtils.updateRecipeIngredient(id.getRecipeId(), id.getIngredientId(), updated);
 
+            this.recipeServerUtils.updateRecipeIngredient(id.getRecipeId(), id.getIngredientId(), updated);
             List<RecipeIngredient> ingredients = selectedRecipe.getIngredients();
             for (int i = 0; i < ingredients.size(); i++) {
                 if (ingredients.get(i).getId().equals(id)) {
@@ -1286,10 +1290,38 @@ public class MainCtrl {
 
         if (kcals < 200) {
             healthStatus.setStyle("-fx-background-color: green");
+            healthyStatus.setText("Healthy");
+            healthyStatus.setStyle("-fx-text-fill: #ffffff");
         } else if (kcals < 500) {
             healthStatus.setStyle("-fx-background-color: yellow");
+            healthyStatus.setText("Moderately Healthy");
+            healthyStatus.setStyle("-fx-text-fill: #000000");
         } else {
+            healthyStatus.setText("Unhealthy");
             healthStatus.setStyle("-fx-background-color: red");
+            healthyStatus.setStyle("-fx-text-fill: #ffffff");
         }
     }
+
+    @FXML
+    private void onInfoHealthButtonClicked() {
+        VBox root = new VBox();
+        Label text = new Label("""
+                Healthiness is calculated according to the following principle:
+                  • less than 200 kcals/100g → healthy
+                  • less than 500 kcals/100g → moderately healthy
+                  • otherwise → unhealthy""");
+
+        text.setStyle("-fx-text-fill: #ffffff");
+        root.getChildren().add(text);
+        root.setAlignment(Pos.CENTER);
+        root.setStyle("-fx-background-color: #8191b3");
+
+        Stage popup = new Stage();
+        popup.setTitle("Health Information");
+        popup.setResizable(false);
+        popup.setScene(new Scene(root, 400, 200));
+        popup.show();
+    }
 }
+

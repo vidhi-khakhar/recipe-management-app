@@ -55,6 +55,8 @@ public class AddRecipeIngredientCtrl {
     @FXML
     private Label pleaseAddIngredientLabel;
 
+    private boolean isAdd;
+
     /**
      * Initialize the scenes.
      * @param nutritionScene the nutrition scenes to add a global ingredient
@@ -73,7 +75,8 @@ public class AddRecipeIngredientCtrl {
      * whenever a change is observed
      */
     @FXML
-    public void onStart() {
+    public void onStart(boolean isAdd) {
+        this.isAdd = isAdd;
         infoLabel.setVisible(false);
         pleaseAddIngredientLabel.setVisible(false);
 
@@ -133,7 +136,7 @@ public class AddRecipeIngredientCtrl {
         // Get ingredient
         Ingredient ingredient = ingredientChoiceBox.getSelectionModel().getSelectedItem();
 
-        if (duplicateIngredient(recipe, ingredient)) {
+        if (duplicateIngredient(recipe, ingredient) && isAdd) {
             showError("Duplicate Ingredient", "Ingredient " + ingredient.getName()
                     + " is already added to recipe " + recipe.getTitle() + ".\n Please select a different ingredient.");
             return;
