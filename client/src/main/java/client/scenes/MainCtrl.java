@@ -23,7 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import javafx.collections.ListChangeListener;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.CheckComboBox;
 
@@ -88,6 +90,7 @@ public class MainCtrl {
     private Recipe selectedRecipe;
     private final SearchService searchService;
     private final RecipeCollection recipeCollection;
+    private List<String> filteredLanguages = new ArrayList<>();
 
     private ConfigService configService;
 
@@ -247,6 +250,15 @@ public class MainCtrl {
         languageSetter.getItems().addAll(englishFlag, dutchFlag, romanianFlag, spanishFlag);
 
         updateLanguageButton("/images/EnglishFlag.png"); //this needs to be a config thing later"
+
+
+        languageCheckBox.getItems().addAll("English", "Dutch", "Romanian", "Spanish");
+        languageCheckBox.getCheckModel().getCheckedItems().addListener(new ListChangeListener<String>() {
+            @Override
+            public void onChanged(Change<? extends String> change) {
+                filterLanguages(change);
+            }
+        });
 
         sidebarList.setItems(recipesObservableList);
 
@@ -474,7 +486,17 @@ public class MainCtrl {
         String query = searchBar.getText();
         boolean searchFavorites = "★ Only".equals(favoriteS.getText());
 
-        List<Recipe> filtered = searchService.search(query, searchFavorites);
+        List<Recipe> fromServer = searchService.search(query, searchFavorites);
+
+        List<Recipe> filtered = fromServer.stream()
+                .filter(recipe -> {
+                    if (filteredLanguages.isEmpty()) {
+                        return true;
+                    }
+
+                    return filteredLanguages.contains(recipe.getLanguage().toLowerCase().trim());
+                })
+                        .collect(Collectors.toList());
 
         recipesObservableList.setAll(filtered);
         updateRecipeStackPane();
@@ -1123,6 +1145,8 @@ public class MainCtrl {
         recipeLanguageLabel.setText(fullLanguage);
     }
 
+
+
     
     @FXML
     private void downloadButtonClicked() throws IOException {
@@ -1295,6 +1319,40 @@ public class MainCtrl {
         }
         return true;
     }
+
+    /**
+     * filter the languages
+     * @param change the change from the languagecheckbox
+     */
+    @FXML
+    private void filterLanguages(ListChangeListener.Change<? extends String> change) {
+        boolean added;
+        String language = "";
+        String changed = change.toString();
+
+
+        added = changed.contains("addition");
+
+        if (changed.contains("English")) {
+            language = "en";
+        } else if (changed.contains("Dutch")) {
+            language = "nl";
+        } else if (changed.contains("Romanian")) {
+            language = "ro";
+        } else if (changed.contains("Spanish")) {
+            language = "es";
+        }
+
+        if (added) {
+            filteredLanguages.add(language);
+        } else {
+            filteredLanguages.remove(language);
+        }
+        System.out.println(filteredLanguages);
+        applySearch();
+    }
+
+
 
 
 }
