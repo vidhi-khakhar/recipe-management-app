@@ -246,7 +246,8 @@ public class MainCtrl {
      */
     @Inject
     public MainCtrl(RecipeServerUtils recipeServerUtils, SearchService searchService,
-                    FavoriteService favoriteService, RecipeCollection recipeCollection, ConfigService configService) {
+                    FavoriteService favoriteService, RecipeCollection recipeCollection,
+                    RecipeSortingService recipeSortingService, ConfigService configService) {
         this.recipeServerUtils = recipeServerUtils;
         this.searchService = searchService;
         this.favoriteService = favoriteService;
@@ -591,7 +592,7 @@ public class MainCtrl {
 
         if(sortType.equals("A-Z")){
             filtered = recipeSortingService.sortByTitle(filtered);
-        }else if(sortType.equals("Newest")){
+        }else{
             filtered = recipeSortingService.sortByDate(filtered);
         }
 
