@@ -96,7 +96,10 @@ public class MainCtrl {
     private ListView<Recipe> sidebarList;
 
     @FXML
-    private Button favoriteS;
+    private Button favoritesOnly;
+
+    @FXML
+    private Button cloneRecipeButton;
 
     @FXML
     private Button addIngredientButton;
@@ -123,6 +126,9 @@ public class MainCtrl {
     private Label itemLabel;
 
     @FXML
+    private Label FoodPalLabel;
+
+    @FXML
     private Button refreshButton;
 
     @FXML
@@ -136,7 +142,6 @@ public class MainCtrl {
 
     @FXML
     private TextField searchBar;
-
 
     @FXML
     private Label titleRecipeLabel;
@@ -170,9 +175,23 @@ public class MainCtrl {
     @FXML
     private CheckComboBox<String> languageCheckBox;
 
-
     @FXML
     private Label recipeLanguageLabel;
+
+    @FXML
+    private Label languageLabel;
+
+    @FXML
+    private Label ingredientsLabel;
+
+    @FXML 
+    private Label instructionsLabel;
+
+    @FXML 
+    private Label nutritionalValuesLabel;
+
+    @FXML 
+    private Label servingsLabel;
 
 
     /**
@@ -473,7 +492,7 @@ public class MainCtrl {
         Recipe previouslySelected = getSelectedRecipe();
 
         String query = searchBar.getText();
-        boolean searchFavorites = "★ Only".equals(favoriteS.getText());
+        boolean searchFavorites = "★ Only".equals(favoritesOnly.getText());
 
         List<Recipe> filtered = searchService.search(query, searchFavorites);
 
@@ -490,10 +509,10 @@ public class MainCtrl {
 
     @FXML
     private void searchFavorites() {
-        if(favoriteS.getText() == "★ Only"){
-            favoriteS.setText("☆ Only");
+        if(favoritesOnly.getText() == "★ Only"){
+            favoritesOnly.setText("☆ Only");
         }else{
-            favoriteS.setText("★ Only");
+            favoritesOnly.setText("★ Only");
         }
 
         applySearch();
@@ -1156,6 +1175,7 @@ public class MainCtrl {
     private void setSpanishLanguage() {
         setAppLanguage("es", "/images/SpanishFlag.png");
     }
+    
 
     /**
      * Helper method to update the language both visually and in config.
@@ -1164,29 +1184,80 @@ public class MainCtrl {
      * @param imagePath the path to the flag image resource
      */
     private void setAppLanguage(String languageCode, String imagePath) {
-        // Update ConfigService
+        System.out.println("Switching language to: " + languageCode);
         configService.setLanguage(languageCode);
 
-        // Update the MenuButton graphic
+        // Update MenuButton graphic (flags)
         var stream = getClass().getResourceAsStream(imagePath);
         if (stream != null) {
             ImageView flag = new ImageView(new Image(stream));
             flag.setFitWidth(20);
             flag.setFitHeight(20);
             languageSetter.setGraphic(flag);
-            languageSetter.setText(""); // Remove any text
+            languageSetter.setText(""); 
         } else {
-            System.err.println("Flag image not found: " + imagePath);
             languageSetter.setGraphic(null);
             languageSetter.setText(languageCode.toUpperCase());
         }
 
-        // Optional: Update recipe language label if a recipe is selected
+        // Update all bound text properties
+        initializeTextProperties();
+
+        // Optional: update recipe language label
         Recipe selected = getSelectedRecipe();
         if (selected != null) {
             updateRecipeLanguageLabel(languageCode);
         }
     }
+
+
+    /**
+     * Binds all the UI text properties to the current ResourceBundle.
+     * Call this whenever the language changes.
+     */
+    private void initializeTextProperties() {
+        java.util.ResourceBundle props = getTranslationsBundle();
+
+        // Main view
+        FoodPalLabel.setText(props.getString("label.title"));
+        searchBar.setPromptText(props.getString("label.searchPromptText"));
+        favoritesOnly.setText(props.getString("label.displayFavouriteRecipesToggleOff"));
+        // TOGGLE ON TO BE IMPLEMENTED
+        shoppingListButton.setText(props.getString("label.shoppingListWindow"));
+        nutritionalValueButton.setText(props.getString("label.nutritionalValuesWindow"));
+        addRecipeButton.setText(props.getString("label.addRecipeButton"));
+        // from here on 
+        editRecipeTitleButton.setText(props.getString("label.editRecipeButton"));
+        cloneRecipeButton.setText(props.getString("label.cloneRecipeButton"));
+        removeItemButton.setText(props.getString("label.removeIngredientButton"));
+        recipeShoppingButton.setText(props.getString("label.shopIngredientButton"));
+        languageLabel.setText(props.getString("label.languageLabel"));
+        ingredientsLabel.setText(props.getString("label.ingredientsLabel"));
+        instructionsLabel.setText(props.getString("label.instructionsLabel"));
+        nutritionalValuesLabel.setText(props.getString("label.nutritionalValuesLabel"));
+        servingsLabel.setText(props.getString("label.servingsLabel"));
+        downloadButton.setText(props.getString("label.downloadButton"));
+    }
+
+    /**
+     * Returns the ResourceBundle for the currently selected language.
+     * This ensures a consistent path to the translations file.
+     */
+    private java.util.ResourceBundle getTranslationsBundle() {
+        try {
+            String languageCode = configService.getLanguage();
+            return java.util.ResourceBundle.getBundle(
+                    "client.scenes.Translations", // matches Translations_en.properties location
+                    new java.util.Locale(languageCode)
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Failed to load language bundle for code: " + configService.getLanguage());
+            return java.util.ResourceBundle.getBundle("client.scenes.Translations", java.util.Locale.ENGLISH);
+        }
+    }
+
+
 
 
     /**

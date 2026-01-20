@@ -42,11 +42,11 @@
                                        <padding>
                                           <Insets right="5.0" />
                                        </padding></Pane>
-                                                <TextField fx:id="searchBar" maxHeight="-Infinity" prefHeight="31.0" prefWidth="271.0" promptText="🔍 Enter your query..." styleClass="searchbar" HBox.hgrow="ALWAYS">
+                                                <TextField fx:id="searchBar" maxHeight="-Infinity" prefHeight="31.0" prefWidth="271.0" promptText="%label.searchPromptText" styleClass="searchbar" HBox.hgrow="ALWAYS">
                                        <HBox.margin>
                                           <Insets right="5.0" />
                                        </HBox.margin></TextField>
-                                                <Button fx:id="favoriteS" maxHeight="31.0" maxWidth="145.0" mnemonicParsing="false" onAction="#searchFavorites" prefHeight="31.0" prefWidth="145.0" text="☆ Only" HBox.hgrow="NEVER">
+                                                <Button fx:id="favoritesOnly" maxHeight="31.0" maxWidth="145.0" mnemonicParsing="false" onAction="#searchFavorites" prefHeight="31.0" prefWidth="145.0" text="%label.displayFavouriteRecipesToggleOff" HBox.hgrow="NEVER">
                                        <HBox.margin>
                                           <Insets />
                                        </HBox.margin>
@@ -60,7 +60,7 @@
                                         </HBox>
                                     </children>
                                 </HBox>
-                                <Label alignment="CENTER" prefHeight="54.0" prefWidth="179.0" text="FoodPal" HBox.hgrow="ALWAYS">
+                                <Label fx:id="FoodPalLabel" alignment="CENTER" prefHeight="63.0" prefWidth="267.0" text="%label.title" HBox.hgrow="ALWAYS">
                                     <font>
                                         <Font name="Cascadia Code Regular" size="37.0" />
                                     </font>
@@ -144,13 +144,13 @@
                 </HBox>
             </top>
             <left>
-                <VBox prefHeight="490.0" prefWidth="264.0" BorderPane.alignment="CENTER">
+                <VBox prefHeight="490.0" prefWidth="298.0" BorderPane.alignment="CENTER">
                     <children>
                         <HBox maxHeight="-Infinity" prefHeight="46.0" prefWidth="264.0" VBox.vgrow="NEVER">
                             <children>
                                 <HBox prefHeight="100.0" prefWidth="200.0">
                                     <children>
-                                        <Button fx:id="shoppingListButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#showShoppingListWindow" prefHeight="34.0" prefWidth="122.0" text="Shopping List">
+                                        <Button fx:id="shoppingListButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#showShoppingListWindow" prefHeight="34.0" prefWidth="150.0" text="%label.shoppingListWindow" HBox.hgrow="ALWAYS">
                                             <HBox.margin>
                                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                             </HBox.margin>
@@ -159,7 +159,7 @@
                                 </HBox>
                                 <HBox prefHeight="100.0" prefWidth="200.0">
                                     <children>
-                                        <Button fx:id="nutritionalValueButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#showNutritionWindow" prefHeight="34.0" prefWidth="128.0" text="Nutritional Value">
+                                        <Button fx:id="nutritionalValueButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#showNutritionWindow" prefHeight="34.0" prefWidth="128.0" text="%label.nutritionalValuesWindow" HBox.hgrow="ALWAYS">
                                             <HBox.margin>
                                                 <Insets bottom="5.0" left="5.0" right="7.0" top="5.0" />
                                             </HBox.margin>
@@ -189,7 +189,7 @@
                                         </VBox>
                                         <HBox alignment="CENTER" prefHeight="50.0" prefWidth="266.0">
                                             <children>
-                                                <Button fx:id="addRecipeButton1" mnemonicParsing="false" onAction="#showAddRecipeWindow" prefHeight="38.0" prefWidth="161.0" styleClass="h3" text="+ Add" HBox.hgrow="ALWAYS">
+                                                <Button fx:id="addRecipeButton" mnemonicParsing="false" onAction="#showAddRecipeWindow" prefHeight="38.0" prefWidth="161.0" styleClass="h3" text="%label.addRecipeButton" HBox.hgrow="ALWAYS">
                                                     <font>
                                                         <Font size="17.0" />
                                                     </font>
@@ -271,13 +271,13 @@
                                                           <HBox prefHeight="43.0" prefWidth="639.0" styleClass="titlelablebox" VBox.vgrow="NEVER">
                                                               <children>
                                                                   <Label fx:id="titleRecipeLabel" styleClass="h2" text="titleLabel" />
-                                                                  <Button fx:id="editRecipeTitleButton" mnemonicParsing="false" onAction="#editRecipeTitleButtonClicked" prefHeight="31.0" prefWidth="63.0" styleClass="roundbutton" text="edit">
+                                                                  <Button fx:id="editRecipeTitleButton" mnemonicParsing="false" onAction="#editRecipeTitleButtonClicked" prefHeight="34.0" prefWidth="94.0" styleClass="roundbutton" text="%label.editRecipeButton" HBox.hgrow="ALWAYS">
                                                                       <HBox.margin>
-                                                                          <Insets bottom="5.0" left="5.0" />
+                                                                          <Insets bottom="5.0" left="10.0" />
                                                                       </HBox.margin>
                                                                   </Button>
                                                                   <Region HBox.hgrow="ALWAYS" />
-                                                                  <Button fx:id="cloneRecipeButton" mnemonicParsing="false" onAction="#cloneRecipe" prefHeight="31.0" prefWidth="70" styleClass="clonebutton" text="clone">
+                                                                  <Button fx:id="cloneRecipeButton" mnemonicParsing="false" onAction="#cloneRecipe" prefHeight="34.0" prefWidth="98.0" styleClass="clonebutton" text="%label.cloneRecipeButton" HBox.hgrow="ALWAYS">
                                                                       <HBox.margin>
                                                                           <Insets bottom="5.0" left="5.0" />
                                                                       </HBox.margin>
@@ -286,7 +286,7 @@
                                                           </HBox>
                                                 <HBox prefHeight="100.0" prefWidth="200.0">
                                                    <children>
-                                                      <Label styleClass="h3" text="Language:">
+                                                      <Label fx:id="languageLabel" styleClass="h3" text="%label.languageLabel">
                                                    <HBox.margin>
                                                       <Insets top="2.0" />
                                                    </HBox.margin></Label>
@@ -303,7 +303,7 @@
 
                                                           <VBox prefHeight="231.0" prefWidth="639.0" VBox.vgrow="ALWAYS">
                                                               <children>
-                                                                  <Label styleClass="h3" text="Ingredients:" />
+                                                                  <Label fx:id="ingredientsLabel" styleClass="h3" text="%label.ingredientsLabel" />
                                                                   <VBox fx:id="ingredientList" prefHeight="397.0" prefWidth="595.0" spacing="6.0" VBox.vgrow="ALWAYS">
                                                                       <children>
                                                                           <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="266.0" prefWidth="595.0" styleClass="scrollPane" VBox.vgrow="ALWAYS">
@@ -318,12 +318,12 @@
                                                                                                         </HBox.margin>
                                                                                                     </Label>
                                                                                                     <Region prefHeight="31.0" prefWidth="242.0" HBox.hgrow="ALWAYS" />
-                                                                                                    <Button fx:id="editItemButton" mnemonicParsing="false" onAction="#editIngredientButtonClicked" text="edit">
+                                                                                                    <Button fx:id="editItemButton" mnemonicParsing="false" onAction="#editIngredientButtonClicked" prefHeight="34.0" prefWidth="84.0" text="%label.editRecipeButton">
                                                                                                         <font>
                                                                                                             <Font name="Cascadia Code Regular" size="12.0" />
                                                                                                         </font>
                                                                                                     </Button>
-                                                                                                    <Button fx:id="removeItemButton" mnemonicParsing="false" onAction="#ingredientRemoveButtonClicked" text="remove" />
+                                                                                                    <Button fx:id="removeItemButton" mnemonicParsing="false" onAction="#ingredientRemoveButtonClicked" prefHeight="34.0" prefWidth="100.0" text="%label.removeIngredientButton" />
                                                                                                 </children>
                                                                                             </HBox>
                                                                                         </children>
@@ -349,7 +349,7 @@
                                                             <Insets top="3.0" />
                                                          </HBox.margin>
                                                                           </Button>
-                                                                          <Button fx:id="recipeShoppingButton" mnemonicParsing="false" onAction="#showRecipeShoppingWindow" styleClass="h4" text="Shop 🛒" HBox.hgrow="ALWAYS">
+                                                                          <Button fx:id="recipeShoppingButton" mnemonicParsing="false" onAction="#showRecipeShoppingWindow" styleClass="h4" text="%label.shopIngredientButton" HBox.hgrow="ALWAYS">
                                                                               <HBox.margin>
                                                                                   <Insets left="20.0" right="5.0" top="3.0" />
                                                                               </HBox.margin>
@@ -363,7 +363,7 @@
                                                           </VBox>
                                                           <VBox prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
                                                               <children>
-                                                                  <Label styleClass="h3" text="Preparation" VBox.vgrow="ALWAYS" />
+                                                                  <Label fx:id="instructionsLabel" styleClass="h3" text="%label.instructionsLabel" VBox.vgrow="ALWAYS" />
                                                                   <ScrollPane fx:id="prepScrollPane" fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" styleClass="scrollPane" VBox.vgrow="ALWAYS">
                                                                       <content>
                                                                           <VBox fx:id="preparationList" prefHeight="119.0" prefWidth="579.0" spacing="3.0" />
@@ -378,7 +378,7 @@
                                                       <String fx:value="h4" />
                                                    </styleClass>
                                                                   </Button>
-                                                 <Label styleClass="h3" text="Nutritional Values" />
+                                                 <Label fx:id="nutritionalValuesLabel" styleClass="h3" text="%label.nutritionalValuesLabel" />
                                                               </children>
                                                           </VBox>
                                                           <VBox maxHeight="-Infinity" prefHeight="40.0" prefWidth="324.0" VBox.vgrow="ALWAYS">
@@ -417,7 +417,7 @@
                                                             </VBox>
                                                             <VBox prefHeight="200.0" prefWidth="100.0">
                                                                <children>
-                                                                     <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="34.0" prefWidth="110.0" styleClass="recipe-item" text="servings: " />
+                                                                     <Label fx:id="servingsLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="34.0" prefWidth="110.0" styleClass="recipe-item" text="%label.servingsLabel" />
                                                                </children>
                                                             </VBox>
                                                             <VBox prefHeight="200.0" prefWidth="100.0">
@@ -449,7 +449,7 @@
                                                             </VBox>
                                                             <VBox alignment="CENTER" fillWidth="false" prefHeight="34.0" prefWidth="0.0">
                                                                <children>
-                                                                     <Button fx:id="downloadButton" alignment="TOP_CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#downloadButtonClicked" prefHeight="34.0" prefWidth="99.0" text="Download" />
+                                                                     <Button fx:id="downloadButton" alignment="TOP_CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#downloadButtonClicked" prefHeight="34.0" prefWidth="99.0" text="%label.downloadButton" />
                                                                </children>
                                                             </VBox>
                                                            </items>
