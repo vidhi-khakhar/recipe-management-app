@@ -1204,28 +1204,31 @@ public class MainCtrl {
     }
 
     private double calculateKcal(Recipe recipe) {
-        List<Ingredient> ingredients = recipe.getIngredients().stream()
-                .map(recipeIngredient -> {
-                    if (recipeIngredient.isFormal()) {
-                        return recipeIngredient.getIngredient();
-                    }
+        List<RecipeIngredient> ingredients = recipe.getIngredients().stream()
+                .filter(ri -> ri.isFormal()).toList();
 
-                    return null;
-                }).toList();
+        int factor = 1;
+        if (scaler.getValue() != null) {
+            factor = scaler.getValue();
+        }
 
         double kcals = 0;
-        for (Ingredient ingredient : ingredients) {
-            kcals += ingredient.getKcalPer100g();
+        double weight = 0;
+        for (RecipeIngredient ingredient : ingredients) {
+            kcals += ingredient.getIngredient().getKcalPer100g() * baseAmounts.get(ingredient)
+                    * factor / 100;
+            weight += ingredient.getAmount();
         }
 
         if (ingredients.isEmpty())
             return 0;
-        return kcals / ingredients.size();
+        return kcals / weight * 100;
     }
 
     private void showNutritionalValues(Recipe recipe) {
         inferredKcalsLabel.setText(String.valueOf(calculateKcal(recipe)));
         servingsValueLabel.setText(String.valueOf(recipe.getServings()));
+        inferredKcalsLabel.setText(String.valueOf(calculateKcal(recipe)));
     }
 
     private void scaleRecipe(Recipe recipe) {
@@ -1233,7 +1236,11 @@ public class MainCtrl {
             return;
         }
 
-        int factor = scaler.getValue();
+        int factor = 1;
+        if (scaler.getValue() != null) {
+            factor = scaler.getValue();
+        }
+
         recipe.setServings(baseServings * factor);
 
         for (RecipeIngredient ri : recipe.getIngredients()) {
@@ -1242,6 +1249,7 @@ public class MainCtrl {
             }
         }
 
+        inferredKcalsLabel.setText(String.valueOf(calculateKcal(recipe)));
         normalizeUnits(recipe);
         showNutritionalValues(recipe);
         showIngredients(recipe);
