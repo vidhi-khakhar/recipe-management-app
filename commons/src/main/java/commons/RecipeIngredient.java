@@ -28,7 +28,7 @@ public class RecipeIngredient {
     private RecipeIngredientKey id;
 
     // Many lines belong to one recipe
-    @ManyToOne(optional = false, cascade = CascadeType.ALL)
+    @ManyToOne(optional = false, cascade = CascadeType.MERGE)
     @MapsId("recipeId")
     @JoinColumn(name = "recipe_id", nullable = false)
     @JsonBackReference
