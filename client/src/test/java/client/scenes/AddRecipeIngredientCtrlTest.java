@@ -23,11 +23,20 @@ class AddRecipeIngredientCtrlTest {
      * Without this, JavaFX screams this: IllegalStateException: Toolkit not initialized
      * So, this starts the JavaFX application thread once, before each test,
      * but it does not launch a window.
+     * Also, apparently JavaFX needs a graphical environment and
+     * the running the pipeline does not connect it to one, so here is the fix.  
      */
     @BeforeAll
     static void startJavaFx() {
+        // Force JavaFX to run in headless mode (CI-friendly)
+        System.setProperty("javafx.platform", "Monocle");
+        System.setProperty("monocle.platform", "Headless");
+        System.setProperty("prism.order", "sw");
+        System.setProperty("prism.text", "t2k");
+
         Platform.startup(() -> {});
     }
+
 
     @BeforeEach
     void setup() {
