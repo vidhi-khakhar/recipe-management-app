@@ -871,6 +871,7 @@ public class MainCtrl {
         secondaryStage.setTitle("Nutritional Values");
         secondaryStage.setScene(nutritionScene);
         secondaryStage.initOwner(primaryStage); // makes it modal to main window if desired
+        secondaryStage.setResizable(false);
         secondaryStage.showAndWait();
 
         sidebarList.getSelectionModel().clearSelection();
