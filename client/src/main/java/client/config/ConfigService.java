@@ -98,6 +98,10 @@ public class ConfigService {
             loaded.setShoppingList(new ShoppingList());
         }
 
+        if (loaded.getFilteredLanguages() == null) {
+            loaded.setFilteredLanguages(new ArrayList<>());
+        }
+
         return loaded;
     }
 
@@ -128,6 +132,7 @@ public class ConfigService {
         config.setFavoriteRecipeIds(new ArrayList<>());
         config.setLanguage(Locale.ENGLISH);
         config.setShoppingList(new ShoppingList());
+        config.setFilteredLanguages(new ArrayList<>());
 
         this.config = config;
         save();

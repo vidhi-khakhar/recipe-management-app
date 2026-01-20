@@ -286,6 +286,25 @@ public class MainCtrl {
             }
         });
 
+        List<String> savedLanguages = configService.getConfig().getFilteredLanguages();
+        for (String languages : savedLanguages) {
+            switch (languages) {
+                case "en":
+                    languageCheckBox.getCheckModel().check("English");
+                    break;
+                case "nl":
+                    languageCheckBox.getCheckModel().check("Dutch");
+                    break;
+                case "ro":
+                    languageCheckBox.getCheckModel().check("Romanian");
+                    break;
+                case "es":
+                    languageCheckBox.getCheckModel().check("Spanish");
+                    break;
+            }
+        }
+        applySearch();
+
         loadRecipesFromDatabase();
         scaler.setPromptText("scale");
         scaler.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 50));
@@ -1348,7 +1367,9 @@ public class MainCtrl {
         } else {
             filteredLanguages.remove(language);
         }
-        System.out.println(filteredLanguages);
+
+        configService.getConfig().setFilteredLanguages(new ArrayList<>(filteredLanguages));
+        configService.save();
         applySearch();
     }
 
