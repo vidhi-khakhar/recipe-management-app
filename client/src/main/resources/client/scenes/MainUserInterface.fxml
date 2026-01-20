@@ -6,10 +6,13 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -79,6 +82,44 @@
                                        <VBox.margin>
                                           <Insets bottom="7.0" right="7.0" />
                                        </VBox.margin>
+                                       <items>
+                                          <MenuItem mnemonicParsing="false" onAction="#setEnglishLanguage">
+                                             <graphic>
+                                                <ImageView id="englishFlag" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../../images/EnglishFlag.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                          </MenuItem>
+                                          <MenuItem mnemonicParsing="false" onAction="#setDutchLanguage">
+                                             <graphic>
+                                                <ImageView id="dutchFlag" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../../images/DutchFlag.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                          </MenuItem>
+                                          <MenuItem mnemonicParsing="false" onAction="#setRomanianLanguage">
+                                             <graphic>
+                                                <ImageView id="romanianFlag" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../../images/RomanianFlag.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                          </MenuItem>
+                                          <MenuItem mnemonicParsing="false" onAction="#setSpanishLanguage">
+                                             <graphic>
+                                                <ImageView id="spanishFlag" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../../images/SpanishFlag.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                          </MenuItem>
+                                       </items>
                                     </MenuButton>
                                  </children>
                               </VBox>

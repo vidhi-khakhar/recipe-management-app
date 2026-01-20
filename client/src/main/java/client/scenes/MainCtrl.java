@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
@@ -52,7 +51,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
@@ -239,14 +237,16 @@ public class MainCtrl {
      */
     @FXML
     public void initialize() {
-        MenuItem englishFlag = makeLanguageImage("English", "EnglishFlag.png");
-        MenuItem dutchFlag = makeLanguageImage("Dutch", "DutchFlag.png");
-        MenuItem romanianFlag = makeLanguageImage("Romanian", "RomanianFlag.png");
-        MenuItem spanishFlag = makeLanguageImage("Spanish", "SpanishFlag.png");
 
-        languageSetter.getItems().addAll(englishFlag, dutchFlag, romanianFlag, spanishFlag);
-
-        updateLanguageButton("/images/EnglishFlag.png"); //this needs to be a config thing later"
+        // Set initial flag based on saved config
+        String currentLang = configService.getLanguage();
+        switch (currentLang) {
+            case "en" -> setEnglishLanguage();
+            case "nl" -> setDutchLanguage();
+            case "ro" -> setRomanianLanguage();
+            case "es" -> setSpanishLanguage();
+            default -> setEnglishLanguage(); 
+        }
 
         sidebarList.setItems(recipesObservableList);
 
@@ -282,6 +282,7 @@ public class MainCtrl {
                 scaleRecipe(getSelectedRecipe());
             }
         });
+        
     }
 
 
@@ -1136,50 +1137,57 @@ public class MainCtrl {
     }
 
 
+    @FXML
+    private void setEnglishLanguage() {
+        setAppLanguage("en", "/images/EnglishFlag.png");
+    }
+
+    @FXML
+    private void setDutchLanguage() {
+        setAppLanguage("nl", "/images/DutchFlag.png");
+    }
+
+    @FXML
+    private void setRomanianLanguage() {
+        setAppLanguage("ro", "/images/RomanianFlag.png");
+    }
+
+    @FXML
+    private void setSpanishLanguage() {
+        setAppLanguage("es", "/images/SpanishFlag.png");
+    }
+
     /**
-     * creates a menuitem for all flags
-     * @param languageName the name of the language
-     * @param imagePath the path to the flag
-     * @return a menuitem with the flag
+     * Helper method to update the language both visually and in config.
+     *
+     * @param languageCode the ISO code of the language ("en", "nl", "ro", "es")
+     * @param imagePath the path to the flag image resource
      */
-    private MenuItem makeLanguageImage(String languageName, String imagePath) {
-        String path = "/images/" + imagePath;
-        var stream = getClass().getResourceAsStream(path);
-        if (stream == null) {
-            return new MenuItem(languageName + " (no icon)");
+    private void setAppLanguage(String languageCode, String imagePath) {
+        // Update ConfigService
+        configService.setLanguage(languageCode);
+
+        // Update the MenuButton graphic
+        var stream = getClass().getResourceAsStream(imagePath);
+        if (stream != null) {
+            ImageView flag = new ImageView(new Image(stream));
+            flag.setFitWidth(20);
+            flag.setFitHeight(20);
+            languageSetter.setGraphic(flag);
+            languageSetter.setText(""); // Remove any text
+        } else {
+            System.err.println("Flag image not found: " + imagePath);
+            languageSetter.setGraphic(null);
+            languageSetter.setText(languageCode.toUpperCase());
         }
-        Image image = new Image (Objects.requireNonNull(getClass().getResourceAsStream(path)));
-        ImageView imageView = new ImageView(image);
 
-        imageView.setFitHeight(20);
-        imageView.setFitWidth(20);
-
-
-        MenuItem flag = new MenuItem("", imageView);
-
-        flag.setOnAction(e -> {
-            updateLanguageButton(path);
-        });
-
-        return flag;
+        // Optional: Update recipe language label if a recipe is selected
+        Recipe selected = getSelectedRecipe();
+        if (selected != null) {
+            updateRecipeLanguageLabel(languageCode);
+        }
     }
 
-    /**
-     * A method that sets the buttonIcon that displays the language that the app is working in
-     * @param path the path to the image that will be displayed
-     */
-    private void updateLanguageButton(String path) {
-        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(path)));
-
-        ImageView buttonIcon = new ImageView(image);
-        buttonIcon.setFitWidth(20);
-        buttonIcon.setFitHeight(20);
-
-        languageSetter.setGraphic(buttonIcon);
-        languageSetter.setText(""); // this dumb ass line is neccesary bc otherwise you still get ... next to the flag.
-
-
-    }
 
     /**
      * Saves a recipe in chosen path.
