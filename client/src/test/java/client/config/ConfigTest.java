@@ -26,12 +26,12 @@ public class ConfigTest {
 
         config.setServerUrl("http://localhost:8080");
         config.setFavoriteRecipeIds(new ArrayList<>());
-        config.setLanguage(Locale.ENGLISH);
+        config.setLanguage("en");
         config.setShoppingListReminder(100L);
 
         assertEquals("http://localhost:8080", config.getServerUrl());
         assertNotNull(config.getFavoriteRecipeIds());
-        assertEquals(Locale.ENGLISH, config.getLanguage());
+        assertEquals("en", config.getLanguage());
         assertEquals(100L, config.getShoppingListReminder());
     }
 

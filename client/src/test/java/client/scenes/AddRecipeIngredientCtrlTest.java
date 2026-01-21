@@ -3,6 +3,7 @@ package client.scenes;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import client.config.ConfigService;
 import client.utils.IngredientServerUtils;
 import commons.Ingredient;
 import commons.Recipe;
@@ -20,20 +21,26 @@ public class AddRecipeIngredientCtrlTest {
     @Mock
     private IngredientServerUtils mockIngredientServerUtils;
 
+    @Mock
+    private ConfigService mockConfigService;
+
     private AddRecipeIngredientCtrl addRecipeIngredientCtrl;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        when(mockConfigService.getLanguage()).thenReturn("en");
         addRecipeIngredientCtrl = new AddRecipeIngredientCtrl(
-            mockIngredientServerUtils
+            mockIngredientServerUtils,
+            mockConfigService
         );
     }
 
     @Test
     public void testConstructor() {
         AddRecipeIngredientCtrl ctrl = new AddRecipeIngredientCtrl(
-            mockIngredientServerUtils
+            mockIngredientServerUtils,
+            mockConfigService
         );
         assertNotNull(ctrl);
     }
