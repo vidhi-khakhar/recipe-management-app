@@ -15,7 +15,6 @@
  */
 package client.scenes;
 
-<<<<<<< client/src/main/java/client/scenes/MainCtrl.java
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,8 +31,6 @@ import org.controlsfx.control.CheckComboBox;
 
 import com.google.inject.Inject;
 
-=======
->>>>>>> client/src/main/java/client/scenes/MainCtrl.java
 import client.RecipeFormatter;
 import client.config.ConfigService;
 import client.favorite.FavoriteService;
@@ -41,7 +38,6 @@ import client.scenes.state.EmptyStateReason;
 import client.search.RecipeCollection;
 import client.search.SearchService;
 import client.utils.RecipeServerUtils;
-import com.google.inject.Inject;
 import commons.Recipe;
 import commons.RecipeIngredient;
 import commons.RecipeIngredientKey;
@@ -59,11 +55,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.apache.commons.io.FileUtils;
-import org.controlsfx.control.CheckComboBox;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 public class MainCtrl {
@@ -86,9 +78,9 @@ public class MainCtrl {
     private Recipe selectedRecipe;
     private final SearchService searchService;
     private final RecipeCollection recipeCollection;
-    private List<String> filteredLanguages = new ArrayList<>();
+    private final List<String> filteredLanguages = new ArrayList<>();
 
-    private ConfigService configService;
+    private final ConfigService configService;
 
     @FXML
     private Spinner<Integer> scaler;
@@ -588,7 +580,6 @@ public class MainCtrl {
         String query = searchBar.getText();
         boolean searchFavorites = "★ Only".equals(favoriteS.getText());
 
-<<<<<<< client/src/main/java/client/scenes/MainCtrl.java
         List<Recipe> fromServer = searchService.search(query, searchFavorites);
 
         List<Recipe> filtered = fromServer.stream()
@@ -601,9 +592,7 @@ public class MainCtrl {
                 })
                         .collect(Collectors.toList());
 
-=======
-        List<Recipe> filtered = searchService.search(query, searchFavorites);
->>>>>>> client/src/main/java/client/scenes/MainCtrl.java
+
         recipesObservableList.setAll(filtered);
 
         if (filtered.isEmpty() && searchFavorites) {
@@ -1284,12 +1273,6 @@ public class MainCtrl {
         recipeLanguageLabel.setText(fullLanguage);
     }
 
-
-<<<<<<< client/src/main/java/client/scenes/MainCtrl.java
-
-    
-=======
->>>>>>> client/src/main/java/client/scenes/MainCtrl.java
     @FXML
     private void downloadButtonClicked() throws IOException {
         Recipe selectedRecipe = (Recipe) sidebarList.getSelectionModel().getSelectedItem();
