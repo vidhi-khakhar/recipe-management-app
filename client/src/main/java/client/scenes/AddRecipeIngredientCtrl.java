@@ -40,9 +40,6 @@ public class AddRecipeIngredientCtrl {
     private TextField amountTextField;
 
     @FXML
-    private Label titleLabel;
-
-    @FXML
     private Button cancelButton;
 
     @FXML
@@ -110,12 +107,12 @@ public class AddRecipeIngredientCtrl {
         if (!ingredientServerUtils.getAllIngredients().isEmpty() && isAdd) {
             ingredientChoiceBox.setValue(ingredientChoiceBox.getItems().get(0));
             ingredientChoiceBox.setDisable(false);
-            titleLabel.setText("Add Ingredient");
+            addIngredientLabel.setText(props.getString("label.addIngredientButton"));
         } else if (!ingredientServerUtils.getAllIngredients().isEmpty() && !isAdd) {
             ingredientChoiceBox.setValue(getIngredient(ingredientId));
             ingredientChoiceBox.setDisable(true);
             ingredientChoiceBox.setStyle("-fx-background-color: #E6E6FA");
-            titleLabel.setText("Edit Ingredient");
+            addIngredientLabel.setText(props.getString("label.editButton"));
 
         } else {
             showError(
@@ -233,26 +230,24 @@ public class AddRecipeIngredientCtrl {
      */
     public boolean validateFormalAmount(String text) {
         ResourceBundle props = getTranslationsBundle();
+        double amount;
 
         try {
-            double amount = Double.parseDouble(text);
-
+            amount = Double.parseDouble(text);
             if (amount < 0) {
                 showError(
                     props.getString("alert.negativeAmount"),
                     props.getString("alert.negativeAmount.body")
                 );
-                return false;
             }
-
-            return true;
+            return (amount >= 0);
         } catch (NumberFormatException e) {
             showError(
                 props.getString("alert.illegalInput"),
                 props.getString("alert.illegalInput.body")
             );
-            return false;
         }
+        return false;
     }
 
 
@@ -313,6 +308,7 @@ public class AddRecipeIngredientCtrl {
             ingredientChoiceBox.getItems().addAll(
                     ingredientServerUtils.getAllIngredients());
         } catch (Exception e) {
+            System.out.println(e.getStackTrace());
             showError(props.getString("alert.problemWithIngredients"),
                     props.getString("alert.problemWithIngredients.body"));
         }

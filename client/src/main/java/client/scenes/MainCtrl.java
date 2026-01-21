@@ -464,8 +464,8 @@ public class MainCtrl {
             showNutritionalValues(recipe);
             setHealthStatus(recipe);
         } catch (Exception e) {
-            // Use the translation bundle instead of hardcoded string
             java.util.ResourceBundle props = getTranslationsBundle();
+            System.out.println(e.getMessage());
             recoverFromError(props.getString("alert.recipeMissing"));
         }
     }
@@ -506,7 +506,6 @@ public class MainCtrl {
             );
 
         } catch (Exception e) {
-            // Use ResourceBundle for error message
             java.util.ResourceBundle props = getTranslationsBundle();
             showError(props.getString("alert.reloadFailed"));
         }
@@ -711,6 +710,7 @@ public class MainCtrl {
     @FXML
     private void ingredientAddButtonClicked() {
         java.util.ResourceBundle props = getTranslationsBundle();
+        requireSelectedRecipe();
         try {
             Recipe selectedRecipe = getSelectedRecipe();
 
@@ -736,7 +736,7 @@ public class MainCtrl {
 
             showIngredients(selectedRecipe);
         } catch (Exception e) {
-            // Use ResourceBundle for the alert message
+            System.out.println(e.getMessage());
             recoverFromError(props.getString("alert.recipeIngredientFail"));
         }
     }
@@ -938,6 +938,7 @@ public class MainCtrl {
             try {
                 recipeServerUtils.replaceRecipe(selectedRecipe.getRecipeId(), selectedRecipe);
             } catch (Exception e) {
+                System.out.println(e.getMessage());
                 recoverFromError(getTranslationsBundle().getString("alert.saveInstructionsFail"));
             }
 
@@ -1138,6 +1139,7 @@ public class MainCtrl {
             System.out.println("It worked! Cloned recipe ID: " + newId);
 
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             recoverFromError(props.getString("alert.cloneFailed"));
         }
     }
