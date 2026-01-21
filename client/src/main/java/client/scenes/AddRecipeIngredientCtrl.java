@@ -13,6 +13,7 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 public class AddRecipeIngredientCtrl {
+
     private Scene nutritionScene;
     private Scene addRecipeIngredientScene;
 
@@ -23,7 +24,8 @@ public class AddRecipeIngredientCtrl {
 
     @Inject
     public AddRecipeIngredientCtrl(
-            IngredientServerUtils ingredientServerUtils) {
+        IngredientServerUtils ingredientServerUtils
+    ) {
         this.ingredientServerUtils = ingredientServerUtils;
     }
 
@@ -60,7 +62,10 @@ public class AddRecipeIngredientCtrl {
      * @param nutritionScene the nutrition scenes to add a global ingredient
      * @param addRecipeIngredientScene the current add recipe-ingredient scene
      */
-    public void initScenes(Scene nutritionScene, Scene addRecipeIngredientScene) {
+    public void initScenes(
+        Scene nutritionScene,
+        Scene addRecipeIngredientScene
+    ) {
         this.nutritionScene = nutritionScene;
         this.addRecipeIngredientScene = addRecipeIngredientScene;
     }
@@ -91,14 +96,17 @@ public class AddRecipeIngredientCtrl {
         unitTypeChoiceBox.setValue(unitTypeChoiceBox.getItems().get(0));
 
         unitChoiceBox.getItems().clear();
-        unitChoiceBox.setItems(FXCollections.observableArrayList(Unit.values()));
+        unitChoiceBox.setItems(
+            FXCollections.observableArrayList(Unit.values())
+        );
         unitChoiceBox.setValue(unitChoiceBox.getItems().get(0));
 
-        unitTypeChoiceBox.getSelectionModel()
-                .selectedItemProperty()
-                .addListener((observable, oldValue, newValue) -> {
-                    updateUnitChoiceBoxVisibility(newValue);
-                });
+        unitTypeChoiceBox
+            .getSelectionModel()
+            .selectedItemProperty()
+            .addListener((observable, oldValue, newValue) -> {
+                updateUnitChoiceBoxVisibility(newValue);
+            });
     }
 
     /**
@@ -107,8 +115,7 @@ public class AddRecipeIngredientCtrl {
      * @param unitType the selected unit type ("Formal" or "Informal")
      */
     public void updateUnitChoiceBoxVisibility(String unitType) {
-
-        if(unitType == null) {
+        if (unitType == null) {
             return;
         }
 
@@ -131,11 +138,19 @@ public class AddRecipeIngredientCtrl {
         System.out.println("User saved ingredient to recipe.");
 
         // Get ingredient
-        Ingredient ingredient = ingredientChoiceBox.getSelectionModel().getSelectedItem();
+        Ingredient ingredient = ingredientChoiceBox
+            .getSelectionModel()
+            .getSelectedItem();
 
         if (duplicateIngredient(recipe, ingredient)) {
-            showError("Duplicate Ingredient", "Ingredient " + ingredient.getName()
-                    + " is already added to recipe " + recipe.getTitle() + ".\n Please select a different ingredient.");
+            showError(
+                "Duplicate Ingredient",
+                "Ingredient " +
+                    ingredient.getName() +
+                    " is already added to recipe " +
+                    recipe.getTitle() +
+                    ".\n Please select a different ingredient."
+            );
             return;
         }
 
@@ -145,14 +160,21 @@ public class AddRecipeIngredientCtrl {
             String input = amountTextField.getText();
             if (validateFormalAmount(input)) {
                 double amount = Double.parseDouble(input);
-                recipeIngredient = RecipeIngredient.formal(recipe,
-                        ingredient, amount, unitChoiceBox.getValue());
+                recipeIngredient = RecipeIngredient.formal(
+                    recipe,
+                    ingredient,
+                    amount,
+                    unitChoiceBox.getValue()
+                );
                 closeWindow();
             }
         } else {
             String informal = amountTextField.getText();
-            recipeIngredient = RecipeIngredient.informal(recipe,
-                    ingredient, informal);
+            recipeIngredient = RecipeIngredient.informal(
+                recipe,
+                ingredient,
+                informal
+            );
             closeWindow();
         }
     }
@@ -164,6 +186,9 @@ public class AddRecipeIngredientCtrl {
      * @return true if it is already contained, false if not
      */
     public boolean duplicateIngredient(Recipe recipe, Ingredient ingredient) {
+        if (recipe == null || recipe.getIngredients() == null) {
+            return false;
+        }
         for (RecipeIngredient ri : recipe.getIngredients()) {
             if (ri.getIngredient().equals(ingredient)) {
                 return true;
@@ -187,15 +212,14 @@ public class AddRecipeIngredientCtrl {
 
         try {
             amount = Double.parseDouble(text);
-            if (amount < 0)
-                showError("Must be Positive", "Please enter a positive number!");
+            if (amount < 0) {
+                return false;
+            }
 
             return (amount >= 0);
         } catch (NumberFormatException e) {
-            showError("Wrong Format", "Please input a number!");
+            return false;
         }
-
-        return false;
     }
 
     /**
@@ -250,11 +274,14 @@ public class AddRecipeIngredientCtrl {
     private void populateIngredientDropdown() {
         try {
             ingredientChoiceBox.getItems().clear();
-            ingredientChoiceBox.getItems().addAll(
-                    ingredientServerUtils.getAllIngredients());
+            ingredientChoiceBox
+                .getItems()
+                .addAll(ingredientServerUtils.getAllIngredients());
         } catch (Exception e) {
-            showError("Problem with Ingredients",
-                    "Something went wrong with retrieving ingredients!");
+            showError(
+                "Problem with Ingredients",
+                "Something went wrong with retrieving ingredients!"
+            );
         }
     }
 
@@ -263,7 +290,7 @@ public class AddRecipeIngredientCtrl {
      * @param header The header of the error
      * @param content the content of the error
      */
-    private void showError(String header, String content) {
+    void showError(String header, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
         alert.setHeaderText(header);
