@@ -587,13 +587,14 @@ public class MainCtrl {
         boolean searchFavorites = "★ Only".equals(favoriteS.getText());
 
         List<Recipe> filtered = searchService.search(query, searchFavorites);
+        RecipeCollection unSortedRC = new RecipeCollection(filtered);
 
         String sortType = sortComboBox.getValue();
 
         if(sortType.equals("A-Z")){
-            filtered = recipeSortingService.sortByTitle(filtered);
+            filtered = recipeSortingService.sortByTitle(unSortedRC);
         }else{
-            filtered = recipeSortingService.sortByDate(filtered);
+            filtered = recipeSortingService.sortByDate(unSortedRC);
         }
 
         if(sortButton.getText().equals("↑☰")){

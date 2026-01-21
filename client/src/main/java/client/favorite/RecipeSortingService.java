@@ -1,5 +1,6 @@
 package client.favorite;
 
+import client.search.RecipeCollection;
 import commons.Recipe;
 
 import java.util.Comparator;
@@ -17,7 +18,7 @@ public class RecipeSortingService {
      * Returns whether the collection can be sorted.
      * Blueprint.
      */
-    public boolean isSortable(List<Recipe> collection) {
+    public boolean isSortable(RecipeCollection collection) {
         return collection != null && !collection.isEmpty();
     }
 
@@ -30,11 +31,12 @@ public class RecipeSortingService {
      * @param collection the collection to be sorted.
      * @return the sorted collection by title.
      */
-    public List<Recipe> sortByTitle(List<Recipe> collection) {
+    public List<Recipe> sortByTitle(RecipeCollection collection) {
         System.out.println("Before sort: " + collection);
-        collection.sort(Comparator.comparing(Recipe::getTitle));
-        System.out.println("After sort: " + collection);
-        return collection;
+        List<Recipe> result = collection.getAll();
+        result.sort(Comparator.comparing(Recipe::getTitle));
+        System.out.println("After sort: " + result);
+        return result;
     }
 
     /**
@@ -42,11 +44,11 @@ public class RecipeSortingService {
      * @param collection the collection to be sorted.
      * @return the sorted collection by date.
      */
-    public List<Recipe> sortByDate(List<Recipe> collection) {
+    public List<Recipe> sortByDate(RecipeCollection collection) {
         System.out.println("Before sort: " + collection);
-        collection.sort(Comparator.comparing(Recipe::getRecipeId).reversed());
-        System.out.println("After sort: " + collection);
-        return collection;
+        List<Recipe> result = collection.getAll();
+        System.out.println("After sort: " + result);
+        return result;
     }
 
     // --- helpers ---
@@ -58,7 +60,7 @@ public class RecipeSortingService {
      * @param max the maximum number of recipes in the preview
      * @return a limited, sorted list of recipes
      */
-    public List<Recipe> getPreview(List<Recipe> collection, int max) {
+    public List<Recipe> getPreview(RecipeCollection collection, int max) {
         System.out.println("Creating recipe preview...");
 
         if (!isSortable(collection)) {
