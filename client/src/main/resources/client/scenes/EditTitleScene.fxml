@@ -27,7 +27,7 @@
                                 <HBox alignment="CENTER" maxHeight="-Infinity" prefHeight="52.0" prefWidth="309.0" spacing="6.0" styleClass="searchbar-background" HBox.hgrow="ALWAYS">
                                     <children>
                                         <TextField fx:id="editRecipeTitle" prefHeight="39.0" prefWidth="239.0" promptText="Enter the recipe name" styleClass="searchbar" HBox.hgrow="ALWAYS" />
-                                        <Button fx:id="editTitleAddButton" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#editTitle" prefHeight="39.0" prefWidth="111.0" styleClass="add-button" text="Edit" HBox.hgrow="ALWAYS" />
+                                        <Button fx:id="editTitleAddButton" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#editTitle" prefHeight="39.0" prefWidth="126.0" styleClass="add-button" text="Edit" HBox.hgrow="ALWAYS" />
                                     </children>
                                     <HBox.margin>
                                         <Insets left="50.0" right="50.0" />
@@ -43,7 +43,7 @@
                         <HBox alignment="CENTER" maxHeight="-Infinity" prefHeight="52.0" prefWidth="309.0" spacing="6.0" styleClass="searchbar-background" HBox.hgrow="ALWAYS">
                            <children>
                               <TextField fx:id="servingsInput" prefHeight="39.0" prefWidth="239.0" promptText="Set the number of servings" styleClass="searchbar" HBox.hgrow="ALWAYS" />
-                              <Button fx:id="setServingsButton" alignment="CENTER" contentDisplay="CENTER" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#editTitle" prefHeight="39.0" prefWidth="106.0" styleClass="add-button" text="Set " HBox.hgrow="ALWAYS" />
+                              <Button fx:id="setServingsButton" alignment="CENTER" contentDisplay="CENTER" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#editTitle" prefHeight="39.0" prefWidth="128.0" styleClass="add-button" text="Set " HBox.hgrow="ALWAYS" />
                            </children>
                            <HBox.margin>
                               <Insets left="50.0" right="50.0" />
