@@ -250,6 +250,8 @@ public class MainCtrl {
                 .addListener((obs, oldRecipe, newRecipe) -> {
                     if (newRecipe != null) {
                         onRecipeSelected(newRecipe);
+                        baseServings = newRecipe.getServings();
+                        servingsValueLabel.setText(String.valueOf(baseServings));
                     }
                 });
 
@@ -1302,8 +1304,6 @@ public class MainCtrl {
     private final Map<RecipeIngredient, Unit> baseUnits = new HashMap<>();
 
     private void initScalingValues(Recipe recipe) {
-        baseServings = recipe.getServings();
-
         for (RecipeIngredient ri : recipe.getIngredients()) {
             if (ri.getAmount() != null && ri.getUnit() != null) {
                 baseAmounts.put(ri, ri.getAmount());
@@ -1358,6 +1358,7 @@ public class MainCtrl {
         }
 
         inferredKcalsLabel.setText(String.valueOf(calculateKcal(recipe)));
+        servingsValueLabel.setText(String.valueOf(baseServings * factor));
         normalizeUnits(recipe);
         showNutritionalValues(recipe);
         showIngredients(recipe);
