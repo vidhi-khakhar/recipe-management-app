@@ -18,9 +18,9 @@ package client;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.nio.file.Paths;
 
 import static com.google.inject.Guice.createInjector;
 import com.google.inject.Injector;
@@ -94,7 +94,7 @@ public class Main extends Application {
 
         var mainUserInterfaceScene = new Scene(mainUserInterface.getValue());
 
-        loadScenesAndStyles(fxml, mainUserInterfaceScene, primaryStage, controller);
+        loadScenesAndStyles(fxml, bundle, mainUserInterfaceScene, primaryStage, controller);
 
         // pass both scenes into controller
 
@@ -111,39 +111,39 @@ public class Main extends Application {
     }
 
     private void loadScenesAndStyles(
-            MyFXML fxml, Scene mainUserInterfaceScene, Stage primaryStage, MainCtrl controller) {
+            MyFXML fxml, ResourceBundle bundle, Scene mainUserInterfaceScene, Stage primaryStage, MainCtrl controller) {
         // preload shopping list scene
         var shoppingListInterface =
-                fxml.load(ShoppingListCtrl.class, "client", "scenes", "ShoppingListInterface.fxml");
+                fxml.load(ShoppingListCtrl.class, bundle, "client", "scenes", "ShoppingListInterface.fxml");
         var shoppingListScene = new Scene(shoppingListInterface.getValue());
         shoppingListScene.setUserData(shoppingListInterface.getKey()); // Store controller reference
 
         // preload recipe shopping list scene
         var recipeShoppingListInterface =
-            fxml.load(RecipeShoppingListCtrl.class, "client", "scenes", "RecipeShoppingList.fxml");
+            fxml.load(RecipeShoppingListCtrl.class, bundle, "client", "scenes", "RecipeShoppingList.fxml");
         var recipeShoppingListScene = new Scene(recipeShoppingListInterface.getValue());
         var recipeShoppingListCtrl = recipeShoppingListInterface.getKey();
 
         // preload nutritional values scene
         var nutritionInterface =
-                fxml.load(NutritionalValueCtrl.class, "client", "scenes", "NutrionalValueInterface.fxml");
+                fxml.load(NutritionalValueCtrl.class, bundle, "client", "scenes", "NutrionalValueInterface.fxml");
         var nutritionScene = new Scene(nutritionInterface.getValue());
         var nutritionCtrl = nutritionInterface.getKey();
 
         //preload recipe add scene
         var recipeAddInterface =
-                fxml.load(AddButtonCtrl.class, "client", "scenes", "AddRecipeInterface.fxml");
+                fxml.load(AddButtonCtrl.class, bundle, "client", "scenes", "AddRecipeInterface.fxml");
         var recipeAddScene = new Scene(recipeAddInterface.getValue());
 
         // Load AddRecipeIngredientScene
         var recipeIngredientInterface =
-                fxml.load(AddRecipeIngredientCtrl.class, "client", "scenes", "AddRecipeIngredientScene.fxml");
+                fxml.load(AddRecipeIngredientCtrl.class, bundle, "client", "scenes", "AddRecipeIngredientScene.fxml");
         var recipeIngredientScene = new Scene(recipeIngredientInterface.getValue());
         var recipeIngredientCtrl = recipeIngredientInterface.getKey();
 
         // Load EditTitleScene
         var editTitleInterface =
-                fxml.load(EditTitleCtrl.class, "client", "scenes", "EditTitleScene.fxml");
+                fxml.load(EditTitleCtrl.class, bundle, "client", "scenes", "EditTitleScene.fxml");
         var editTitleScene = new Scene(editTitleInterface.getValue());
 
         // add stylesheets if needed
@@ -170,6 +170,5 @@ public class Main extends Application {
         controller.initScenes(primaryStage, nutritionScene, recipeAddScene,
                 recipeIngredientScene, recipeIngredientCtrl, editTitleScene,
                 shoppingListScene, recipeShoppingListScene, nutritionCtrl, recipeShoppingListCtrl);
-
     }
 }
