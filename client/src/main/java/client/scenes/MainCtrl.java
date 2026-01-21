@@ -1523,10 +1523,10 @@ public class MainCtrl {
             healthyStatus.setStyle("-fx-text-fill: #ffffff");
         } else if (kcals < 500) {
             healthStatus.setStyle("-fx-background-color: yellow");
-            healthyStatus.setText(props.getString("label.moderatelyHealthy"));
+            healthyStatus.setText(props.getString("label.UmHealthy"));
             healthyStatus.setStyle("-fx-text-fill: #000000");
         } else {
-            healthyStatus.setText(props.getString("label.unhealthyRecipe"));
+            healthyStatus.setText(props.getString("label.UnHealthy"));
             healthyStatus.setStyle("-fx-text-fill: #ffffff");
             healthStatus.setStyle("-fx-background-color: red");
         }
