@@ -710,7 +710,6 @@ public class MainCtrl {
     @FXML
     private void ingredientAddButtonClicked() {
         java.util.ResourceBundle props = getTranslationsBundle();
-        requireSelectedRecipe();
         try {
             Recipe selectedRecipe = getSelectedRecipe();
 
@@ -1012,10 +1011,9 @@ public class MainCtrl {
         nutritionalValueCtrl.initialize();
         secondaryStage.setTitle(props.getString("label.nutritionalValuesWindow"));
         secondaryStage.setScene(nutritionScene);
-        secondaryStage.initOwner(primaryStage); // makes it modal to main window if desired
+        secondaryStage.initOwner(primaryStage); 
         secondaryStage.setResizable(false);
         secondaryStage.showAndWait();
-        sidebarList.getSelectionModel().clearSelection();
     }
 
     /**
