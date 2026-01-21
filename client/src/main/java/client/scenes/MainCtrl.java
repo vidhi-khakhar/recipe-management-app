@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.CheckComboBox;
@@ -380,10 +381,13 @@ public class MainCtrl {
      * @param removedIds the removed recipes' IDs
      */
     private void showFavoriteRemovedAlert(List<Long> removedIds) {
+        java.util.ResourceBundle props = getTranslationsBundle();
+
         Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Favorite deleted");
-        alert.setHeaderText("A favorite recipe got deleted");
-        alert.setContentText("One or more favorites have been removed by someone else.");
+        alert.setTitle(props.getString("alert.favouriteDeleted"));
+        alert.setHeaderText(props.getString("alert.favouriteDeleted.header"));
+        alert.setContentText(props.getString("alert.favouriteDeleted.content"));
+
         alert.showAndWait();
     }
 
@@ -408,27 +412,24 @@ public class MainCtrl {
             return;
         }
 
+        java.util.ResourceBundle props = getTranslationsBundle();
+
         switch (reason) {
             case NO_RECIPES_EXIST -> {
-                noRecipeTitle.setText("No Recipes Created!");
-                noRecipeSubtitle.setText(
-                        "Please create or select a recipe to view its ingredients and instructions."
-                );
+                noRecipeTitle.setText(props.getString("label.noRecipeTitle"));
+                noRecipeSubtitle.setText(props.getString("label.noRecipeSubtitle"));
             }
             case NO_SEARCH_RESULTS -> {
-                noRecipeTitle.setText("No Recipes Found!");
-                noRecipeSubtitle.setText(
-                        "Please check the spelling or create a new recipe."
-                );
+                noRecipeTitle.setText(props.getString("label.noRecipesFound"));
+                noRecipeSubtitle.setText(props.getString("label.noRecipesFoundSubtitle"));
             }
             case NO_FAVORITES -> {
-                noRecipeTitle.setText("No Favorites Found!");
-                noRecipeSubtitle.setText(
-                        "Please check if there are any favorites or add a new favorite."
-                );
+                noRecipeTitle.setText(props.getString("label.noFavoritesFound"));
+                noRecipeSubtitle.setText(props.getString("label.noFavoritesFoundSubtitle"));
             }
         }
     }
+
 
     /**
      * Changes the UI according to the selected recipe
@@ -437,7 +438,7 @@ public class MainCtrl {
      */
     private void onRecipeSelected(Recipe recipe) {
         try {
-            recipeServerUtils.getRecipe(recipe.getRecipeId()); // Test if the recipe actually exists.
+            recipeServerUtils.getRecipe(recipe.getRecipeId()); 
 
             initScalingValues(recipe);
 
@@ -454,9 +455,10 @@ public class MainCtrl {
             showIngredients(recipe);
             showNutritionalValues(recipe);
         } catch (Exception e) {
-            recoverFromError("This recipe was removed or changed.");
+            // Use the translation bundle instead of hardcoded string
+            java.util.ResourceBundle props = getTranslationsBundle();
+            recoverFromError(props.getString("alert.recipeMissing"));
         }
-
     }
 
     /**
@@ -467,10 +469,12 @@ public class MainCtrl {
      * developer.
      */
     public void recoverFromError(String userMessage) {
+        java.util.ResourceBundle props = getTranslationsBundle();
+
         Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Something went wrong");
+        alert.setTitle(props.getString("alert.somethingWentWrong"));
         alert.setHeaderText(userMessage);
-        alert.setContentText("The application will refresh to sync with the server.");
+        alert.setContentText(props.getString("alert.recipeMissing.content"));
         alert.showAndWait();
 
         reloadApplicationState();
@@ -493,7 +497,9 @@ public class MainCtrl {
             );
 
         } catch (Exception e) {
-            showError("Failed to reload data from server.");
+            // Use ResourceBundle for error message
+            java.util.ResourceBundle props = getTranslationsBundle();
+            showError(props.getString("alert.reloadFailed"));
         }
     }
 
@@ -503,7 +509,6 @@ public class MainCtrl {
      * @param recipe the to be added recipe.
      */
     public void addRecipe(Recipe recipe) {
-        // adds the recipe object to the list!
         recipeCollection.add(recipe);
         applySearch();
         sidebarList.getSelectionModel().select(recipe);
@@ -543,24 +548,20 @@ public class MainCtrl {
      * deletion
      */
     private boolean deleteConfirmation() {
+        java.util.ResourceBundle props = getTranslationsBundle();
+
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation");
-        alert.setHeaderText("Are you sure you want to delete this recipe?");
+        alert.setTitle(props.getString("alert.confirmationText"));
+        alert.setHeaderText(props.getString("alert.confirmDelete"));
 
         if (favoriteService.isFavorite(selectedRecipe)) {
-            alert.setContentText("This is one of your favorites!");
+            alert.setContentText(props.getString("alert.favoriteNotice"));
         }
 
-        // Wait for the conformation from the user
+        // Wait for the confirmation from the user
         Optional<ButtonType> result = alert.showAndWait();
 
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            // If confirmed
-            return true;
-        } else {
-            // If canceled
-            return false;
-        }
+        return result.isPresent() && result.get() == ButtonType.OK;
     }
 
     /**
@@ -591,9 +592,11 @@ public class MainCtrl {
     @FXML
     private void applySearch() {
         Recipe previouslySelected = getSelectedRecipe();
+        java.util.ResourceBundle props = getTranslationsBundle();
 
         String query = searchBar.getText();
-        boolean searchFavorites = "★ Only".equals(favoritesOnly.getText());
+        boolean searchFavorites = props.getString("label.displayFavouriteRecipesToggleOn")
+            .equals(favoritesOnly.getText());
 
         List<Recipe> filtered = searchService.search(query, searchFavorites);
         recipesObservableList.setAll(filtered);
@@ -617,10 +620,12 @@ public class MainCtrl {
 
     @FXML
     private void searchFavorites() {
-        if (favoritesOnly.getText().equals("★ Only")) {
-            favoritesOnly.setText("☆ Only");
+        java.util.ResourceBundle props = getTranslationsBundle();
+
+        if (favoritesOnly.getText().equals(props.getString("label.displayFavouriteRecipesToggleOn"))) {
+            favoritesOnly.setText(props.getString("label.displayFavouriteRecipesToggleOff"));
         } else {
-            favoritesOnly.setText("★ Only");
+            favoritesOnly.setText(props.getString("label.displayFavouriteRecipesToggleOn"));
         }
 
         applySearch();
@@ -641,7 +646,7 @@ public class MainCtrl {
             }
 
         } catch (Exception e) {
-            showError("Refresh failed.");
+            showError("alert.refreshFailed");
         }
     }
 
@@ -673,21 +678,27 @@ public class MainCtrl {
             return;
         }
 
+        java.util.ResourceBundle props = getTranslationsBundle(); 
+
         Stage secondaryStage = new Stage();
         addRecipeIngredientCtrl.onStart();
         addRecipeIngredientCtrl.initScenes(nutritionScene, addRecipeIngredientScene);
-        secondaryStage.setTitle("Add Ingredient to Recipe");
+
+        secondaryStage.setTitle(props.getString("label.addRecipeIngredientsTitle"));
+
         secondaryStage.setScene(addRecipeIngredientScene);
         secondaryStage.setResizable(false);
         secondaryStage.initOwner(primaryStage);
         secondaryStage.showAndWait();
     }
 
+
     /**
      * Adds an ingredient to a recipe.
      */
     @FXML
     private void ingredientAddButtonClicked() {
+        java.util.ResourceBundle props = getTranslationsBundle();
         try {
             Recipe selectedRecipe = getSelectedRecipe();
 
@@ -696,8 +707,7 @@ public class MainCtrl {
             addRecipeIngredientCtrl.setRecipe(selectedRecipe);
             showAddRecipeIngredientWindow();
 
-            RecipeIngredient newIngredient
-                    = addRecipeIngredientCtrl.getRecipeIngredient();
+            RecipeIngredient newIngredient = addRecipeIngredientCtrl.getRecipeIngredient();
 
             if (newIngredient != null) {
                 newIngredient.setRecipe(selectedRecipe);
@@ -714,12 +724,15 @@ public class MainCtrl {
 
             showIngredients(selectedRecipe);
         } catch (Exception e) {
-            recoverFromError("Could not add recipe ingredient.");
+            // Use ResourceBundle for the alert message
+            recoverFromError(props.getString("alert.recipeIngredientFail"));
         }
     }
 
     private void addRecipeIngredientToUI(RecipeIngredient recipeIngredient) {
-        // To create a new row
+        java.util.ResourceBundle props = getTranslationsBundle();
+
+        // Create a new row
         HBox ingredientItem = new HBox();
         ingredientItem.setUserData(recipeIngredient.getId());
         ingredientItem.setAlignment(Pos.CENTER_LEFT);
@@ -729,12 +742,11 @@ public class MainCtrl {
         Label itemLabel = new Label(recipeIngredient.toString());
         itemLabel.setStyle("-fx-padding: 0 0 0 9;"); // <Insets left="9.0">
 
-        // To throw the buttons to the right
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         // Edit button
-        Button editButton = new Button("edit");
+        Button editButton = new Button(props.getString("label.editRecipeButton"));
         editButton.setOnAction(event -> {
             try {
                 editIngredientButtonClicked(event);
@@ -744,18 +756,14 @@ public class MainCtrl {
         });
 
         // Remove button
-        Button removeButton = new Button("remove");
+        Button removeButton = new Button(props.getString("label.removeIngredientButton"));
         removeButton.setOnAction(this::ingredientRemoveButtonClicked);
-        removeButton.setUserData(recipeIngredient.getId()); // To be able to identify which recipeIngredient to delete
-        // when remove button is clicked
+        removeButton.setUserData(recipeIngredient.getId());
 
         // Put it all into HBox
         ingredientItem.getChildren().addAll(itemLabel, spacer, editButton, removeButton);
 
-        // Put the HBox (the row) in the ingredientList
-        ingredientList
-                .getChildren()
-                .add(ingredientItem);
+        ingredientList.getChildren().add(ingredientItem);
     }
 
     /**
@@ -880,23 +888,17 @@ public class MainCtrl {
      * @param startEditable whether the step is initially editable
      */
     private HBox createExecutionStepRow(int index, String initialText, boolean startEditable) {
-        // Create a new HBox (a preparation step)
-        // [ 1 ][ Label(text) ][ ✏ ][ ✖ ] when not editing
-        // [ 1 ][ TextField ][ ✔ ][ ✖ ] when editing
         HBox row = new HBox(10);
         row.setAlignment(Pos.CENTER_LEFT);
         row.setMaxWidth(Double.MAX_VALUE);
 
-        //index
         Label indexLabel = new Label((index + 1) + ".");
         indexLabel.setMinWidth(30);
 
         Label textLabel = new Label(initialText);
-        //textLabel.setPrefWidth(400);
         textLabel.setMaxWidth(Double.MAX_VALUE);
 
         TextField textField = new TextField(initialText);
-        //textField.setPrefWidth(400);
         textField.setMaxWidth(Double.MAX_VALUE);
 
         HBox.setHgrow(textLabel, Priority.ALWAYS);
@@ -910,9 +912,7 @@ public class MainCtrl {
 
         saveStep[0] = () -> {
             String text = textField.getText().trim();
-            if (text.isEmpty()) {
-                return;
-            }
+            if (text.isEmpty()) return;
 
             selectedRecipe.getInstructions().set(index, text);
             textLabel.setText(text);
@@ -920,12 +920,11 @@ public class MainCtrl {
             try {
                 recipeServerUtils.replaceRecipe(selectedRecipe.getRecipeId(), selectedRecipe);
             } catch (Exception e) {
-                recoverFromError("Could not save the instruction!");
+                recoverFromError(getTranslationsBundle().getString("alert.saveInstructionsFail"));
             }
 
             editSaveButton.setText("✏");
             row.getChildren().setAll(indexLabel, textLabel, editSaveButton, deleteButton);
-
             editSaveButton.setOnAction(e -> switchToEdit[0].run());
         };
 
@@ -937,7 +936,6 @@ public class MainCtrl {
             textField.selectAll();
 
             textField.setOnAction(ev -> saveStep[0].run());
-
             editSaveButton.setOnAction(e -> saveStep[0].run());
         };
 
@@ -949,20 +947,18 @@ public class MainCtrl {
             row.getChildren().addAll(indexLabel, textLabel, editSaveButton, deleteButton);
         }
 
+        // keep this exactly as before to ensure deletion works
         deleteButton.setOnAction(e -> handleDeleteStep(index));
 
         return row;
     }
 
-    /**
-     * Handles the deletion of a preparation step.
-     *
-     * @param index the index of the step to be deleted
-     */
     private void handleDeleteStep(int index) {
+        ResourceBundle props = getTranslationsBundle();
+
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Delete Step");
-        alert.setHeaderText("Delete this preparation step?");
+        alert.setTitle(props.getString("alert.deleteStep"));
+        alert.setHeaderText(props.getString("alert.confirmDeleteStep"));
 
         Optional<ButtonType> result = alert.showAndWait();
 
@@ -979,16 +975,8 @@ public class MainCtrl {
         }
     }
 
-    /**
-     * This is a placeholder a helper method for further list management Method
-     * prints out a message when the button is clicked
-     *
-     * @param ingredient the ingredient to be added
-     */
-    @FXML
-    private void addIngredientToList(String ingredient) {
-        System.out.println("Added ingredient: " + ingredient);
-    }
+// WE STOPPED HERE!!!!!!!!!!!!!!!!!!!!!
+
 
     /**
      * Makes sure the window with the nutrition information is opened once the
@@ -996,6 +984,8 @@ public class MainCtrl {
      */
     @FXML
     void showNutritionWindow() {
+        ResourceBundle props = getTranslationsBundle();
+
         if (nutritionScene == null) {
             System.err.println("Nutrition scene not initialized!");
             return;
@@ -1003,7 +993,7 @@ public class MainCtrl {
 
         Stage secondaryStage = new Stage();
         nutritionalValueCtrl.initialize();
-        secondaryStage.setTitle("Nutritional Values");
+        secondaryStage.setTitle(props.getString("label.nutritionalValuesWindow"));
         secondaryStage.setScene(nutritionScene);
         secondaryStage.initOwner(primaryStage); // makes it modal to main window if desired
         secondaryStage.setResizable(false);
@@ -1017,6 +1007,7 @@ public class MainCtrl {
      */
     @FXML
     void showShoppingListWindow() {
+        ResourceBundle props = getTranslationsBundle();
         if (shoppingListScene == null) {
             System.err.println("Shopping list scene not initialized!");
             return;
@@ -1029,7 +1020,7 @@ public class MainCtrl {
         }
 
         Stage secondaryStage = new Stage();
-        secondaryStage.setTitle("Shopping List");
+        secondaryStage.setTitle(props.getString("label.shoppingListWindow"));
         secondaryStage.setScene(shoppingListScene);
         secondaryStage.initOwner(primaryStage); // makes it modal to main window if desired
         secondaryStage.show();
@@ -1041,27 +1032,23 @@ public class MainCtrl {
      */
     @FXML
     void showRecipeShoppingWindow() {
+        ResourceBundle props = getTranslationsBundle();
         if (recipeShoppingListScene == null || recipeShoppingListCtrl == null) {
             System.err.println("Recipe shopping list scene or controller not initialized!");
             return;
         }
-
-        // Check if a recipe is selected
-        if (selectedRecipe == null) {
-            showError("Please select a recipe first");
-            return;
-        }
-
+    
+        requireSelectedRecipe();
         Stage secondaryStage = new Stage();
-        secondaryStage.setTitle("Recipe Shopping List - " + selectedRecipe.getTitle());
+        secondaryStage.setTitle(props.getString("label.shoppingListTitle") + selectedRecipe.getTitle());
         secondaryStage.setScene(recipeShoppingListScene);
-        secondaryStage.initOwner(primaryStage); // makes it modal to main window if desired
+        secondaryStage.initOwner(primaryStage);
 
-        // Initialize the controller with the selected recipe
         recipeShoppingListCtrl.initializeWithRecipe(selectedRecipe);
 
         secondaryStage.show();
     }
+
 
     /**
      * Makes sure the window with the add recipe functionality is opened once
@@ -1069,13 +1056,15 @@ public class MainCtrl {
      */
     @FXML
     void showAddRecipeWindow() {
+        ResourceBundle props = getTranslationsBundle();
+
         if (recipeAddScene == null) {
             System.err.println("Recipe add scene not initialized!");
             return;
         }
 
         Stage recipeAddStage = new Stage();
-        recipeAddStage.setTitle("Add Recipe");
+        recipeAddStage.setTitle(props.getString("label.addRecipeWindowTitle"));
         recipeAddStage.setScene(recipeAddScene);
         recipeAddStage.initOwner(primaryStage);
         recipeAddStage.setResizable(false);
@@ -1092,10 +1081,9 @@ public class MainCtrl {
 
         Long currentRecipeId = selectedRecipe.getRecipeId();
 
-        if (currentRecipeId == null) {
-            System.out.println("No Recipe selected!");
-            return;
-        }
+        ResourceBundle props = getTranslationsBundle();
+
+        requireSelectedRecipe();
 
         try {
             Recipe original = recipeServerUtils.getRecipe(currentRecipeId);
@@ -1134,7 +1122,7 @@ public class MainCtrl {
             System.out.println("It worked! Cloned recipe ID: " + newId);
 
         } catch (Exception e) {
-            recoverFromError("Clone recipe failed!");
+            recoverFromError(props.getString("alert.cloneFailed"));
         }
     }
 
@@ -1146,9 +1134,14 @@ public class MainCtrl {
      * @return the generated title for the cloned recipe
      */
     private String generateCloneTitle(String originalTitle) {
+        ResourceBundle props = getTranslationsBundle();
+
+        String cloneWord = props.getString("label.cloneFunctionality");
+
         // Extract base title
         var pattern = java.util.regex.Pattern.compile(
-                "^(.*?)(?:\\s*\\(Clone(?:\\s*(\\d+))?\\))?$"
+                "^(.*?)(?:\\s*\\(" + java.util.regex.Pattern.quote(cloneWord)
+                        + "(?:\\s*(\\d+))?\\))?$"
         );
         var matcher = pattern.matcher(originalTitle.trim());
 
@@ -1174,7 +1167,7 @@ public class MainCtrl {
                 int num = 0;
                 if (numGroup != null) {
                     num = Integer.parseInt(numGroup);
-                } else if (title.endsWith("(Clone)")) {
+                } else if (title.endsWith("(" + cloneWord + ")")) {
                     num = 1;
                 }
 
@@ -1185,26 +1178,7 @@ public class MainCtrl {
         }
 
         int nextNumber = maxCloneNumber + 1;
-        return baseTitle + " (Clone " + nextNumber + ")";
-    }
-
-    /**
-     * Shows edit title of recipe window.
-     */
-    @FXML
-    void showEditRecipeTitleScene() {
-        if (editTitleScene == null) {
-            System.err.println("Scene not initialized!");
-            return;
-        }
-
-        Stage editTitleStage = new Stage();
-        editTitleStage.setTitle("Edit Recipe Title");
-        editTitleStage.setScene(editTitleScene);
-        editTitleStage.initOwner(primaryStage);
-        editTitleStage.setResizable(false);
-
-        editTitleStage.show();
+        return baseTitle + " (" + cloneWord + " " + nextNumber + ")";
     }
 
     /**
@@ -1221,7 +1195,20 @@ public class MainCtrl {
      */
     @FXML
     void editRecipeTitleButtonClicked() {
-        showEditRecipeTitleScene();
+        ResourceBundle props = getTranslationsBundle();
+
+        if (editTitleScene == null) {
+            System.err.println("Scene not initialized!");
+            return;
+        }
+
+        Stage editTitleStage = new Stage();
+        editTitleStage.setTitle(props.getString("label.editRecipeDetails"));
+        editTitleStage.setScene(editTitleScene);
+        editTitleStage.initOwner(primaryStage);
+        editTitleStage.setResizable(false);
+
+        editTitleStage.show();
     }
 
     public void refreshSidebarList() {
@@ -1233,13 +1220,16 @@ public class MainCtrl {
      *
      * @param message error message
      */
-    private void showError(String message) {
+    private void showError(String messageKey) {
+        ResourceBundle props = getTranslationsBundle();
+
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
+        alert.setTitle(props.getString("alert.error"));
         alert.setHeaderText(null);
-        alert.setContentText(message);
+        alert.setContentText(props.getString(messageKey));
         alert.showAndWait();
     }
+
 
     public void updateTitleLabel(String title) {
         titleRecipeLabel.setText(title);
@@ -1250,18 +1240,18 @@ public class MainCtrl {
      *
      * @param recipeLanguage
      */
-    public void updateRecipeLanguageLabel(String recipeLanguage) {
-        String fullLanguage = RecipeFormatter.getFullRecipeLanguage(recipeLanguage);
-        recipeLanguageLabel.setText(fullLanguage);
+    public void updateRecipeLanguageLabel(String recipeLanguage) { 
+        ResourceBundle props = getTranslationsBundle();
+        String fullLanguage = RecipeFormatter.getFullRecipeLanguage(recipeLanguage, props); 
+        recipeLanguageLabel.setText(fullLanguage); 
     }
+
 
     @FXML
     private void downloadButtonClicked() throws IOException {
-        Recipe selectedRecipe = (Recipe) sidebarList.getSelectionModel().getSelectedItem();
-        if (selectedRecipe == null) {
-            System.out.println("Please select a recipe.");
-            return;
-        }
+        ResourceBundle props = getTranslationsBundle();
+        requireSelectedRecipe();
+
 
         saveRecipe(selectedRecipe);
     }
@@ -1314,7 +1304,7 @@ public class MainCtrl {
         buttonIcon.setFitHeight(20);
 
         languageSetter.setGraphic(buttonIcon);
-        languageSetter.setText(""); // this dumb ass line is neccesary bc otherwise you still get ... next to the flag.
+        languageSetter.setText(""); // this line is neccesary bc otherwise you still get ... next to the flag.
 
     }
     
@@ -1323,17 +1313,23 @@ public class MainCtrl {
      */
     @FXML
     private void initializeTextProperties() {
-        java.util.ResourceBundle props = getTranslationsBundle();
+        ResourceBundle props = getTranslationsBundle();
 
-        // Main view
+        // 1️⃣ Update static UI labels once
+        updateStaticUILabels(props);
+
+        // 2️⃣ Update dynamic labels (selected recipe only)
+        updateSelectedRecipeLabels(props);
+    }
+
+    /* Sets to langauge */
+    private void updateStaticUILabels(ResourceBundle props) {
         FoodPalLabel.setText(props.getString("label.title"));
         searchBar.setPromptText(props.getString("label.searchPromptText"));
         favoritesOnly.setText(props.getString("label.displayFavouriteRecipesToggleOff"));
-        // TOGGLE ON TO BE IMPLEMENTED
         shoppingListButton.setText(props.getString("label.shoppingListWindow"));
         nutritionalValueButton.setText(props.getString("label.nutritionalValuesWindow"));
         addRecipeButton.setText(props.getString("label.addRecipeButton"));
-        // from here on 
         editRecipeTitleButton.setText(props.getString("label.editRecipeButton"));
         cloneRecipeButton.setText(props.getString("label.cloneRecipeButton"));
         removeItemButton.setText(props.getString("label.removeIngredientButton"));
@@ -1348,6 +1344,14 @@ public class MainCtrl {
         noRecipeSubtitle.setText(props.getString("label.noRecipeSubtitle"));
     }
 
+    private void updateSelectedRecipeLabels(ResourceBundle props) {
+        Recipe selected = getSelectedRecipe();
+        if (selected != null) {
+            recipeLanguageLabel.setText(RecipeFormatter.getFullRecipeLanguage(selected.getLanguage(), props));
+        }
+    }
+
+
     /**
      * Returns the ResourceBundle for the currently selected language. This
      * ensures a consistent path to the translations file.
@@ -1361,7 +1365,7 @@ public class MainCtrl {
             );
         } catch (Exception e) {
             e.printStackTrace();
-            showError("Failed to load language bundle for code: " + configService.getLanguage());
+            System.out.println("Failed to load language bundle for code: " + configService.getLanguage());
             return java.util.ResourceBundle.getBundle("client.scenes.Translations", java.util.Locale.ENGLISH);
         }
     }
@@ -1372,6 +1376,8 @@ public class MainCtrl {
      * @param recipe recipe to be saved
      */
     private void saveRecipe(Recipe recipe) throws IOException {
+        ResourceBundle props = getTranslationsBundle();
+
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save recipe");
         fileChooser.setInitialFileName(recipe.getTitle() + ".txt");
@@ -1477,10 +1483,13 @@ public class MainCtrl {
      * @return true if a recipe is selected, false otherwise
      */
     private boolean requireSelectedRecipe() {
+        ResourceBundle props = getTranslationsBundle();
+
         if (getSelectedRecipe() == null) {
-            showError("Please select a recipe first.");
+            showError(props.getString("alert.selectARecipe"));
             return false;
         }
+
         return true;
     }
 

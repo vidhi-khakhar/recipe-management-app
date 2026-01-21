@@ -78,7 +78,7 @@
                               </CheckComboBox>
                               <VBox alignment="BOTTOM_RIGHT" prefHeight="96.0" prefWidth="66.0">
                                  <children>
-                                    <MenuButton fx:id="languageSetter" mnemonicParsing="false" prefHeight="30.0" prefWidth="200.0" text="Select Lanuage">
+                                    <MenuButton fx:id="languageSetter" mnemonicParsing="false" onAction="#initializeTextProperties" prefHeight="30.0" prefWidth="200.0" text="Select Lanuage">
                                        <VBox.margin>
                                           <Insets bottom="7.0" right="7.0" />
                                        </VBox.margin>
@@ -232,7 +232,7 @@
                                 <StackPane prefHeight="510.0" prefWidth="634.0" VBox.vgrow="ALWAYS">
                                     <children>
 
-                                          <VBox fx:id="noRecipePane">
+                                          <VBox fx:id="noRecipePane" visible="false">
                                               <children>
                                                   <HBox prefHeight="114.0" prefWidth="316.0" VBox.vgrow="ALWAYS">
                                                       <VBox.margin>
@@ -264,7 +264,7 @@
                                                   <HBox layoutX="10.0" layoutY="110.0" prefHeight="110.0" prefWidth="316.0" VBox.vgrow="ALWAYS" />
                                               </children>
                                           </VBox>
-                                          <VBox fx:id="allRecipePane" prefHeight="490.0" prefWidth="637.0" visible="false" StackPane.alignment="CENTER">
+                                          <VBox fx:id="allRecipePane" prefHeight="490.0" prefWidth="637.0" StackPane.alignment="CENTER">
                                               <children>
                                                   <VBox prefHeight="474.0" prefWidth="650.0" styleClass="centerbox" VBox.vgrow="ALWAYS">
                                                       <children>
