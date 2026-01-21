@@ -1513,6 +1513,9 @@ public class MainCtrl {
         return true;
     }
 
+    /**
+     * Sets the health status of meaningful extension
+     */
     private void setHealthStatus(Recipe recipe) {
         ResourceBundle props = getTranslationsBundle();
         double kcals = calculateKcal(recipe);
