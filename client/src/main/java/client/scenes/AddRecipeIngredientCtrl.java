@@ -2,10 +2,7 @@ package client.scenes;
 
 import client.utils.IngredientServerUtils;
 import com.google.inject.Inject;
-import commons.Ingredient;
-import commons.Recipe;
-import commons.RecipeIngredient;
-import commons.Unit;
+import commons.*;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -18,6 +15,7 @@ public class AddRecipeIngredientCtrl {
 
     private Recipe recipe;
     private RecipeIngredient recipeIngredient;
+    private Long ingredientId;
 
     private final IngredientServerUtils ingredientServerUtils;
 
@@ -30,6 +28,9 @@ public class AddRecipeIngredientCtrl {
     // UI Elements
     @FXML
     private Button saveButton;
+
+    @FXML
+    private Label titleLabel;
 
     @FXML
     private Button cancelButton;
@@ -55,6 +56,8 @@ public class AddRecipeIngredientCtrl {
     @FXML
     private Label pleaseAddIngredientLabel;
 
+    private boolean isAdd;
+
     /**
      * Initialize the scenes.
      * @param nutritionScene the nutrition scenes to add a global ingredient
@@ -73,18 +76,28 @@ public class AddRecipeIngredientCtrl {
      * whenever a change is observed
      */
     @FXML
-    public void onStart() {
+    public void onStart(boolean isAdd) {
+        this.isAdd = isAdd;
         infoLabel.setVisible(false);
         pleaseAddIngredientLabel.setVisible(false);
 
         populateIngredientDropdown();
 
-        if (!ingredientServerUtils.getAllIngredients().isEmpty()) {
+        if (!ingredientServerUtils.getAllIngredients().isEmpty() && isAdd) {
             ingredientChoiceBox.setValue(ingredientChoiceBox.getItems().get(0));
+            ingredientChoiceBox.setDisable(false);
+            titleLabel.setText("Add Ingredient");
+        } else if (!ingredientServerUtils.getAllIngredients().isEmpty() && !isAdd) {
+            ingredientChoiceBox.setValue(getIngredient(ingredientId));
+            ingredientChoiceBox.setDisable(true);
+            ingredientChoiceBox.setStyle("-fx-background-color: #E6E6FA");
+            titleLabel.setText("Edit Ingredient");
+
         } else {
             showError("No ingredients", "Please add an ingredient.");
             pleaseAddIngredientLabel.setVisible(true);
         }
+
 
         unitTypeChoiceBox.getItems().clear();
         unitTypeChoiceBox.getItems().addAll("Formal", "Informal");
@@ -133,7 +146,7 @@ public class AddRecipeIngredientCtrl {
         // Get ingredient
         Ingredient ingredient = ingredientChoiceBox.getSelectionModel().getSelectedItem();
 
-        if (duplicateIngredient(recipe, ingredient)) {
+        if (duplicateIngredient(recipe, ingredient) && isAdd) {
             showError("Duplicate Ingredient", "Ingredient " + ingredient.getName()
                     + " is already added to recipe " + recipe.getTitle() + ".\n Please select a different ingredient.");
             return;
@@ -269,5 +282,19 @@ public class AddRecipeIngredientCtrl {
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+    public void setIngredient(Long id) {
+        this.ingredientId = id;
+    }
+
+    private Ingredient getIngredient(Long id) {
+        for (Ingredient i : ingredientChoiceBox.getItems()) {
+            if (i.getId().equals(id)) {
+                return i;
+            }
+        }
+
+        return null;
     }
 }

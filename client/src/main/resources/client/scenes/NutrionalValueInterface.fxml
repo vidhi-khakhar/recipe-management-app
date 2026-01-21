@@ -57,7 +57,7 @@
                   </VBox>
                   <HBox alignment="CENTER" prefHeight="50.0" prefWidth="266.0" VBox.vgrow="NEVER">
                      <children>
-                        <Button fx:id="addIngredientButton" mnemonicParsing="false" onAction="#addIngredient" prefHeight="38.0" prefWidth="161.0" styleClass="h3" text="+ Add" HBox.hgrow="ALWAYS">
+                        <Button fx:id="addIngredientButton" mnemonicParsing="false" onAction="#addIngredient" prefHeight="40.0" prefWidth="80.0" styleClass="h3" text="+ Add" HBox.hgrow="ALWAYS">
                            <font>
                               <Font size="17.0" />
                            </font>
@@ -70,12 +70,20 @@
                               <Font size="17.0" />
                            </font>
                            <HBox.margin>
-                              <Insets left="5.0" />
+                              <Insets left="5.0" right="5.0" />
                            </HBox.margin>
                            <styleClass>
                               <String fx:value="h3" />
                               <String fx:value="minusbutton" />
                            </styleClass>
+                        </Button>
+                        <Button fx:id="healthButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#showHealthChart" prefHeight="40.0" prefWidth="87.0" styleClass="minusbutton" stylesheets="@NutritionalValue.css" text="Health">
+                           <HBox.margin>
+                              <Insets left="5.0" />
+                           </HBox.margin>
+                           <font>
+                              <Font size="17.0" />
+                           </font>
                         </Button>
                      </children>
                      <VBox.margin>

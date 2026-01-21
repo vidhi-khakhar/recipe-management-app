@@ -15,32 +15,14 @@
  */
 package client.scenes;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-
+import client.RecipeFormatter;
 import client.config.ConfigService;
 import client.favorite.FavoriteService;
 import client.scenes.state.EmptyStateReason;
 import client.search.RecipeCollection;
 import client.search.SearchService;
-import commons.*;
-import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.input.KeyCode;
-import org.apache.commons.io.FileUtils;
-import org.controlsfx.control.CheckComboBox;
-
-import com.google.inject.Inject;
-
-import client.RecipeFormatter;
 import client.utils.RecipeServerUtils;
-import commons.Ingredient;
+import com.google.inject.Inject;
 import commons.Recipe;
 import commons.RecipeIngredient;
 import commons.RecipeIngredientKey;
@@ -51,25 +33,19 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.apache.commons.io.FileUtils;
+import org.controlsfx.control.CheckComboBox;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 public class MainCtrl {
 
@@ -186,6 +162,11 @@ public class MainCtrl {
     @FXML
     private Label recipeLanguageLabel;
 
+    @FXML
+    private Pane healthStatus;
+
+    @FXML
+    private Label healthyStatus;
 
     /**
      * Initializes the scenes
@@ -269,6 +250,8 @@ public class MainCtrl {
                 .addListener((obs, oldRecipe, newRecipe) -> {
                     if (newRecipe != null) {
                         onRecipeSelected(newRecipe);
+                        baseServings = newRecipe.getServings();
+                        servingsValueLabel.setText(String.valueOf(baseServings));
                     }
                 });
 
@@ -317,6 +300,7 @@ public class MainCtrl {
 
             favoriteService.removeDeletedFavorites(recipesFromDB);
             applySearch();
+
 
 
             if (!recipesObservableList.isEmpty()) {
@@ -389,10 +373,8 @@ public class MainCtrl {
         }
     }
 
-
     /**
      * Changes the UI according to the selected recipe
-     *
      * @param recipe the recipe that is selected
      */
     private void onRecipeSelected(Recipe recipe) {
@@ -414,10 +396,11 @@ public class MainCtrl {
             showInstructions(recipe);
             showIngredients(recipe);
             showNutritionalValues(recipe);
+            setHealthStatus(recipe);
+
         } catch (Exception e) {
             recoverFromError("This recipe was removed or changed.");
         }
-
     }
 
     /**
@@ -608,9 +591,7 @@ public class MainCtrl {
         }
     }
 
-
     // RECIPE INGREDIENTS METHODS
-
     /**
      * Shows the ingredients for a recipe.
      */
@@ -626,20 +607,23 @@ public class MainCtrl {
         for (RecipeIngredient ingredient : ingredients) {
             addRecipeIngredientToUI(ingredient);
         }
+
+        showNutritionalValues(recipe);
+        setHealthStatus(recipe);
     }
 
     /**
      * Opens the add ingredient to recipe popup window.
      */
     @FXML
-    void showAddRecipeIngredientWindow() {
+    void showAddRecipeIngredientWindow(boolean isAdd) {
         if (addRecipeIngredientScene == null) {
             System.err.println("AddRecipeIngredientScene not initialized!");
             return;
         }
 
         Stage secondaryStage = new Stage();
-        addRecipeIngredientCtrl.onStart();
+        addRecipeIngredientCtrl.onStart(isAdd);
         addRecipeIngredientCtrl.initScenes(nutritionScene, addRecipeIngredientScene);
         secondaryStage.setTitle("Add Ingredient to Recipe");
         secondaryStage.setScene(addRecipeIngredientScene);
@@ -659,7 +643,7 @@ public class MainCtrl {
             requireSelectedRecipe();
 
             addRecipeIngredientCtrl.setRecipe(selectedRecipe);
-            showAddRecipeIngredientWindow();
+            showAddRecipeIngredientWindow(true);
 
             RecipeIngredient newIngredient =
                     addRecipeIngredientCtrl.getRecipeIngredient();
@@ -760,6 +744,8 @@ public class MainCtrl {
         }
 
 
+
+
     }
 
 
@@ -781,12 +767,19 @@ public class MainCtrl {
             return;
         }
 
+        RecipeIngredientKey id = (RecipeIngredientKey) ingredientToEdit.getUserData();
+
         addRecipeIngredientCtrl.setRecipe(selectedRecipe);
-        showAddRecipeIngredientWindow();
+        addRecipeIngredientCtrl.setIngredient(id.getIngredientId());
+
+        showAddRecipeIngredientWindow(false);
         RecipeIngredient updated = addRecipeIngredientCtrl.getRecipeIngredient();
 
         if (updated != null) {
-            RecipeIngredientKey id = (RecipeIngredientKey) ingredientToEdit.getUserData();
+
+            baseAmounts.put(updated, updated.getAmount());
+            baseUnits.put(updated, updated.getUnit());
+
             this.recipeServerUtils.updateRecipeIngredient(id.getRecipeId(), id.getIngredientId(), updated);
 
             List<RecipeIngredient> ingredients = selectedRecipe.getIngredients();
@@ -926,7 +919,6 @@ public class MainCtrl {
 
     /**
      * Handles the deletion of a preparation step.
-     *
      * @param index the index of the step to be deleted
      */
     private void handleDeleteStep(int index) {
@@ -979,6 +971,7 @@ public class MainCtrl {
         secondaryStage.setResizable(false);
         secondaryStage.showAndWait();
 
+        sidebarList.getSelectionModel().clearSelection();
     }
 
     /**
@@ -1026,10 +1019,10 @@ public class MainCtrl {
         secondaryStage.setTitle("Recipe Shopping List - " + selectedRecipe.getTitle());
         secondaryStage.setScene(recipeShoppingListScene);
         secondaryStage.initOwner(primaryStage); // makes it modal to main window if desired
-
+        
         // Initialize the controller with the selected recipe
         recipeShoppingListCtrl.initializeWithRecipe(selectedRecipe);
-
+        
         secondaryStage.show();
     }
 
@@ -1075,7 +1068,7 @@ public class MainCtrl {
             Recipe newRecipe = new Recipe(
                     clonedTitle,
                     original.getLanguage()
-            );
+            );  
 
 
             newRecipe.setServings(original.getServings());
@@ -1158,6 +1151,8 @@ public class MainCtrl {
     }
 
 
+
+
     /**
      * Shows edit title of recipe window.
      */
@@ -1175,6 +1170,7 @@ public class MainCtrl {
         editTitleStage.setResizable(false);
 
         editTitleStage.show();
+        baseServings = getSelectedRecipe().getServings();
     }
 
     /**
@@ -1225,6 +1221,7 @@ public class MainCtrl {
         recipeLanguageLabel.setText(fullLanguage);
     }
 
+
     @FXML
     private void downloadButtonClicked() throws IOException {
         Recipe selectedRecipe = (Recipe) sidebarList.getSelectionModel().getSelectedItem();
@@ -1239,7 +1236,6 @@ public class MainCtrl {
 
     /**
      * creates a menuitem for all flags
-     *
      * @param languageName the name of the language
      * @param imagePath    the path to the flag
      * @return a menuitem with the flag
@@ -1268,7 +1264,6 @@ public class MainCtrl {
 
     /**
      * A method that sets the buttonIcon that displays the language that the app is working in
-     *
      * @param path the path to the image that will be displayed
      */
     private void updateLanguageButton(String path) {
@@ -1286,7 +1281,6 @@ public class MainCtrl {
 
     /**
      * Saves a recipe in chosen path.
-     *
      * @param recipe recipe to be saved
      */
     private void saveRecipe(Recipe recipe) throws IOException {
@@ -1310,8 +1304,6 @@ public class MainCtrl {
     private final Map<RecipeIngredient, Unit> baseUnits = new HashMap<>();
 
     private void initScalingValues(Recipe recipe) {
-        baseServings = recipe.getServings();
-
         for (RecipeIngredient ri : recipe.getIngredients()) {
             if (ri.getAmount() != null && ri.getUnit() != null) {
                 baseAmounts.put(ri, ri.getAmount());
@@ -1321,21 +1313,25 @@ public class MainCtrl {
     }
 
     private double calculateKcal(Recipe recipe) {
-        List<Ingredient> ingredients = recipe.getIngredients().stream()
-                .map(recipeIngredient -> {
-                    if (recipeIngredient.isFormal()) {
-                        return recipeIngredient.getIngredient();
-                    }
+        List<RecipeIngredient> ingredients = recipe.getIngredients().stream()
+                .filter(ri -> ri.isFormal()).toList();
 
-                    return null;
-                }).toList();
-
-        double kcals = 0;
-        for (Ingredient ingredient : ingredients) {
-            kcals += (ingredient.getFatPer100g() + ingredient.getCarbsPer100g() + ingredient.getProteinPer100g());
+        int factor = 1;
+        if (scaler.getValue() != null) {
+            factor = scaler.getValue();
         }
 
-        return kcals / ingredients.size();
+        double kcals = 0;
+        double weight = 0;
+        for (RecipeIngredient ingredient : ingredients) {
+            kcals += ingredient.getIngredient().getKcalPer100g() * baseAmounts.get(ingredient)
+                    * factor / 100;
+            weight += ingredient.getAmount();
+        }
+
+        if (ingredients.isEmpty())
+            return 0;
+        return kcals / weight * 100;
     }
 
     private void showNutritionalValues(Recipe recipe) {
@@ -1348,7 +1344,11 @@ public class MainCtrl {
             return;
         }
 
-        int factor = scaler.getValue();
+        int factor = 1;
+        if (scaler.getValue() != null) {
+            factor = scaler.getValue();
+        }
+
         recipe.setServings(baseServings * factor);
 
         for (RecipeIngredient ri : recipe.getIngredients()) {
@@ -1357,6 +1357,8 @@ public class MainCtrl {
             }
         }
 
+        inferredKcalsLabel.setText(String.valueOf(calculateKcal(recipe)));
+        servingsValueLabel.setText(String.valueOf(baseServings * factor));
         normalizeUnits(recipe);
         showNutritionalValues(recipe);
         showIngredients(recipe);
@@ -1386,10 +1388,9 @@ public class MainCtrl {
             }
         }
     }
-
+    
     /**
      * Ensures a recipe is selected; shows an error if not.
-     *
      * @return true if a recipe is selected, false otherwise
      */
     private boolean requireSelectedRecipe() {
@@ -1400,5 +1401,43 @@ public class MainCtrl {
         return true;
     }
 
+    private void setHealthStatus(Recipe recipe) {
+        double kcals = calculateKcal(recipe);
 
+        if (kcals < 200) {
+            healthStatus.setStyle("-fx-background-color: green");
+            healthyStatus.setText("Healthy");
+            healthyStatus.setStyle("-fx-text-fill: #ffffff");
+        } else if (kcals < 500) {
+            healthStatus.setStyle("-fx-background-color: yellow");
+            healthyStatus.setText("Moderately Healthy");
+            healthyStatus.setStyle("-fx-text-fill: #000000");
+        } else {
+            healthyStatus.setText("Unhealthy");
+            healthStatus.setStyle("-fx-background-color: red");
+            healthyStatus.setStyle("-fx-text-fill: #ffffff");
+        }
+    }
+
+    @FXML
+    private void onInfoHealthButtonClicked() {
+        VBox root = new VBox();
+        Label text = new Label("""
+                Healthiness is calculated according to the following principle:
+                  • less than 200 kcals/100g → healthy
+                  • less than 500 kcals/100g → moderately healthy
+                  • otherwise → unhealthy""");
+
+        text.setStyle("-fx-text-fill: #ffffff");
+        root.getChildren().add(text);
+        root.setAlignment(Pos.CENTER);
+        root.setStyle("-fx-background-color: #8191b3");
+
+        Stage popup = new Stage();
+        popup.setTitle("Health Information");
+        popup.setResizable(false);
+        popup.setScene(new Scene(root, 400, 200));
+        popup.show();
+    }
 }
+
