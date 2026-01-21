@@ -1168,6 +1168,7 @@ public class MainCtrl {
         editTitleStage.setResizable(false);
 
         editTitleStage.show();
+        baseServings = getSelectedRecipe().getServings();
     }
 
     /**
