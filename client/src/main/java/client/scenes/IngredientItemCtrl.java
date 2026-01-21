@@ -107,6 +107,9 @@ public class IngredientItemCtrl {
         }
     }
 
+    /**
+     * Changes combo box from formal to informal
+     */
     private void handleUnitComboBoxChange(String newVal) {
         if (ingredientData == null || updatingFields) return;
 
