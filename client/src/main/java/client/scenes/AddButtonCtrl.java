@@ -1,7 +1,10 @@
 package client.scenes;
 
+import java.util.ResourceBundle;
+
 import com.google.inject.Inject;
 
+import client.config.ConfigService;
 import client.utils.RecipeServerUtils;
 import commons.Recipe;
 import javafx.animation.PauseTransition;
@@ -14,95 +17,128 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-
 public class AddButtonCtrl {
+
     private final MainCtrl mainCtrl;
     private final RecipeServerUtils recipeServerUtils;
+    private ConfigService configService;
+
+    @FXML 
+    private Label addRecipeInfo;
 
     @FXML
     private Button recipeAddButton;
-
     @FXML
     private TextField recipeInput;
-
     @FXML
     private Label statusLabel;
-
     @FXML
     private TextField servingsInput;
-
     @FXML
     private Button setServingsButton;
-
     @FXML
     private ChoiceBox<String> languageChoiceBox;
 
     /**
-     * Constructs an AddButtonCtrl and injects the necessary dependencies.
-     * The injected dependencies allow this controller to communicate with the
-     * server for recipe operations and to update the main UI.
-     * @param mainCtrl the main controller, used to update the UI when a recipe is added
-     * @param recipeServerUtils the utility class responsible for server communication,
-     *                          used to create and manage recipes
+     * * Constructs an AddButtonCtrl and injects the necessary dependencies. *
+     * The injected dependencies allow this controller to communicate with the *
+     * server for recipe operations and to update the main UI. * @param mainCtrl
+     * the main controller, used to update the UI when a recipe is added
+     *
+     *
+     * @param recipeServerUtils the utility class responsible for server
+     * communication, * used to create and manage recipes
      */
     @Inject
-    public AddButtonCtrl(MainCtrl mainCtrl,  RecipeServerUtils recipeServerUtils) {
+    public AddButtonCtrl(MainCtrl mainCtrl, RecipeServerUtils recipeServerUtils, ConfigService configService) {
         this.mainCtrl = mainCtrl;
         this.recipeServerUtils = recipeServerUtils;
+        this.configService = configService;
     }
 
     /**
-     * Handles the action of adding a new recipe when the user clicks the "Add" button.
+     * Starts up this ui
+     */
+    @FXML
+    public void initialize() {
+        loadLanguages();
+    }
+
+    private void loadLanguages() {
+        ResourceBundle props = getTranslationsBundle();
+
+        languageChoiceBox.getItems().clear();
+
+        languageChoiceBox.getItems().addAll(
+            props.getString("label.english"),
+            props.getString("label.dutch"),
+            props.getString("label.romanian"),
+            props.getString("label.spanish")
+        );
+
+        languageChoiceBox.getSelectionModel().selectFirst();
+
+        addRecipeInfo.setText(props.getString("label.addRecipeInfo"));
+        recipeInput.setPromptText(props.getString("label.addRecipeName"));
+        servingsInput.setPromptText(props.getString("label.addRecipeServings"));
+        recipeAddButton.setText(props.getString("label.addRecipeButton"));
+        setServingsButton.setText(props.getString("label.addServingsButton"));
+    }
+
+
+    /**
+     * * Handles the action of adding a new recipe when the user clicks the
+     * "Add" button.
      */
     @FXML
     private void recipeAddRequest() {
+        ResourceBundle props = getTranslationsBundle();
         String query = recipeInput.getText().trim();
 
+        // Check if recipe name is empty
         if (query.isEmpty()) {
-            statusLabel.setText("Please enter a name.");
+            statusLabel.setText(props.getString("label.emptyRecipeName"));
             statusLabel.setStyle("-fx-text-fill: red;");
             statusLabel.setVisible(true);
             return;
         }
 
+        // Validate recipe name
         if (!recipeValidation(query)) {
             statusLabel.setVisible(true);
             return;
         }
 
+        // Capitalize first letter
         query = query.substring(0, 1).toUpperCase() + query.substring(1);
         Recipe recipe = new Recipe(query);
 
+        // Validate servings
         int servings = validateServings(servingsInput.getText());
-        if (servings == -1) {
-            return;
-        } else {
-            recipe.setServings(servings);
-            servingsInput.clear();
-        }
+        if (servings == -1) return;
+        recipe.setServings(servings);
+        servingsInput.clear();
 
+        // Set language based on choice box
         String selectedLanguage = languageChoiceBox.getValue().toLowerCase().trim();
-        if (selectedLanguage.equals("english")) {
-            recipe.setLanguage("En");
-        } else if (selectedLanguage.equals("dutch")) {
-            recipe.setLanguage("NL");
-        } else if (selectedLanguage.equals("romanian")) {
-            recipe.setLanguage("Ro");
-        } else if (selectedLanguage.equals("spanish")) {
-            recipe.setLanguage("Es");
+        switch (selectedLanguage) {
+            case "english" -> recipe.setLanguage("En");
+            case "dutch" -> recipe.setLanguage("NL");
+            case "romanian" -> recipe.setLanguage("Ro");
+            case "spanish" -> recipe.setLanguage("Es");
         }
 
+        // Try to create recipe and update UI
         try {
             recipe.setRecipeId(recipeServerUtils.createRecipe(recipe));
             mainCtrl.addRecipe(recipe);
-
             recipeInput.clear();
 
-            statusLabel.setText("Recipe added!");
+            statusLabel.setText(props.getString("label.successMessage"));
             statusLabel.setStyle("-fx-text-fill: green;");
             statusLabel.setVisible(true);
 
-            // DOnly close window after 2 seconds
+            // Auto-close after 2 seconds
             PauseTransition delay = new PauseTransition(Duration.seconds(2));
             delay.setOnFinished(event -> {
                 Stage stage = (Stage) recipeAddButton.getScene().getWindow();
@@ -111,29 +147,29 @@ public class AddButtonCtrl {
             delay.play();
 
         } catch (Exception e) {
-            statusLabel.setText("Something went wrong during adding recipe.");
+            statusLabel.setText(props.getString("label.failedrecipeAdd"));
             statusLabel.setStyle("-fx-text-fill: red;");
             statusLabel.setVisible(true);
-            System.out.println(
-                "Something went wrong during the creation of a recipe: " + e.getMessage()
-            );
+            System.out.println("Something went wrong during the creation of a recipe: " + e.getMessage());
         }
     }
 
 
     /**
-     * Checks whether the given input suffices the criteria
-     * Also makes sure the first letter is a capital
-     * @param query the given recipe name by the user
+     * * Checks whether the given input suffices the criteria * Also makes sure
+     * the first letter is a capital * @param query the given recipe name by the
+     * user
      */
     private boolean recipeValidation(String query) {
+        ResourceBundle props = getTranslationsBundle();
+
         if (query.length() > 20) {
-            statusLabel.setText("The name is longer than 20 characters.");
+            statusLabel.setText(props.getString("label.tooLongName"));
             statusLabel.setStyle("-fx-text-fill: red;");
             return false;
         }
-        if (query.matches(".*[\\*\"'\\`@].*")) {
-            statusLabel.setText("The name contains illegal characters.");
+        if (query.matches(".*[\\*\"'\\@].*")) {
+            statusLabel.setText(props.getString("label.illegalName"));
             statusLabel.setStyle("-fx-text-fill: red;");
             return false;
         }
@@ -147,40 +183,54 @@ public class AddButtonCtrl {
      */
     @FXML
     private int validateServings(String text) {
+        ResourceBundle props = getTranslationsBundle();
+
         try {
             int servings = Integer.parseInt(text);
-
             if (servings < 1) {
-                showError("More Than 0", "Servings must be an integer more than 0.");
+                showError(props.getString("label.negativeServings"),
+                        props.getString("label.negativeServings.body"));
                 return -1;
             }
-
             return servings;
-
         } catch (NumberFormatException e) {
-            showError("Must Be Number", "Servings must be a number.");
+            showError(props.getString("label.illegalServing"),
+                    props.getString("label.illegalServing.body"));
             return -1;
         }
     }
 
-    @FXML
-    public void initialize() {
-        languageChoiceBox.getItems().addAll("English", "Dutch", "Romanian", "Spanish");
-        languageChoiceBox.getSelectionModel().selectFirst();
-    }
-
 
     /**
-     * A method that creates an error alert with a heading and content
-     * @param header The header of the error
-     * @param content the content of the error
+     * * A method that creates an error alert with a heading and content
+     *
+     *
+     * @param header The header of the error * @param content the content of the
+     * error
      */
     private void showError(String header, String content) {
+        ResourceBundle props = getTranslationsBundle();
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
+        alert.setTitle(props.getString("alert.error"));
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.showAndWait();
     }
-}
 
+    private ResourceBundle getTranslationsBundle() {
+        try {
+            String languageCode = configService.getLanguage();
+            return java.util.ResourceBundle.getBundle("client.scenes.Translations", new java.util.Locale(languageCode));
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Failed to load language bundle for code: " + configService.getLanguage());
+            return java.util.ResourceBundle.getBundle("client.scenes.Translations", java.util.Locale.ENGLISH);
+        }
+    }
+
+    public void onShow() {
+        loadLanguages();
+    }
+
+    
+}

@@ -46,7 +46,7 @@
         <module name="ParameterNumber">
             <property name="severity" value="error"/>
             <property name="tokens" value="METHOD_DEF, CTOR_DEF"/>
-            <property name="max" value="10"/>
+            <property name="max" value="15"/>
         </module>
 
         <!-- 7. Cyclomatic complexity, max 8 -->

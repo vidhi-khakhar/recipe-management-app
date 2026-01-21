@@ -4,6 +4,7 @@ import client.utils.RecipeServerUtils;
 import commons.Recipe;
 import jakarta.inject.Inject;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
@@ -17,10 +18,38 @@ public class EditTitleCtrl {
     private final MainCtrl mainCtrl;
     private final RecipeServerUtils recipeServerUtils;
 
+    @FXML 
+    private Label editRecipeWindowTitle;
+
+    @FXML
+    private TextField editRecipeTitle;
+
+    @FXML
+    private TextField servingsInput;
+
+    @FXML
+    private ChoiceBox<String> languageChoiceBox;
+
+    @FXML
+    private Button editTitleAddButton;
+
+    @FXML
+    private Button setServingsButton;
+
+    
+    @FXML
+    private Label statusLabel;
+
     @Inject
     public EditTitleCtrl(MainCtrl mainCtrl, RecipeServerUtils recipeServerUtils) {
         this.mainCtrl = mainCtrl;
         this.recipeServerUtils = recipeServerUtils;
+    }
+
+    @FXML
+    public void initialize() {
+        languageChoiceBox.getItems().addAll("English", "Dutch", "Romanian", "Spanish");
+        languageChoiceBox.getSelectionModel().selectFirst();
     }
 
     /**
@@ -28,7 +57,7 @@ public class EditTitleCtrl {
      */
     @FXML
     private void editTitle() {
-        String query = title.getText().trim();
+        String query = editRecipeTitle.getText().trim();
         if (query.isEmpty()) {
             statusLabel.setText("Please enter a name.");
             statusLabel.setStyle("-fx-text-fill: red;");
@@ -52,9 +81,17 @@ public class EditTitleCtrl {
                         recipe.setLanguage("Es");
                     }
 
+                    int servings = validateServings(servingsInput.getText());
+                    if (servings == -1) {
+                        return;
+                    } else {
+                        recipe.setServings(servings);
+                        servingsInput.clear();
+                    }
+
                     recipeServerUtils.replaceRecipe(recipe.getRecipeId(), recipe);
 
-                    title.clear();
+                    editRecipeTitle.clear();
                     statusLabel.setText("Title has been edited!");
 
 
@@ -67,6 +104,7 @@ public class EditTitleCtrl {
                 } catch (Exception e) {
                     statusLabel.setText("Error editing title of recipe.");
                     statusLabel.setStyle("-fx-text-fill: red;");
+                    mainCtrl.recoverFromError("Error editing title of recipe!");
                 }
             }
         }
@@ -93,22 +131,42 @@ public class EditTitleCtrl {
         return true;
     }
 
+    /**
+     * Validates servings input.
+     * @param text the user input to be converted
+     * @return -1 if invalid, number of servings otherwise
+     */
     @FXML
-    public void initialize() {
-        languageChoiceBox.getItems().addAll("English", "Dutch", "Romanian", "Spanish");
-        languageChoiceBox.getSelectionModel().selectFirst();
+    private int validateServings(String text) {
+        try {
+            int servings = Integer.parseInt(text);
+
+            if (servings < 1) {
+                showError("More Than 0", "Servings must be an integer more than 0.");
+                return -1;
+            }
+
+            return servings;
+
+        } catch (NumberFormatException e) {
+            showError("Must Be Number", "Servings must be a number.");
+            return -1;
+        }
+    }
+
+    /**
+     * A method that creates an error alert with a heading and content
+     * @param header The header of the error
+     * @param content the content of the error
+     */
+    private void showError(String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 
 
 
-    @FXML
-    private ChoiceBox<String> languageChoiceBox;
-    @FXML
-    private Button editTitleButton;
-
-    @FXML
-    private TextField title;
-
-    @FXML
-    private Label statusLabel;
 }

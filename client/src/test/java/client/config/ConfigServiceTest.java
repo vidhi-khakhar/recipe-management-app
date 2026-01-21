@@ -1,67 +1,92 @@
 package client.config;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.MockitoAnnotations;
 
-public class ConfigServiceTest {
+import client.model.ShoppingList;
 
-    @TempDir
-    Path tempDir;
+class ConfigServiceTest {
 
     private ConfigService configService;
+    private File configFile;
 
+    /**
+     * Creates a temporary config file and
+     * initializes a ConfigService before each test.
+     */
     @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
+    void setUp(@TempDir Path tempDir) {
+        configFile = tempDir.resolve("config.json").toFile();
+        configService = new ConfigService(configFile.getAbsolutePath());
     }
 
+    /**
+     * Asserts that a default config is created
+     * when no config file exists.
+     */
     @Test
-    public void testConstructorCreatesDefaultConfig() throws IOException {
-        File configFile = tempDir.resolve("config.json").toFile();
-        configService = new ConfigService(configFile.getAbsolutePath());
-
+    void createsDefaultConfigWhenFileDoesNotExist() {
         Config config = configService.getConfig();
 
         assertNotNull(config);
         assertEquals("http://localhost:8080", config.getServerUrl());
-        assertNotNull(config.getFavoriteRecipeIds());
+        assertEquals("en", config.getLanguage()); // Changed to String
         assertNotNull(config.getShoppingList());
+        assertNotNull(config.getFavoriteRecipeIds());
     }
 
+    /**
+     * Asserts that saving the config actually
+     * writes data to disk.
+     */
     @Test
-    public void testGetConfig() throws IOException {
-        File configFile = tempDir.resolve("config.json").toFile();
-        configService = new ConfigService(configFile.getAbsolutePath());
-
+    void saveWritesConfigToFile() {
         Config config = configService.getConfig();
-
-        assertNotNull(config);
-    }
-
-    @Test
-    public void testReload() throws IOException {
-        File configFile = tempDir.resolve("config.json").toFile();
-        configService = new ConfigService(configFile.getAbsolutePath());
-
-        configService.reload();
-
-        assertNotNull(configService.getConfig());
-    }
-
-    @Test
-    public void testSave() throws IOException {
-        File configFile = tempDir.resolve("config.json").toFile();
-        configService = new ConfigService(configFile.getAbsolutePath());
+        config.setLanguage("de"); // Changed to String
 
         configService.save();
 
         assertTrue(configFile.exists());
+        assertTrue(configFile.length() > 0);
+    }
+
+    /**
+     * Asserts that reloading the config restores
+     * the saved values from disk.
+     */
+    @Test
+    void reloadLoadsSavedConfig() {
+        Config config = configService.getConfig();
+        config.setLanguage("fr"); // Changed to String
+        configService.save();
+
+        configService.reload();
+        Config reloaded = configService.getConfig();
+
+        assertEquals("fr", reloaded.getLanguage());
+    }
+
+    /**
+     * Asserts that a missing shopping list
+     * is automatically initialized when loading.
+     */
+    @Test
+    void shoppingListIsNeverNullAfterLoad() {
+        Config config = configService.getConfig();
+        config.setShoppingList(null);
+        configService.save();
+
+        configService.reload();
+        Config reloaded = configService.getConfig();
+
+        assertNotNull(reloaded.getShoppingList());
+        assertTrue(reloaded.getShoppingList() instanceof ShoppingList);
     }
 }
