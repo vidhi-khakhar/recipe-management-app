@@ -2,27 +2,28 @@ package client.scenes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
+
+import com.google.inject.Inject;
 
 import client.MyFXML;
+import client.config.ConfigService;
 import client.shopping.RecipeIngredientData;
 import client.shopping.RecipeShoppingService;
 import commons.Recipe;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Spinner;
-import javafx.scene.layout.VBox;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.util.Pair;
-
-import com.google.inject.Inject;
-
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.layout.VBox;
 
 /**
  * Controller for the Recipe Shopping List window.
@@ -117,6 +118,8 @@ public class RecipeShoppingListCtrl {
      * List of ingredient controllers for managing individual ingredient UI items.
      */
     private List<IngredientItemCtrl> ingredientCtrls;
+    private final ConfigService configService;
+
 
     /**
      * Constructor for dependency injection.
@@ -125,11 +128,13 @@ public class RecipeShoppingListCtrl {
      * @param myFXML FXML loader utility
      */
     @Inject
-    public RecipeShoppingListCtrl(RecipeShoppingService recipeShoppingService, MyFXML myFXML) {
+    public RecipeShoppingListCtrl(RecipeShoppingService recipeShoppingService, MyFXML myFXML, 
+        ConfigService configService) {
         this.recipeShoppingService = recipeShoppingService;
         this.myFXML = myFXML;
         this.ingredients = new ArrayList<>();
         this.ingredientCtrls = new ArrayList<>();
+        this.configService = configService;
     }
 
     /**
@@ -203,15 +208,40 @@ public class RecipeShoppingListCtrl {
         shoppingList.getChildren().clear();
         ingredientCtrls.clear();
 
+        // Load the current language bundle
+        ResourceBundle bundle;
+        try {
+            String lang = configService.getLanguage();
+            bundle = ResourceBundle.getBundle("client.scenes.Translations", new java.util.Locale(lang));
+        } catch (Exception e) {
+            bundle = ResourceBundle.getBundle("client.scenes.Translations", java.util.Locale.ENGLISH);
+        }
+
         for (RecipeIngredientData ingredient : ingredients) {
             try {
-                // Load ingredient item component
-                Pair<IngredientItemCtrl, Parent> loader = myFXML.load(IngredientItemCtrl.class,
-                    "client", "scenes", "IngredientItem.fxml");
-                IngredientItemCtrl ctrl = loader.getKey();
-                Parent ingredientNode = loader.getValue();
+                FXMLLoader fxmlLoader = new FXMLLoader(
+                        getClass().getResource("/client/scenes/IngredientItem.fxml"),
+                        bundle
+                );
 
-                // Setup the controller
+                // Set a controller factory to inject ConfigService
+                fxmlLoader.setControllerFactory(clazz -> {
+                    if (clazz == IngredientItemCtrl.class) {
+                        return new IngredientItemCtrl(configService);
+                    } else {
+                        try {
+                            return clazz.getDeclaredConstructor().newInstance();
+                        } catch (Exception ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    }
+                });
+
+                // Load the FXML and get controller
+                Parent ingredientNode = fxmlLoader.load();
+                IngredientItemCtrl ctrl = fxmlLoader.getController();
+
+                // Initialize controller with data and callbacks
                 ctrl.setIngredientData(ingredient.copy());
                 ctrl.setOnRemove(() -> removeIngredient(ingredient));
                 ctrl.setOnUpdate(updatedData -> {
@@ -223,14 +253,19 @@ public class RecipeShoppingListCtrl {
                 });
                 ctrl.setOnChange(this::validateIngredients);
 
-                // Add to UI
+                // Add to UI and controller list
                 shoppingList.getChildren().add(ingredientNode);
                 ingredientCtrls.add(ctrl);
+
             } catch (Exception e) {
                 System.err.println("Failed to create ingredient item: " + e.getMessage());
+                e.printStackTrace();
             }
         }
     }
+
+
+
 
     /**
      * Scales all formal ingredients to the specified number of servings.
