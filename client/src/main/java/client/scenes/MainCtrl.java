@@ -672,7 +672,7 @@ public class MainCtrl {
      * Opens the add ingredient to recipe popup window.
      */
     @FXML
-    void showAddRecipeIngredientWindow() {
+    void showAddRecipeIngredientWindow(boolean isAdd) {
         if (addRecipeIngredientScene == null) {
             System.err.println("AddRecipeIngredientScene not initialized!");
             return;
@@ -681,7 +681,7 @@ public class MainCtrl {
         java.util.ResourceBundle props = getTranslationsBundle(); 
 
         Stage secondaryStage = new Stage();
-        addRecipeIngredientCtrl.onStart();
+        addRecipeIngredientCtrl.onStart(isAdd);
         addRecipeIngredientCtrl.initScenes(nutritionScene, addRecipeIngredientScene);
 
         secondaryStage.setTitle(props.getString("label.addRecipeIngredientsTitle"));
@@ -705,7 +705,7 @@ public class MainCtrl {
             requireSelectedRecipe();
 
             addRecipeIngredientCtrl.setRecipe(selectedRecipe);
-            showAddRecipeIngredientWindow();
+            showAddRecipeIngredientWindow(true);
 
             RecipeIngredient newIngredient = addRecipeIngredientCtrl.getRecipeIngredient();
 
@@ -823,7 +823,7 @@ public class MainCtrl {
         }
 
         addRecipeIngredientCtrl.setRecipe(selectedRecipe);
-        showAddRecipeIngredientWindow();
+        showAddRecipeIngredientWindow(false);
         RecipeIngredient updated = addRecipeIngredientCtrl.getRecipeIngredient();
 
         if (updated != null) {
@@ -1314,11 +1314,7 @@ public class MainCtrl {
     @FXML
     private void initializeTextProperties() {
         ResourceBundle props = getTranslationsBundle();
-
-        // 1️⃣ Update static UI labels once
         updateStaticUILabels(props);
-
-        // 2️⃣ Update dynamic labels (selected recipe only)
         updateSelectedRecipeLabels(props);
     }
 
@@ -1356,7 +1352,7 @@ public class MainCtrl {
      * Returns the ResourceBundle for the currently selected language. This
      * ensures a consistent path to the translations file.
      */
-    private java.util.ResourceBundle getTranslationsBundle() {
+    private ResourceBundle getTranslationsBundle() {
         try {
             String languageCode = configService.getLanguage();
             return java.util.ResourceBundle.getBundle(
@@ -1491,6 +1487,27 @@ public class MainCtrl {
         }
 
         return true;
+    }
+
+    @FXML
+    private void onInfoHealthButtonClicked() {
+        VBox root = new VBox();
+        Label text = new Label("""
+                Healthiness is calculated according to the following principle:
+                  • less than 200 kcals/100g → healthy
+                  • less than 500 kcals/100g → moderately healthy
+                  • otherwise → unhealthy""");
+
+        text.setStyle("-fx-text-fill: #ffffff");
+        root.getChildren().add(text);
+        root.setAlignment(Pos.CENTER);
+        root.setStyle("-fx-background-color: #8191b3");
+
+        Stage popup = new Stage();
+        popup.setTitle("Health Information");
+        popup.setResizable(false);
+        popup.setScene(new Scene(root, 400, 200));
+        popup.show();
     }
 
 }

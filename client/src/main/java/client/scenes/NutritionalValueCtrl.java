@@ -10,10 +10,19 @@ import jakarta.ws.rs.ProcessingException;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.stage.Stage;
+
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -91,6 +100,9 @@ public class NutritionalValueCtrl {
     private Button confirmButton;
     @FXML
     private Button cancelButton;
+
+    @FXML
+    private Button healthButton;
 
     /**
      * This method initializes the NutritionalValueUI controller
@@ -528,4 +540,54 @@ public class NutritionalValueCtrl {
         System.out.println("Selected ingredient: " + selected.getId());
     }
 
+    @FXML
+    void showHealthChart() {
+        Ingredient selectedIngredient = sidebarList.getSelectionModel().getSelectedItem();
+
+        if (selectedIngredient == null) {
+            showError("No Selection", "Please select an ingredient first.");
+            return;
+        }
+
+        showPieChart(selectedIngredient);
+    }
+
+    void showPieChart(Ingredient ingredient) {
+        PieChart.Data protein = new PieChart.Data(
+                "Protein", ingredient.getProteinPer100g());
+        PieChart.Data fat = new PieChart.Data(
+                "Fat", ingredient.getFatPer100g());
+        PieChart.Data carbs = new PieChart.Data(
+                "Carbs", ingredient.getCarbsPer100g());
+
+        PieChart pieChart = new PieChart();
+        pieChart.getData().addAll(protein, fat, carbs);
+        pieChart.setTitle("Healthiness of " + ingredient.getName());
+
+        VBox root = new VBox(pieChart);
+
+        Label healthiness = new Label();
+        Label kcalInfo = new Label();
+
+        double kcals = ingredient.getKcalPer100g();
+        kcalInfo.setText("Ingredient contains " + kcals + " kcals/100g.");
+
+        if (kcals < 200) {
+            healthiness.setText("Ingredient is healthy.");
+        } else if (kcals < 500) {
+            healthiness.setText("Ingredient is moderately healthy.");
+        } else {
+            healthiness.setText("Ingredient is unhealthy.");
+        }
+
+        root.setAlignment(Pos.CENTER);
+        root.getChildren().add(kcalInfo);
+        root.getChildren().add(healthiness);
+
+        Stage popup = new Stage();
+        popup.setTitle("Health Overview");
+        popup.setScene(new Scene(root, 400, 400));
+        popup.setResizable(false);
+        popup.show();
+    }
 }

@@ -27,6 +27,8 @@ public class AddRecipeIngredientCtrl {
 
     private Recipe recipe;
     private RecipeIngredient recipeIngredient;
+    private Long ingredientId;
+    private boolean isAdd;
 
     private final IngredientServerUtils ingredientServerUtils;
     private final ConfigService configService;
@@ -36,6 +38,9 @@ public class AddRecipeIngredientCtrl {
 
     @FXML
     private TextField amountTextField;
+
+    @FXML
+    private Label titleLabel;
 
     @FXML
     private Button cancelButton;
@@ -92,7 +97,8 @@ public class AddRecipeIngredientCtrl {
      * The ChoiceBoxes have the default value of the first element.
      */
     @FXML
-    public void onStart() {
+    public void onStart(boolean isAdd) {
+        this.isAdd = isAdd;
         ResourceBundle props = getTranslationsBundle();
         loadLanguages();
 
@@ -101,8 +107,16 @@ public class AddRecipeIngredientCtrl {
 
         populateIngredientDropdown();
 
-        if (!ingredientServerUtils.getAllIngredients().isEmpty()) {
+        if (!ingredientServerUtils.getAllIngredients().isEmpty() && isAdd) {
             ingredientChoiceBox.setValue(ingredientChoiceBox.getItems().get(0));
+            ingredientChoiceBox.setDisable(false);
+            titleLabel.setText("Add Ingredient");
+        } else if (!ingredientServerUtils.getAllIngredients().isEmpty() && !isAdd) {
+            ingredientChoiceBox.setValue(getIngredient(ingredientId));
+            ingredientChoiceBox.setDisable(true);
+            ingredientChoiceBox.setStyle("-fx-background-color: #E6E6FA");
+            titleLabel.setText("Edit Ingredient");
+
         } else {
             showError(
                 props.getString("alert.noIngredients"),
@@ -113,6 +127,7 @@ public class AddRecipeIngredientCtrl {
 
         String formalUnit = props.getString("label.formalUnit");
         String informalUnit = props.getString("label.informalUnit");
+
 
         unitTypeChoiceBox.getItems().clear();
         unitTypeChoiceBox.getItems().addAll(formalUnit, informalUnit);
@@ -142,7 +157,7 @@ public class AddRecipeIngredientCtrl {
         Ingredient ingredient = ingredientChoiceBox.getSelectionModel().getSelectedItem();
 
         // Check for duplicates using localized alert
-        if (duplicateIngredient(recipe, ingredient)) {
+        if (duplicateIngredient(recipe, ingredient) && isAdd) {
             showError(
                 props.getString("alert.duplicateIngredient"),
                 props.getString("alert.duplicateIngredient.body")
@@ -360,4 +375,18 @@ public class AddRecipeIngredientCtrl {
         }
     }
 
+
+    public void setIngredient(Long id) {
+        this.ingredientId = id;
+    }
+
+    private Ingredient getIngredient(Long id) {
+        for (Ingredient i : ingredientChoiceBox.getItems()) {
+            if (i.getId().equals(id)) {
+                return i;
+            }
+        }
+
+        return null;
+    }
 }
