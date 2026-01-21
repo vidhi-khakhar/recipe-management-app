@@ -1,5 +1,7 @@
 package client;
 
+import java.util.ResourceBundle;
+
 import commons.Recipe;
 import commons.RecipeIngredient;
 
@@ -71,21 +73,21 @@ public class RecipeFormatter {
      * @param RecipeLanguage: the abriviated language from the recipe entity
      * @return: The full name of the recipe language
      */
-    public static String getFullRecipeLanguage(String recipeLanguage) {
-        String fullRecipeLanguage = recipeLanguage;
-        if (recipeLanguage.isEmpty()) {
-            return fullRecipeLanguage;
-        } if (recipeLanguage.toLowerCase().trim().equals("en")) {
-            fullRecipeLanguage = "English";
-        } else if (recipeLanguage.toLowerCase().trim().equals("nl")) {
-            fullRecipeLanguage = "Nederlands";
-        } else if (recipeLanguage.toLowerCase().trim().equals("es")) {
-            fullRecipeLanguage = "Españiol";
-        } else if (recipeLanguage.toLowerCase().trim().equals("ro")) {
-            fullRecipeLanguage = "română";
+    public static String getFullRecipeLanguage(String recipeLanguage, ResourceBundle bundle) {
+        if (recipeLanguage == null || recipeLanguage.isBlank() || bundle == null) {
+            return "";
         }
 
-        return fullRecipeLanguage;
+        // Normalize recipe language ONCE
+        String code = recipeLanguage.trim().toLowerCase();
+
+        // Accept both "en" and "en-US" style just in case
+        if (code.startsWith("en")) return bundle.getString("label.english");
+        if (code.startsWith("nl")) return bundle.getString("label.dutch");
+        if (code.startsWith("es")) return bundle.getString("label.spanish");
+        if (code.startsWith("ro")) return bundle.getString("label.romanian");
+
+        return recipeLanguage; // safe fallback
     }
 
 }

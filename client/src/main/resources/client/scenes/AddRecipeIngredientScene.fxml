@@ -8,37 +8,37 @@
    <children>
       <ChoiceBox fx:id="unitChoiceBox" layoutX="530.0" layoutY="266.0" prefHeight="55.0" prefWidth="50.0" styleClass="centerbox" stylesheets="@FoodPal.css" />
       <TextField fx:id="amountTextField" layoutX="311.0" layoutY="268.0" prefHeight="51.0" prefWidth="200.0" styleClass="searchbar" stylesheets="@FoodPal.css" />
-      <Button fx:id="cancelButton" layoutX="308.0" layoutY="374.0" mnemonicParsing="false" onAction="#cancelButtonClicked" prefHeight="50.0" prefWidth="148.0" text="Cancel">
+      <Button fx:id="cancelButton" layoutX="308.0" layoutY="374.0" mnemonicParsing="false" onAction="#cancelButtonClicked" prefHeight="50.0" prefWidth="148.0" text="%label.cancelButton">
          <font>
             <Font size="18.0" />
          </font>
       </Button>
-      <Button fx:id="saveButton" layoutX="129.0" layoutY="374.0" mnemonicParsing="false" onAction="#saveButtonClicked" prefHeight="50.0" prefWidth="148.0" text="Save">
+      <Button fx:id="saveButton" layoutX="129.0" layoutY="374.0" mnemonicParsing="false" onAction="#saveButtonClicked" prefHeight="50.0" prefWidth="148.0" text="%label.saveButton">
          <font>
             <Font size="18.0" />
          </font>
       </Button>
-      <Label fx:id="infoLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="109.0" layoutY="321.0" prefHeight="46.0" prefWidth="399.0" stylesheets="@FoodPal.css" text="Informal values do not contribute to total kcals!" textAlignment="CENTER" textFill="#032085">
+      <Label fx:id="infoLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="109.0" layoutY="321.0" prefHeight="46.0" prefWidth="399.0" stylesheets="@FoodPal.css" text="%label.informalValueInfo" textAlignment="CENTER" textFill="#032085">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>
       </Label>
-      <Label fx:id="titleLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="-8.0" prefHeight="101.0" prefWidth="649.0" styleClass="header" stylesheets="@FoodPal.css" text="Add Ingredient" textAlignment="CENTER" textFill="WHITE">
+      <Label fx:id="addIngredientLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="-8.0" prefHeight="101.0" prefWidth="649.0" styleClass="header" stylesheets="@FoodPal.css" text="%label.addIngredientButton" textAlignment="CENTER" textFill="WHITE">
          <font>
             <Font size="39.0" />
          </font>
       </Label>
-      <Label layoutX="77.0" layoutY="119.0" prefHeight="50.0" prefWidth="200.0" styleClass="headerlabel" stylesheets="@FoodPal.css" text="Select Ingredient" textFill="WHITE" />
+      <Label fx:id="selectIngredient" layoutX="77.0" layoutY="119.0" prefHeight="50.0" prefWidth="200.0" styleClass="headerlabel" stylesheets="@FoodPal.css" text="%label.selectIngredient" textFill="WHITE" />
       <ChoiceBox fx:id="ingredientChoiceBox" layoutX="308.0" layoutY="119.0" prefHeight="50.0" prefWidth="200.0" styleClass="centerbox" stylesheets="@FoodPal.css" />
-      <Label layoutX="77.0" layoutY="194.0" prefHeight="50.0" prefWidth="200.0" styleClass="headerlabel" stylesheets="@FoodPal.css" text="Select Unit Type" textFill="WHITE" />
+      <Label fx:id="selectUnit" layoutX="77.0" layoutY="194.0" prefHeight="50.0" prefWidth="200.0" styleClass="headerlabel" stylesheets="@FoodPal.css" text="%label.selectUnit" textFill="WHITE" />
       <ChoiceBox fx:id="unitTypeChoiceBox" layoutX="308.0" layoutY="194.0" prefHeight="51.0" prefWidth="200.0" styleClass="centerbox" stylesheets="@FoodPal.css" />
-      <Label layoutX="77.0" layoutY="268.0" prefHeight="50.0" prefWidth="200.0" styleClass="headerlabel" stylesheets="@FoodPal.css" text="Enter Amount" textFill="WHITE" />
+      <Label fx:id="enterAmount" layoutX="77.0" layoutY="268.0" prefHeight="50.0" prefWidth="200.0" styleClass="headerlabel" stylesheets="@FoodPal.css" text="%label.enterAmount" textFill="WHITE" />
       <Button fx:id="newIngredient" layoutX="530.0" layoutY="119.0" mnemonicParsing="false" onAction="#addNewIngredient" prefHeight="51.0" prefWidth="66.0" styleClass="minusbutton" stylesheets="@NutritionalValue.css" text="+">
          <font>
             <Font size="18.0" />
          </font>
       </Button>
-      <Label fx:id="pleaseAddIngredientLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="109.0" layoutY="437.0" prefHeight="46.0" prefWidth="399.0" stylesheets="@FoodPal.css" text="Please add an ingredient! " textAlignment="CENTER" textFill="#ae1616">
+      <Label fx:id="pleaseAddIngredientLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="109.0" layoutY="437.0" prefHeight="46.0" prefWidth="399.0" stylesheets="@FoodPal.css" text="%label.addIngredientPlease" textAlignment="CENTER" textFill="#ae1616">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>

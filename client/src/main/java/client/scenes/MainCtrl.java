@@ -15,6 +15,21 @@
  */
 package client.scenes;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.ResourceBundle;
+
+import org.apache.commons.io.FileUtils;
+import org.controlsfx.control.CheckComboBox;
+
+import com.google.inject.Inject;
+
 import client.RecipeFormatter;
 import client.config.ConfigService;
 import client.favorite.FavoriteService;
@@ -22,7 +37,6 @@ import client.scenes.state.EmptyStateReason;
 import client.search.RecipeCollection;
 import client.search.SearchService;
 import client.utils.RecipeServerUtils;
-import com.google.inject.Inject;
 import commons.Recipe;
 import commons.RecipeIngredient;
 import commons.RecipeIngredientKey;
@@ -33,19 +47,26 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.apache.commons.io.FileUtils;
-import org.controlsfx.control.CheckComboBox;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
 
 public class MainCtrl {
 
@@ -60,6 +81,7 @@ public class MainCtrl {
     private AddRecipeIngredientCtrl addRecipeIngredientCtrl;
     private RecipeShoppingListCtrl recipeShoppingListCtrl;
     private NutritionalValueCtrl nutritionalValueCtrl;
+    private AddButtonCtrl addButtonCtrl;
 
     private final RecipeServerUtils recipeServerUtils;
     private final FavoriteService favoriteService;
@@ -77,14 +99,16 @@ public class MainCtrl {
     private ListView<Recipe> sidebarList;
 
     @FXML
-    private Button favoriteS;
+    private Button favoritesOnly;
 
     @FXML
-    private Label noIngredientTitle;
+    private Button cloneRecipeButton;
 
     @FXML
-    private Label noIngredientSubtitle;
+    private Label noRecipeTitle;
 
+    @FXML
+    private Label noRecipeSubtitle;
 
     @FXML
     private Button addIngredientButton;
@@ -111,6 +135,9 @@ public class MainCtrl {
     private Label itemLabel;
 
     @FXML
+    private Label FoodPalLabel;
+
+    @FXML
     private Button refreshButton;
 
     @FXML
@@ -120,11 +147,16 @@ public class MainCtrl {
     private Button removeRecipeButton;
 
     @FXML
+    private Pane healthStatus;
+
+    @FXML
+    private Label healthyStatus;
+
+    @FXML
     private Button nutritionalValueButton;
 
     @FXML
     private TextField searchBar;
-
 
     @FXML
     private Label titleRecipeLabel;
@@ -158,33 +190,42 @@ public class MainCtrl {
     @FXML
     private CheckComboBox<String> languageCheckBox;
 
-
     @FXML
     private Label recipeLanguageLabel;
 
     @FXML
-    private Pane healthStatus;
+    private Label languageLabel;
 
     @FXML
-    private Label healthyStatus;
+    private Label ingredientsLabel;
+
+    @FXML
+    private Label instructionsLabel;
+
+    @FXML
+    private Label nutritionalValuesLabel;
+
+    @FXML
+    private Label servingsLabel;
 
     /**
      * Initializes the scenes
      *
-     * @param primaryStage             the main stage
-     * @param nutritionScene           the nutrition scene
-     * @param recipeAddScene           the add recipe scene
+     * @param primaryStage the main stage
+     * @param nutritionScene the nutrition scene
+     * @param recipeAddScene the add recipe scene
      * @param addRecipeIngredientScene the add ingredient to recipe scene
-     * @param addRecipeIngredientCtrl  the add ingredient to recipe controller
-     * @param nutritionalValueCtrl     the nutritional value controller
-     * @param recipeShoppingListCtrl   the recipe shopping list controller
+     * @param addRecipeIngredientCtrl the add ingredient to recipe controller
+     * @param nutritionalValueCtrl the nutritional value controller
+     * @param recipeShoppingListCtrl the recipe shopping list controller
      */
     public void initScenes(Stage primaryStage, Scene nutritionScene,
-                           Scene recipeAddScene, Scene addRecipeIngredientScene,
-                           AddRecipeIngredientCtrl addRecipeIngredientCtrl,
-                           Scene editTitleScene, Scene shoppingListScene, Scene recipeShoppingListScene,
-                           NutritionalValueCtrl nutritionalValueCtrl,
-                           RecipeShoppingListCtrl recipeShoppingListCtrl) {
+            Scene recipeAddScene, Scene addRecipeIngredientScene,
+            AddRecipeIngredientCtrl addRecipeIngredientCtrl,
+            Scene editTitleScene, Scene shoppingListScene, Scene recipeShoppingListScene,
+            NutritionalValueCtrl nutritionalValueCtrl,
+            RecipeShoppingListCtrl recipeShoppingListCtrl, 
+            AddButtonCtrl addButtonCtrl) {
 
         this.primaryStage = primaryStage;
         this.nutritionScene = nutritionScene;
@@ -196,7 +237,7 @@ public class MainCtrl {
         this.recipeShoppingListScene = recipeShoppingListScene;
         this.recipeShoppingListCtrl = recipeShoppingListCtrl;
         this.nutritionalValueCtrl = nutritionalValueCtrl;
-
+        this.addButtonCtrl = addButtonCtrl;
         primaryStage.show();
     }
 
@@ -204,13 +245,13 @@ public class MainCtrl {
      * The constructor that connects the ServerUtils to this controller.
      *
      * @param recipeServerUtils the utility class responsible for server
-     *                          communication.
-     * @param favoriteService   the service class responsible for favoriting
-     *                          logic.
+     * communication.
+     * @param favoriteService the service class responsible for favoriting
+     * logic.
      */
     @Inject
     public MainCtrl(RecipeServerUtils recipeServerUtils, SearchService searchService,
-                    FavoriteService favoriteService, RecipeCollection recipeCollection, ConfigService configService) {
+            FavoriteService favoriteService, RecipeCollection recipeCollection, ConfigService configService) {
         this.recipeServerUtils = recipeServerUtils;
         this.searchService = searchService;
         this.favoriteService = favoriteService;
@@ -230,19 +271,26 @@ public class MainCtrl {
      */
     @FXML
     public void initialize() {
-        MenuItem englishFlag = makeLanguageImage("English", "EnglishFlag.png");
-        MenuItem dutchFlag = makeLanguageImage("Dutch", "DutchFlag.png");
-        MenuItem romanianFlag = makeLanguageImage("Romanian", "RomanianFlag.png");
-        MenuItem spanishFlag = makeLanguageImage("Spanish", "SpanishFlag.png");
 
-        languageSetter.getItems().addAll(englishFlag, dutchFlag, romanianFlag, spanishFlag);
-
-        updateLanguageButton("/images/EnglishFlag.png"); //this needs to be a config thing later"
+        // Set initial flag based on saved config
+        String currentLang = configService.getLanguage();
+        switch (currentLang) {
+            case "en" ->
+                setEnglishLanguage();
+            case "nl" ->
+                setDutchLanguage();
+            case "ro" ->
+                setRomanianLanguage();
+            case "es" ->
+                setSpanishLanguage();
+            default ->
+                setEnglishLanguage();
+        }
 
         sidebarList.setItems(recipesObservableList);
 
-        sidebarList.setCellFactory(lv ->
-                new RecipeListCell(favoriteService)
+        sidebarList.setCellFactory(lv
+                -> new RecipeListCell(favoriteService)
         );
 
         sidebarList.getSelectionModel()
@@ -275,8 +323,28 @@ public class MainCtrl {
                 scaleRecipe(getSelectedRecipe());
             }
         });
+
     }
 
+    @FXML
+    private void setEnglishLanguage() {
+        setAppLanguage("en", "/images/EnglishFlag.png");
+    }
+
+    @FXML
+    private void setDutchLanguage() {
+        setAppLanguage("nl", "/images/DutchFlag.png");
+    }
+
+    @FXML
+    private void setRomanianLanguage() {
+        setAppLanguage("ro", "/images/RomanianFlag.png");
+    }
+
+    @FXML
+    private void setSpanishLanguage() {
+        setAppLanguage("es", "/images/SpanishFlag.png");
+    }
 
     /**
      * Loads all recipes from the database. That way once the UI is opened, all
@@ -301,8 +369,6 @@ public class MainCtrl {
             favoriteService.removeDeletedFavorites(recipesFromDB);
             applySearch();
 
-
-
             if (!recipesObservableList.isEmpty()) {
                 if (previouslySelected != null && recipesObservableList.contains(previouslySelected)) {
                     sidebarList.getSelectionModel().select(previouslySelected);
@@ -325,10 +391,13 @@ public class MainCtrl {
      * @param removedIds the removed recipes' IDs
      */
     private void showFavoriteRemovedAlert(List<Long> removedIds) {
+        java.util.ResourceBundle props = getTranslationsBundle();
+
         Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Favorite deleted");
-        alert.setHeaderText("A favorite recipe got deleted");
-        alert.setContentText("One or more favorites have been removed by someone else.");
+        alert.setTitle(props.getString("alert.favouriteDeleted"));
+        alert.setHeaderText(props.getString("alert.favouriteDeleted.header"));
+        alert.setContentText(props.getString("alert.favouriteDeleted.content"));
+
         alert.showAndWait();
     }
 
@@ -349,37 +418,37 @@ public class MainCtrl {
         noRecipePane.setVisible(true);
         allRecipePane.setVisible(false);
 
-        if (reason == null) return;
+        if (reason == null) {
+            return;
+        }
+
+        java.util.ResourceBundle props = getTranslationsBundle();
 
         switch (reason) {
             case NO_RECIPES_EXIST -> {
-                noIngredientTitle.setText("No Recipes Created!");
-                noIngredientSubtitle.setText(
-                        "Please create or select a recipe to view its ingredients and instructions."
-                );
+                noRecipeTitle.setText(props.getString("label.noRecipeTitle"));
+                noRecipeSubtitle.setText(props.getString("label.noRecipeSubtitle"));
             }
             case NO_SEARCH_RESULTS -> {
-                noIngredientTitle.setText("No Recipes Found!");
-                noIngredientSubtitle.setText(
-                        "Please check the spelling or create a new recipe."
-                );
+                noRecipeTitle.setText(props.getString("label.noRecipesFound"));
+                noRecipeSubtitle.setText(props.getString("label.noRecipesFoundSubtitle"));
             }
             case NO_FAVORITES -> {
-                noIngredientTitle.setText("No Favorites Found!");
-                noIngredientSubtitle.setText(
-                        "Please check if there are any favorites or add a new favorite."
-                );
+                noRecipeTitle.setText(props.getString("label.noFavoritesFound"));
+                noRecipeSubtitle.setText(props.getString("label.noFavoritesFoundSubtitle"));
             }
         }
     }
 
+
     /**
      * Changes the UI according to the selected recipe
+     *
      * @param recipe the recipe that is selected
      */
     private void onRecipeSelected(Recipe recipe) {
         try {
-            recipeServerUtils.getRecipe(recipe.getRecipeId()); // Test if the recipe actually exists.
+            recipeServerUtils.getRecipe(recipe.getRecipeId()); 
 
             initScalingValues(recipe);
 
@@ -392,28 +461,31 @@ public class MainCtrl {
             updateRecipeLanguageLabel(recipeLanguage);
             titleRecipeLabel.setText(recipe.getTitle());
 
-
             showInstructions(recipe);
             showIngredients(recipe);
             showNutritionalValues(recipe);
             setHealthStatus(recipe);
-
         } catch (Exception e) {
-            recoverFromError("This recipe was removed or changed.");
+            java.util.ResourceBundle props = getTranslationsBundle();
+            System.out.println(e.getMessage());
+            recoverFromError(props.getString("alert.recipeMissing"));
         }
     }
 
     /**
-     * Shows an alert that tells the user something went wrong and the UI
-     * will get refreshed. After that, the UI will get refreshed.
+     * Shows an alert that tells the user something went wrong and the UI will
+     * get refreshed. After that, the UI will get refreshed.
      *
-     * @param userMessage The specific error message passed down by the developer.
+     * @param userMessage The specific error message passed down by the
+     * developer.
      */
     public void recoverFromError(String userMessage) {
+        java.util.ResourceBundle props = getTranslationsBundle();
+
         Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Something went wrong");
+        alert.setTitle(props.getString("alert.somethingWentWrong"));
         alert.setHeaderText(userMessage);
-        alert.setContentText("The application will refresh to sync with the server.");
+        alert.setContentText(props.getString("alert.recipeMissing.content"));
         alert.showAndWait();
 
         reloadApplicationState();
@@ -431,15 +503,15 @@ public class MainCtrl {
 
             updateRecipeStackPane(
                     recipesObservableList.isEmpty()
-                            ? EmptyStateReason.NO_RECIPES_EXIST
-                            : null
+                    ? EmptyStateReason.NO_RECIPES_EXIST
+                    : null
             );
 
         } catch (Exception e) {
-            showError("Failed to reload data from server.");
+            java.util.ResourceBundle props = getTranslationsBundle();
+            showError(props.getString("alert.reloadFailed"));
         }
     }
-
 
     /**
      * Adds the recipe to the list that is displayed by the UI.
@@ -447,7 +519,6 @@ public class MainCtrl {
      * @param recipe the to be added recipe.
      */
     public void addRecipe(Recipe recipe) {
-        // adds the recipe object to the list!
         recipeCollection.add(recipe);
         applySearch();
         sidebarList.getSelectionModel().select(recipe);
@@ -483,28 +554,24 @@ public class MainCtrl {
     /**
      * Opens an alert when user clicks the recipe deletion button.
      *
-     * @return true if user confirms the deletion
-     * false if user cancels the deletion
+     * @return true if user confirms the deletion false if user cancels the
+     * deletion
      */
     private boolean deleteConfirmation() {
+        java.util.ResourceBundle props = getTranslationsBundle();
+
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation");
-        alert.setHeaderText("Are you sure you want to delete this recipe?");
+        alert.setTitle(props.getString("alert.confirmationText"));
+        alert.setHeaderText(props.getString("alert.confirmDelete"));
 
         if (favoriteService.isFavorite(selectedRecipe)) {
-            alert.setContentText("This is one of your favorites!");
+            alert.setContentText(props.getString("alert.favoriteNotice"));
         }
 
-        // Wait for the conformation from the user
+        // Wait for the confirmation from the user
         Optional<ButtonType> result = alert.showAndWait();
 
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            // If confirmed
-            return true;
-        } else {
-            // If canceled
-            return false;
-        }
+        return result.isPresent() && result.get() == ButtonType.OK;
     }
 
     /**
@@ -527,7 +594,6 @@ public class MainCtrl {
         applySearch();
     }
 
-
     /**
      * The placeholder for the search functionality It checks if there is a
      * query typed in the searchbar and then prints the query to the console if
@@ -536,9 +602,11 @@ public class MainCtrl {
     @FXML
     private void applySearch() {
         Recipe previouslySelected = getSelectedRecipe();
+        java.util.ResourceBundle props = getTranslationsBundle();
 
         String query = searchBar.getText();
-        boolean searchFavorites = "★ Only".equals(favoriteS.getText());
+        boolean searchFavorites = props.getString("label.displayFavouriteRecipesToggleOn")
+            .equals(favoritesOnly.getText());
 
         List<Recipe> filtered = searchService.search(query, searchFavorites);
         recipesObservableList.setAll(filtered);
@@ -560,13 +628,14 @@ public class MainCtrl {
         }
     }
 
-
     @FXML
     private void searchFavorites() {
-        if (favoriteS.getText().equals("★ Only")) {
-            favoriteS.setText("☆ Only");
+        java.util.ResourceBundle props = getTranslationsBundle();
+
+        if (favoritesOnly.getText().equals(props.getString("label.displayFavouriteRecipesToggleOn"))) {
+            favoritesOnly.setText(props.getString("label.displayFavouriteRecipesToggleOff"));
         } else {
-            favoriteS.setText("★ Only");
+            favoritesOnly.setText(props.getString("label.displayFavouriteRecipesToggleOn"));
         }
 
         applySearch();
@@ -587,7 +656,7 @@ public class MainCtrl {
             }
 
         } catch (Exception e) {
-            showError("Refresh failed.");
+            showError("alert.refreshFailed");
         }
     }
 
@@ -622,21 +691,27 @@ public class MainCtrl {
             return;
         }
 
+        java.util.ResourceBundle props = getTranslationsBundle(); 
+
         Stage secondaryStage = new Stage();
         addRecipeIngredientCtrl.onStart(isAdd);
         addRecipeIngredientCtrl.initScenes(nutritionScene, addRecipeIngredientScene);
-        secondaryStage.setTitle("Add Ingredient to Recipe");
+
+        secondaryStage.setTitle(props.getString("label.addRecipeIngredientsTitle"));
+
         secondaryStage.setScene(addRecipeIngredientScene);
         secondaryStage.setResizable(false);
         secondaryStage.initOwner(primaryStage);
         secondaryStage.showAndWait();
     }
 
+
     /**
      * Adds an ingredient to a recipe.
      */
     @FXML
     private void ingredientAddButtonClicked() {
+        java.util.ResourceBundle props = getTranslationsBundle();
         try {
             Recipe selectedRecipe = getSelectedRecipe();
 
@@ -645,8 +720,7 @@ public class MainCtrl {
             addRecipeIngredientCtrl.setRecipe(selectedRecipe);
             showAddRecipeIngredientWindow(true);
 
-            RecipeIngredient newIngredient =
-                    addRecipeIngredientCtrl.getRecipeIngredient();
+            RecipeIngredient newIngredient = addRecipeIngredientCtrl.getRecipeIngredient();
 
             if (newIngredient != null) {
                 newIngredient.setRecipe(selectedRecipe);
@@ -663,29 +737,29 @@ public class MainCtrl {
 
             showIngredients(selectedRecipe);
         } catch (Exception e) {
-            recoverFromError("Could not add recipe ingredient.");
+            System.out.println(e.getMessage());
+            recoverFromError(props.getString("alert.recipeIngredientFail"));
         }
     }
 
     private void addRecipeIngredientToUI(RecipeIngredient recipeIngredient) {
-        // To create a new row
+        java.util.ResourceBundle props = getTranslationsBundle();
+
+        // Create a new row
         HBox ingredientItem = new HBox();
         ingredientItem.setUserData(recipeIngredient.getId());
         ingredientItem.setAlignment(Pos.CENTER_LEFT);
         ingredientItem.setSpacing(8.0);
         ingredientItem.getStyleClass().add("recipe-item");
 
-
         Label itemLabel = new Label(recipeIngredient.toString());
         itemLabel.setStyle("-fx-padding: 0 0 0 9;"); // <Insets left="9.0">
 
-
-        // To throw the buttons to the right
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         // Edit button
-        Button editButton = new Button("edit");
+        Button editButton = new Button(props.getString("label.editRecipeButton"));
         editButton.setOnAction(event -> {
             try {
                 editIngredientButtonClicked(event);
@@ -695,10 +769,9 @@ public class MainCtrl {
         });
 
         // Remove button
-        Button removeButton = new Button("remove");
+        Button removeButton = new Button(props.getString("label.removeIngredientButton"));
         removeButton.setOnAction(this::ingredientRemoveButtonClicked);
-        removeButton.setUserData(recipeIngredient.getId()); // To be able to identify which recipeIngredient to delete
-        // when remove button is clicked
+        removeButton.setUserData(recipeIngredient.getId());
 
         // Put it all into HBox
         ingredientItem.getChildren().addAll(itemLabel, spacer, editButton, removeButton);
@@ -721,7 +794,9 @@ public class MainCtrl {
         HBox ingredientToRemove = (HBox) removeButton.getParent(); // To delete the whole row
         RecipeIngredientKey id = (RecipeIngredientKey) ingredientToRemove.getUserData();
 
-        if (id == null) return;
+        if (id == null) {
+            return;
+        }
 
         try {
             boolean success = this.recipeServerUtils.deleteRecipeIngredient(id.getRecipeId(),
@@ -731,8 +806,8 @@ public class MainCtrl {
                 ingredientList.getChildren().remove(ingredientToRemove);
 
                 if (selectedRecipe != null) {
-                    selectedRecipe.getIngredients().removeIf(ri ->
-                            ri.getId().equals(id)
+                    selectedRecipe.getIngredients().removeIf(ri
+                            -> ri.getId().equals(id)
                     );
                 }
             }
@@ -743,11 +818,7 @@ public class MainCtrl {
             System.err.println("Error deleting recipe ingredient from Database");
         }
 
-
-
-
     }
-
 
     /**
      * Edit an ingredient of a selected recipe.
@@ -768,18 +839,14 @@ public class MainCtrl {
         }
 
         RecipeIngredientKey id = (RecipeIngredientKey) ingredientToEdit.getUserData();
-
         addRecipeIngredientCtrl.setRecipe(selectedRecipe);
         addRecipeIngredientCtrl.setIngredient(id.getIngredientId());
-
         showAddRecipeIngredientWindow(false);
         RecipeIngredient updated = addRecipeIngredientCtrl.getRecipeIngredient();
 
         if (updated != null) {
-
             baseAmounts.put(updated, updated.getAmount());
             baseUnits.put(updated, updated.getUnit());
-
             this.recipeServerUtils.updateRecipeIngredient(id.getRecipeId(), id.getIngredientId(), updated);
 
             List<RecipeIngredient> ingredients = selectedRecipe.getIngredients();
@@ -792,14 +859,12 @@ public class MainCtrl {
             }
         }
 
-
         showIngredients(selectedRecipe);
 
         System.out.println("Edited ingredient.");
     }
 
     // ALL INSTRUCTION / PREPARATION STEP METHODS BELOW HERE:
-
     /**
      * Displays the instructions of a recipe in the UI.
      *
@@ -837,28 +902,22 @@ public class MainCtrl {
     /**
      * Creates a row for a preparation step.
      *
-     * @param index         the index of the step
-     * @param initialText   the initial text of the step
+     * @param index the index of the step
+     * @param initialText the initial text of the step
      * @param startEditable whether the step is initially editable
      */
     private HBox createExecutionStepRow(int index, String initialText, boolean startEditable) {
-        // Create a new HBox (a preparation step)
-        // [ 1 ][ Label(text) ][ ✏ ][ ✖ ] when not editing
-        // [ 1 ][ TextField ][ ✔ ][ ✖ ] when editing
         HBox row = new HBox(10);
         row.setAlignment(Pos.CENTER_LEFT);
         row.setMaxWidth(Double.MAX_VALUE);
 
-        //index
         Label indexLabel = new Label((index + 1) + ".");
         indexLabel.setMinWidth(30);
 
         Label textLabel = new Label(initialText);
-        //textLabel.setPrefWidth(400);
         textLabel.setMaxWidth(Double.MAX_VALUE);
 
         TextField textField = new TextField(initialText);
-        //textField.setPrefWidth(400);
         textField.setMaxWidth(Double.MAX_VALUE);
 
         HBox.setHgrow(textLabel, Priority.ALWAYS);
@@ -867,15 +926,12 @@ public class MainCtrl {
         Button editSaveButton = new Button();
         Button deleteButton = new Button("✖");
 
-
         final Runnable[] switchToEdit = new Runnable[1];
         final Runnable[] saveStep = new Runnable[1];
 
         saveStep[0] = () -> {
             String text = textField.getText().trim();
-            if (text.isEmpty()) {
-                return;
-            }
+            if (text.isEmpty()) return;
 
             selectedRecipe.getInstructions().set(index, text);
             textLabel.setText(text);
@@ -883,12 +939,12 @@ public class MainCtrl {
             try {
                 recipeServerUtils.replaceRecipe(selectedRecipe.getRecipeId(), selectedRecipe);
             } catch (Exception e) {
-                recoverFromError("Could not save the instruction!");
+                System.out.println(e.getMessage());
+                recoverFromError(getTranslationsBundle().getString("alert.saveInstructionsFail"));
             }
 
             editSaveButton.setText("✏");
             row.getChildren().setAll(indexLabel, textLabel, editSaveButton, deleteButton);
-
             editSaveButton.setOnAction(e -> switchToEdit[0].run());
         };
 
@@ -900,7 +956,6 @@ public class MainCtrl {
             textField.selectAll();
 
             textField.setOnAction(ev -> saveStep[0].run());
-
             editSaveButton.setOnAction(e -> saveStep[0].run());
         };
 
@@ -912,19 +967,18 @@ public class MainCtrl {
             row.getChildren().addAll(indexLabel, textLabel, editSaveButton, deleteButton);
         }
 
+        // keep this exactly as before to ensure deletion works
         deleteButton.setOnAction(e -> handleDeleteStep(index));
 
         return row;
     }
 
-    /**
-     * Handles the deletion of a preparation step.
-     * @param index the index of the step to be deleted
-     */
     private void handleDeleteStep(int index) {
+        ResourceBundle props = getTranslationsBundle();
+
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Delete Step");
-        alert.setHeaderText("Delete this preparation step?");
+        alert.setTitle(props.getString("alert.deleteStep"));
+        alert.setHeaderText(props.getString("alert.confirmDeleteStep"));
 
         Optional<ButtonType> result = alert.showAndWait();
 
@@ -941,16 +995,6 @@ public class MainCtrl {
         }
     }
 
-    /**
-     * This is a placeholder a helper method for further list management Method
-     * prints out a message when the button is clicked
-     *
-     * @param ingredient the ingredient to be added
-     */
-    @FXML
-    private void addIngredientToList(String ingredient) {
-        System.out.println("Added ingredient: " + ingredient);
-    }
 
     /**
      * Makes sure the window with the nutrition information is opened once the
@@ -958,6 +1002,8 @@ public class MainCtrl {
      */
     @FXML
     void showNutritionWindow() {
+        ResourceBundle props = getTranslationsBundle();
+
         if (nutritionScene == null) {
             System.err.println("Nutrition scene not initialized!");
             return;
@@ -965,13 +1011,11 @@ public class MainCtrl {
 
         Stage secondaryStage = new Stage();
         nutritionalValueCtrl.initialize();
-        secondaryStage.setTitle("Nutritional Values");
+        secondaryStage.setTitle(props.getString("label.nutritionalValuesWindow"));
         secondaryStage.setScene(nutritionScene);
-        secondaryStage.initOwner(primaryStage); // makes it modal to main window if desired
+        secondaryStage.initOwner(primaryStage); 
         secondaryStage.setResizable(false);
         secondaryStage.showAndWait();
-
-        sidebarList.getSelectionModel().clearSelection();
     }
 
     /**
@@ -980,6 +1024,7 @@ public class MainCtrl {
      */
     @FXML
     void showShoppingListWindow() {
+        ResourceBundle props = getTranslationsBundle();
         if (shoppingListScene == null) {
             System.err.println("Shopping list scene not initialized!");
             return;
@@ -992,57 +1037,55 @@ public class MainCtrl {
         }
 
         Stage secondaryStage = new Stage();
-        secondaryStage.setTitle("Shopping List");
+        secondaryStage.setTitle(props.getString("label.shoppingListWindow"));
         secondaryStage.setScene(shoppingListScene);
         secondaryStage.initOwner(primaryStage); // makes it modal to main window if desired
         secondaryStage.show();
     }
 
     /**
-     * Makes sure the recipe shopping list window is opened once the
-     * shopping list button is pressed
+     * Makes sure the recipe shopping list window is opened once the shopping
+     * list button is pressed
      */
     @FXML
     void showRecipeShoppingWindow() {
+        ResourceBundle props = getTranslationsBundle();
         if (recipeShoppingListScene == null || recipeShoppingListCtrl == null) {
             System.err.println("Recipe shopping list scene or controller not initialized!");
             return;
         }
-
-        // Check if a recipe is selected
-        if (selectedRecipe == null) {
-            showError("Please select a recipe first");
-            return;
-        }
-
+    
+        requireSelectedRecipe();
         Stage secondaryStage = new Stage();
-        secondaryStage.setTitle("Recipe Shopping List - " + selectedRecipe.getTitle());
+        secondaryStage.setTitle(props.getString("label.shoppingListTitle") + selectedRecipe.getTitle());
         secondaryStage.setScene(recipeShoppingListScene);
-        secondaryStage.initOwner(primaryStage); // makes it modal to main window if desired
-        
-        // Initialize the controller with the selected recipe
+        secondaryStage.initOwner(primaryStage);
+
         recipeShoppingListCtrl.initializeWithRecipe(selectedRecipe);
-        
+
         secondaryStage.show();
     }
 
+
     /**
-     * Makes sure the window with the add recipe functionality is opened once the
-     * Add button is pressed.
+     * Makes sure the window with the add recipe functionality is opened once
+     * the Add button is pressed.
      */
     @FXML
     void showAddRecipeWindow() {
+        ResourceBundle props = getTranslationsBundle();
+
         if (recipeAddScene == null) {
             System.err.println("Recipe add scene not initialized!");
             return;
         }
 
         Stage recipeAddStage = new Stage();
-        recipeAddStage.setTitle("Add Recipe");
+        recipeAddStage.setTitle(props.getString("label.addRecipeWindowTitle"));
         recipeAddStage.setScene(recipeAddScene);
         recipeAddStage.initOwner(primaryStage);
         recipeAddStage.setResizable(false);
-
+        addButtonCtrl.onShow();
         recipeAddStage.show();
     }
 
@@ -1055,10 +1098,9 @@ public class MainCtrl {
 
         Long currentRecipeId = selectedRecipe.getRecipeId();
 
-        if (currentRecipeId == null) {
-            System.out.println("No Recipe selected!");
-            return;
-        }
+        ResourceBundle props = getTranslationsBundle();
+
+        requireSelectedRecipe();
 
         try {
             Recipe original = recipeServerUtils.getRecipe(currentRecipeId);
@@ -1068,8 +1110,7 @@ public class MainCtrl {
             Recipe newRecipe = new Recipe(
                     clonedTitle,
                     original.getLanguage()
-            );  
-
+            );
 
             newRecipe.setServings(original.getServings());
             newRecipe.setInstructions(new ArrayList<>(original.getInstructions()));
@@ -1098,7 +1139,8 @@ public class MainCtrl {
             System.out.println("It worked! Cloned recipe ID: " + newId);
 
         } catch (Exception e) {
-            recoverFromError("Clone recipe failed!");
+            System.out.println(e.getMessage());
+            recoverFromError(props.getString("alert.cloneFailed"));
         }
     }
 
@@ -1110,9 +1152,14 @@ public class MainCtrl {
      * @return the generated title for the cloned recipe
      */
     private String generateCloneTitle(String originalTitle) {
+        ResourceBundle props = getTranslationsBundle();
+
+        String cloneWord = props.getString("label.cloneFunctionality");
+
         // Extract base title
         var pattern = java.util.regex.Pattern.compile(
-                "^(.*?)(?:\\s*\\(Clone(?:\\s*(\\d+))?\\))?$"
+                "^(.*?)(?:\\s*\\(" + java.util.regex.Pattern.quote(cloneWord)
+                        + "(?:\\s*(\\d+))?\\))?$"
         );
         var matcher = pattern.matcher(originalTitle.trim());
 
@@ -1131,12 +1178,14 @@ public class MainCtrl {
                 String candidateBase = m.group(1).trim();
                 String numGroup = m.group(2);
 
-                if (!candidateBase.equals(baseTitle)) continue;
+                if (!candidateBase.equals(baseTitle)) {
+                    continue;
+                }
 
                 int num = 0;
                 if (numGroup != null) {
                     num = Integer.parseInt(numGroup);
-                } else if (title.endsWith("(Clone)")) {
+                } else if (title.endsWith("(" + cloneWord + ")")) {
                     num = 1;
                 }
 
@@ -1147,30 +1196,7 @@ public class MainCtrl {
         }
 
         int nextNumber = maxCloneNumber + 1;
-        return baseTitle + " (Clone " + nextNumber + ")";
-    }
-
-
-
-
-    /**
-     * Shows edit title of recipe window.
-     */
-    @FXML
-    void showEditRecipeTitleScene() {
-        if (editTitleScene == null) {
-            System.err.println("Scene not initialized!");
-            return;
-        }
-
-        Stage editTitleStage = new Stage();
-        editTitleStage.setTitle("Edit Recipe Title");
-        editTitleStage.setScene(editTitleScene);
-        editTitleStage.initOwner(primaryStage);
-        editTitleStage.setResizable(false);
-
-        editTitleStage.show();
-        baseServings = getSelectedRecipe().getServings();
+        return baseTitle + " (" + cloneWord + " " + nextNumber + ")";
     }
 
     /**
@@ -1187,7 +1213,20 @@ public class MainCtrl {
      */
     @FXML
     void editRecipeTitleButtonClicked() {
-        showEditRecipeTitleScene();
+        ResourceBundle props = getTranslationsBundle();
+
+        if (editTitleScene == null) {
+            System.err.println("Scene not initialized!");
+            return;
+        }
+
+        Stage editTitleStage = new Stage();
+        editTitleStage.setTitle(props.getString("label.editRecipeDetails"));
+        editTitleStage.setScene(editTitleScene);
+        editTitleStage.initOwner(primaryStage);
+        editTitleStage.setResizable(false);
+
+        editTitleStage.show();
     }
 
     public void refreshSidebarList() {
@@ -1199,13 +1238,16 @@ public class MainCtrl {
      *
      * @param message error message
      */
-    private void showError(String message) {
+    private void showError(String messageKey) {
+        ResourceBundle props = getTranslationsBundle();
+
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
+        alert.setTitle(props.getString("alert.error"));
         alert.setHeaderText(null);
-        alert.setContentText(message);
+        alert.setContentText(props.getString(messageKey));
         alert.showAndWait();
     }
+
 
     public void updateTitleLabel(String title) {
         titleRecipeLabel.setText(title);
@@ -1216,54 +1258,60 @@ public class MainCtrl {
      *
      * @param recipeLanguage
      */
-    public void updateRecipeLanguageLabel(String recipeLanguage) {
-        String fullLanguage = RecipeFormatter.getFullRecipeLanguage(recipeLanguage);
-        recipeLanguageLabel.setText(fullLanguage);
+    public void updateRecipeLanguageLabel(String recipeLanguage) { 
+        ResourceBundle props = getTranslationsBundle();
+        String fullLanguage = RecipeFormatter.getFullRecipeLanguage(recipeLanguage, props); 
+        recipeLanguageLabel.setText(fullLanguage); 
     }
 
 
     @FXML
     private void downloadButtonClicked() throws IOException {
-        Recipe selectedRecipe = (Recipe) sidebarList.getSelectionModel().getSelectedItem();
-        if (selectedRecipe == null) {
-            System.out.println("Please select a recipe.");
-            return;
-        }
+        ResourceBundle props = getTranslationsBundle();
+        requireSelectedRecipe();
+
 
         saveRecipe(selectedRecipe);
     }
 
 
-    /**
-     * creates a menuitem for all flags
-     * @param languageName the name of the language
-     * @param imagePath    the path to the flag
-     * @return a menuitem with the flag
+     /**
+     * Helper method to update the language both visually and in config.
+     *
+     * @param languageCode the ISO code of the language ("en", "nl", "ro", "es")
+     * @param imagePath the path to the flag image resource
      */
-    private MenuItem makeLanguageImage(String languageName, String imagePath) {
-        String path = "/images/" + imagePath;
-        var stream = getClass().getResourceAsStream(path);
-        if (stream == null) {
-            return new MenuItem(languageName + " (no icon)");
+    private void setAppLanguage(String languageCode, String imagePath) {
+        System.out.println("Switching language to: " + languageCode);
+        configService.setLanguage(languageCode);
+
+        // Update MenuButton graphic (flags)
+        var stream = getClass().getResourceAsStream(imagePath);
+        if (stream != null) {
+            ImageView flag = new ImageView(new Image(stream));
+            flag.setFitWidth(20);
+            flag.setFitHeight(20);
+            languageSetter.setGraphic(flag);
+            languageSetter.setText("");
+        } else {
+            languageSetter.setGraphic(null);
+            languageSetter.setText(languageCode.toUpperCase());
         }
-        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(path)));
-        ImageView imageView = new ImageView(image);
 
-        imageView.setFitHeight(20);
-        imageView.setFitWidth(20);
+        // Update all bound text properties
+        initializeTextProperties();
 
-
-        MenuItem flag = new MenuItem("", imageView);
-
-        flag.setOnAction(e -> {
-            updateLanguageButton(path);
-        });
-
-        return flag;
+        // Optional: update recipe language label
+        Recipe selected = getSelectedRecipe();
+        if (selected != null) {
+            updateRecipeLanguageLabel(languageCode);
+        }
     }
 
     /**
-     * A method that sets the buttonIcon that displays the language that the app is working in
+     * A method that sets the buttonIcon that displays the language that the app
+     * is working in
+     *
      * @param path the path to the image that will be displayed
      */
     private void updateLanguageButton(String path) {
@@ -1274,16 +1322,76 @@ public class MainCtrl {
         buttonIcon.setFitHeight(20);
 
         languageSetter.setGraphic(buttonIcon);
-        languageSetter.setText(""); // this dumb ass line is neccesary bc otherwise you still get ... next to the flag.
+        languageSetter.setText(""); // this line is neccesary bc otherwise you still get ... next to the flag.
+
+    }
+    
+    /** Binds all the UI text properties to the current ResourceBundle
+     * Call  this whenever the language changes
+     */
+    @FXML
+    private void initializeTextProperties() {
+        ResourceBundle props = getTranslationsBundle();
+        updateStaticUILabels(props);
+        updateSelectedRecipeLabels(props);
+    }
+
+    /* Sets to langauge */
+    private void updateStaticUILabels(ResourceBundle props) {
+        FoodPalLabel.setText(props.getString("label.title"));
+        searchBar.setPromptText(props.getString("label.searchPromptText"));
+        favoritesOnly.setText(props.getString("label.displayFavouriteRecipesToggleOff"));
+        shoppingListButton.setText(props.getString("label.shoppingListWindow"));
+        nutritionalValueButton.setText(props.getString("label.nutritionalValuesWindow"));
+        addRecipeButton.setText(props.getString("label.addRecipeButton"));
+        editRecipeTitleButton.setText(props.getString("label.editRecipeButton"));
+        cloneRecipeButton.setText(props.getString("label.cloneRecipeButton"));
+        removeItemButton.setText(props.getString("label.removeIngredientButton"));
+        recipeShoppingButton.setText(props.getString("label.shopIngredientButton"));
+        languageLabel.setText(props.getString("label.languageLabel"));
+        ingredientsLabel.setText(props.getString("label.ingredientsLabel"));
+        instructionsLabel.setText(props.getString("label.instructionsLabel"));
+        nutritionalValuesLabel.setText(props.getString("label.nutritionalValuesLabel"));
+        servingsLabel.setText(props.getString("label.servingsLabel"));
+        downloadButton.setText(props.getString("label.downloadButton"));
+        noRecipeTitle.setText(props.getString("label.noRecipeTitle"));
+        noRecipeSubtitle.setText(props.getString("label.noRecipeSubtitle"));
+    }
+
+    private void updateSelectedRecipeLabels(ResourceBundle props) {
+        Recipe selected = getSelectedRecipe();
+        if (selected != null) {
+            recipeLanguageLabel.setText(RecipeFormatter.getFullRecipeLanguage(selected.getLanguage(), props));
+        }
+    }
 
 
+    /**
+     * Returns the ResourceBundle for the currently selected language. This
+     * ensures a consistent path to the translations file.
+     */
+    private ResourceBundle getTranslationsBundle() {
+        try {
+            String languageCode = configService.getLanguage();
+            return java.util.ResourceBundle.getBundle(
+                    "client.scenes.Translations", // matches Translations_en.properties location
+                    new java.util.Locale(languageCode)
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Failed to load language bundle for code: " + configService.getLanguage());
+            return java.util.ResourceBundle.getBundle("client.scenes.Translations", java.util.Locale.ENGLISH);
+        }
     }
 
     /**
      * Saves a recipe in chosen path.
+     *
      * @param recipe recipe to be saved
      */
     private void saveRecipe(Recipe recipe) throws IOException {
+        ResourceBundle props = getTranslationsBundle();
+
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save recipe");
         fileChooser.setInitialFileName(recipe.getTitle() + ".txt");
@@ -1304,6 +1412,7 @@ public class MainCtrl {
     private final Map<RecipeIngredient, Unit> baseUnits = new HashMap<>();
 
     private void initScalingValues(Recipe recipe) {
+
         for (RecipeIngredient ri : recipe.getIngredients()) {
             if (ri.getAmount() != null && ri.getUnit() != null) {
                 baseAmounts.put(ri, ri.getAmount());
@@ -1333,6 +1442,7 @@ public class MainCtrl {
             return 0;
         return kcals / weight * 100;
     }
+
 
     private void showNutritionalValues(Recipe recipe) {
         inferredKcalsLabel.setText(String.valueOf(calculateKcal(recipe)));
@@ -1364,6 +1474,7 @@ public class MainCtrl {
         showIngredients(recipe);
     }
 
+
     private void normalizeUnits(Recipe recipe) {
         for (RecipeIngredient ri : recipe.getIngredients()) {
             if (!ri.isFormal()) continue;
@@ -1394,50 +1505,54 @@ public class MainCtrl {
      * @return true if a recipe is selected, false otherwise
      */
     private boolean requireSelectedRecipe() {
+        ResourceBundle props = getTranslationsBundle();
         if (getSelectedRecipe() == null) {
-            showError("Please select a recipe first.");
+            showError(props.getString("alert.selectARecipe"));
             return false;
         }
         return true;
     }
 
+    /**
+     * Sets the health status of meaningful extension
+     */
     private void setHealthStatus(Recipe recipe) {
+        ResourceBundle props = getTranslationsBundle();
         double kcals = calculateKcal(recipe);
 
         if (kcals < 200) {
             healthStatus.setStyle("-fx-background-color: green");
-            healthyStatus.setText("Healthy");
+            healthyStatus.setText(props.getString("label.healthyRecipe"));
             healthyStatus.setStyle("-fx-text-fill: #ffffff");
         } else if (kcals < 500) {
             healthStatus.setStyle("-fx-background-color: yellow");
-            healthyStatus.setText("Moderately Healthy");
+            healthyStatus.setText(props.getString("label.UmHealthy"));
             healthyStatus.setStyle("-fx-text-fill: #000000");
         } else {
-            healthyStatus.setText("Unhealthy");
-            healthStatus.setStyle("-fx-background-color: red");
+            healthyStatus.setText(props.getString("label.UnHealthy"));
             healthyStatus.setStyle("-fx-text-fill: #ffffff");
+            healthStatus.setStyle("-fx-background-color: red");
         }
     }
 
+
     @FXML
     private void onInfoHealthButtonClicked() {
-        VBox root = new VBox();
-        Label text = new Label("""
-                Healthiness is calculated according to the following principle:
-                  • less than 200 kcals/100g → healthy
-                  • less than 500 kcals/100g → moderately healthy
-                  • otherwise → unhealthy""");
+        ResourceBundle props = getTranslationsBundle();
 
+        VBox root = new VBox();
+        Label text = new Label(props.getString("label.healthyInfo"));
         text.setStyle("-fx-text-fill: #ffffff");
+
         root.getChildren().add(text);
         root.setAlignment(Pos.CENTER);
         root.setStyle("-fx-background-color: #8191b3");
 
         Stage popup = new Stage();
-        popup.setTitle("Health Information");
+        popup.setTitle(props.getString("label.healthInfo"));
         popup.setResizable(false);
         popup.setScene(new Scene(root, 400, 200));
         popup.show();
     }
-}
 
+}

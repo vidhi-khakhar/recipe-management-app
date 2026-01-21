@@ -4,7 +4,11 @@ import client.utils.RecipeServerUtils;
 import commons.Recipe;
 import jakarta.inject.Inject;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 
 /**
  * Note: This class has borrowed heavily from
@@ -14,8 +18,27 @@ public class EditTitleCtrl {
     private final MainCtrl mainCtrl;
     private final RecipeServerUtils recipeServerUtils;
 
+    @FXML 
+    private Label editRecipeWindowTitle;
+
+    @FXML
+    private TextField editRecipeTitle;
+
     @FXML
     private TextField servingsInput;
+
+    @FXML
+    private ChoiceBox<String> languageChoiceBox;
+
+    @FXML
+    private Button editTitleAddButton;
+
+    @FXML
+    private Button setServingsButton;
+
+    
+    @FXML
+    private Label statusLabel;
 
     @Inject
     public EditTitleCtrl(MainCtrl mainCtrl, RecipeServerUtils recipeServerUtils) {
@@ -23,12 +46,18 @@ public class EditTitleCtrl {
         this.recipeServerUtils = recipeServerUtils;
     }
 
+    @FXML
+    public void initialize() {
+        languageChoiceBox.getItems().addAll("English", "Dutch", "Romanian", "Spanish");
+        languageChoiceBox.getSelectionModel().selectFirst();
+    }
+
     /**
      * Edits the title of recipe.
      */
     @FXML
     private void editTitle() {
-        String query = title.getText().trim();
+        String query = editRecipeTitle.getText().trim();
         if (query.isEmpty()) {
             statusLabel.setText("Please enter a name.");
             statusLabel.setStyle("-fx-text-fill: red;");
@@ -62,7 +91,7 @@ public class EditTitleCtrl {
 
                     recipeServerUtils.replaceRecipe(recipe.getRecipeId(), recipe);
 
-                    title.clear();
+                    editRecipeTitle.clear();
                     statusLabel.setText("Title has been edited!");
 
 
@@ -100,12 +129,6 @@ public class EditTitleCtrl {
             return false;
         }
         return true;
-    }
-
-    @FXML
-    public void initialize() {
-        languageChoiceBox.getItems().addAll("English", "Dutch", "Romanian", "Spanish");
-        languageChoiceBox.getSelectionModel().selectFirst();
     }
 
     /**
@@ -146,14 +169,4 @@ public class EditTitleCtrl {
 
 
 
-    @FXML
-    private ChoiceBox<String> languageChoiceBox;
-    @FXML
-    private Button editTitleButton;
-
-    @FXML
-    private TextField title;
-
-    @FXML
-    private Label statusLabel;
 }

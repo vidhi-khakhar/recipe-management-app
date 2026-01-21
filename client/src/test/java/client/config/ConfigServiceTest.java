@@ -1,15 +1,16 @@
 package client.config;
 
-import client.model.ShoppingList;
+import java.io.File;
+import java.nio.file.Path;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.util.Locale;
-
-import static org.junit.jupiter.api.Assertions.*;
+import client.model.ShoppingList;
 
 class ConfigServiceTest {
 
@@ -21,7 +22,7 @@ class ConfigServiceTest {
      * initializes a ConfigService before each test.
      */
     @BeforeEach
-    void setUp(@TempDir Path tempDir) { // Clever way to use a dummy config for tests.
+    void setUp(@TempDir Path tempDir) {
         configFile = tempDir.resolve("config.json").toFile();
         configService = new ConfigService(configFile.getAbsolutePath());
     }
@@ -36,7 +37,7 @@ class ConfigServiceTest {
 
         assertNotNull(config);
         assertEquals("http://localhost:8080", config.getServerUrl());
-        assertEquals(Locale.ENGLISH, config.getLanguage());
+        assertEquals("en", config.getLanguage()); // Changed to String
         assertNotNull(config.getShoppingList());
         assertNotNull(config.getFavoriteRecipeIds());
     }
@@ -48,7 +49,7 @@ class ConfigServiceTest {
     @Test
     void saveWritesConfigToFile() {
         Config config = configService.getConfig();
-        config.setLanguage(Locale.GERMAN);
+        config.setLanguage("de"); // Changed to String
 
         configService.save();
 
@@ -63,13 +64,13 @@ class ConfigServiceTest {
     @Test
     void reloadLoadsSavedConfig() {
         Config config = configService.getConfig();
-        config.setLanguage(Locale.FRENCH);
+        config.setLanguage("fr"); // Changed to String
         configService.save();
 
         configService.reload();
         Config reloaded = configService.getConfig();
 
-        assertEquals(Locale.FRENCH, reloaded.getLanguage());
+        assertEquals("fr", reloaded.getLanguage());
     }
 
     /**
