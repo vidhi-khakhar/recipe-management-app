@@ -134,6 +134,7 @@ public class Main extends Application {
         var recipeAddInterface =
                 fxml.load(AddButtonCtrl.class, bundle, "client", "scenes", "AddRecipeInterface.fxml");
         var recipeAddScene = new Scene(recipeAddInterface.getValue());
+        var addButtonCtrl = recipeAddInterface.getKey();
 
         // Load AddRecipeIngredientScene
         var recipeIngredientInterface =
@@ -169,6 +170,7 @@ public class Main extends Application {
 
         controller.initScenes(primaryStage, nutritionScene, recipeAddScene,
                 recipeIngredientScene, recipeIngredientCtrl, editTitleScene,
-                shoppingListScene, recipeShoppingListScene, nutritionCtrl, recipeShoppingListCtrl);
+                shoppingListScene, recipeShoppingListScene, nutritionCtrl, recipeShoppingListCtrl,
+                addButtonCtrl);
     }
 }

@@ -18,17 +18,25 @@ public class EditTitleCtrl {
     private final MainCtrl mainCtrl;
     private final RecipeServerUtils recipeServerUtils;
 
+    @FXML 
+    private Label editRecipeWindowTitle;
+
+    @FXML
+    private TextField editRecipeTitle;
+
     @FXML
     private TextField servingsInput;
 
     @FXML
     private ChoiceBox<String> languageChoiceBox;
-    @FXML
-    private Button editTitleButton;
 
     @FXML
-    private TextField title;
+    private Button editTitleAddButton;
 
+    @FXML
+    private Button setServingsButton;
+
+    
     @FXML
     private Label statusLabel;
 
@@ -49,7 +57,7 @@ public class EditTitleCtrl {
      */
     @FXML
     private void editTitle() {
-        String query = title.getText().trim();
+        String query = editRecipeTitle.getText().trim();
         if (query.isEmpty()) {
             statusLabel.setText("Please enter a name.");
             statusLabel.setStyle("-fx-text-fill: red;");
@@ -83,7 +91,7 @@ public class EditTitleCtrl {
 
                     recipeServerUtils.replaceRecipe(recipe.getRecipeId(), recipe);
 
-                    title.clear();
+                    editRecipeTitle.clear();
                     statusLabel.setText("Title has been edited!");
 
 

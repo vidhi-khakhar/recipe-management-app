@@ -61,28 +61,30 @@ public class AddButtonCtrl {
      */
     @FXML
     public void initialize() {
-        ResourceBundle props = getTranslationsBundle();
-        String english = props.getString("label.english");
-        String dutch = props.getString("label.dutch");
-        String romanian = props.getString("label.romanian");
-        String spanish = props.getString("label.spanish");
-
-
-        languageChoiceBox.getItems().addAll(english, dutch, romanian, spanish);
-        languageChoiceBox.getSelectionModel().selectFirst();
-
-        loadLangauges();
+        loadLanguages();
     }
 
-    private void loadLangauges() {
+    private void loadLanguages() {
         ResourceBundle props = getTranslationsBundle();
+
+        languageChoiceBox.getItems().clear();
+
+        languageChoiceBox.getItems().addAll(
+            props.getString("label.english"),
+            props.getString("label.dutch"),
+            props.getString("label.romanian"),
+            props.getString("label.spanish")
+        );
+
+        languageChoiceBox.getSelectionModel().selectFirst();
+
         addRecipeInfo.setText(props.getString("label.addRecipeInfo"));
         recipeInput.setPromptText(props.getString("label.addRecipeName"));
         servingsInput.setPromptText(props.getString("label.addRecipeServings"));
         recipeAddButton.setText(props.getString("label.addRecipeButton"));
         setServingsButton.setText(props.getString("label.addServingsButton"));
-
     }
+
 
     /**
      * * Handles the action of adding a new recipe when the user clicks the
@@ -225,5 +227,10 @@ public class AddButtonCtrl {
             return java.util.ResourceBundle.getBundle("client.scenes.Translations", java.util.Locale.ENGLISH);
         }
     }
+
+    public void onShow() {
+        loadLanguages();
+    }
+
     
 }

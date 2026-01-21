@@ -81,6 +81,7 @@ public class MainCtrl {
     private AddRecipeIngredientCtrl addRecipeIngredientCtrl;
     private RecipeShoppingListCtrl recipeShoppingListCtrl;
     private NutritionalValueCtrl nutritionalValueCtrl;
+    private AddButtonCtrl addButtonCtrl;
 
     private final RecipeServerUtils recipeServerUtils;
     private final FavoriteService favoriteService;
@@ -223,7 +224,8 @@ public class MainCtrl {
             AddRecipeIngredientCtrl addRecipeIngredientCtrl,
             Scene editTitleScene, Scene shoppingListScene, Scene recipeShoppingListScene,
             NutritionalValueCtrl nutritionalValueCtrl,
-            RecipeShoppingListCtrl recipeShoppingListCtrl) {
+            RecipeShoppingListCtrl recipeShoppingListCtrl, 
+            AddButtonCtrl addButtonCtrl) {
 
         this.primaryStage = primaryStage;
         this.nutritionScene = nutritionScene;
@@ -235,7 +237,7 @@ public class MainCtrl {
         this.recipeShoppingListScene = recipeShoppingListScene;
         this.recipeShoppingListCtrl = recipeShoppingListCtrl;
         this.nutritionalValueCtrl = nutritionalValueCtrl;
-
+        this.addButtonCtrl = addButtonCtrl;
         primaryStage.show();
     }
 
@@ -1083,7 +1085,7 @@ public class MainCtrl {
         recipeAddStage.setScene(recipeAddScene);
         recipeAddStage.initOwner(primaryStage);
         recipeAddStage.setResizable(false);
-
+        addButtonCtrl.onShow();
         recipeAddStage.show();
     }
 
