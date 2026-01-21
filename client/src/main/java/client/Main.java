@@ -126,7 +126,7 @@ public class Main extends Application {
 
         // preload nutritional values scene
         var nutritionInterface =
-                fxml.load(NutritionalValueCtrl.class, bundle, "client", "scenes", "NutrionalValueInterface.fxml");
+                fxml.load(NutritionalValueCtrl.class, bundle, "client", "scenes", "NutritionalValueInterface.fxml");
         var nutritionScene = new Scene(nutritionInterface.getValue());
         var nutritionCtrl = nutritionInterface.getKey();
 
