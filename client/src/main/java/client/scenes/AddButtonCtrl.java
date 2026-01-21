@@ -92,56 +92,66 @@ public class AddButtonCtrl {
     private void recipeAddRequest() {
         ResourceBundle props = getTranslationsBundle();
         String query = recipeInput.getText().trim();
+
+        // Check if recipe name is empty
         if (query.isEmpty()) {
-            System.out.println(props.getString("label.noRecipeSubtitle"));
-            statusLabel.setText("Please enter a name.");
+            statusLabel.setText(props.getString("label.emptyRecipeName"));
             statusLabel.setStyle("-fx-text-fill: red;");
             statusLabel.setVisible(true);
             return;
         }
+
+        // Validate recipe name
         if (!recipeValidation(query)) {
             statusLabel.setVisible(true);
             return;
         }
+
+        // Capitalize first letter
         query = query.substring(0, 1).toUpperCase() + query.substring(1);
         Recipe recipe = new Recipe(query);
+
+        // Validate servings
         int servings = validateServings(servingsInput.getText());
-        if (servings == -1) {
-            return;
-        } else {
-            recipe.setServings(servings);
-            servingsInput.clear();
-        }
+        if (servings == -1) return;
+        recipe.setServings(servings);
+        servingsInput.clear();
+
+        // Set language based on choice box
         String selectedLanguage = languageChoiceBox.getValue().toLowerCase().trim();
-        if (selectedLanguage.equals("english")) {
-            recipe.setLanguage("En");
-        } else if (selectedLanguage.equals("dutch")) {
-            recipe.setLanguage("NL");
-        } else if (selectedLanguage.equals("romanian")) {
-            recipe.setLanguage("Ro");
-        } else if (selectedLanguage.equals("spanish")) {
-            recipe.setLanguage("Es");
+        switch (selectedLanguage) {
+            case "english" -> recipe.setLanguage("En");
+            case "dutch" -> recipe.setLanguage("NL");
+            case "romanian" -> recipe.setLanguage("Ro");
+            case "spanish" -> recipe.setLanguage("Es");
         }
+
+        // Try to create recipe and update UI
         try {
             recipe.setRecipeId(recipeServerUtils.createRecipe(recipe));
             mainCtrl.addRecipe(recipe);
             recipeInput.clear();
-            statusLabel.setText("Recipe added!");
+
+            statusLabel.setText(props.getString("label.successMessage"));
             statusLabel.setStyle("-fx-text-fill: green;");
             statusLabel.setVisible(true);
+
+            // Auto-close after 2 seconds
             PauseTransition delay = new PauseTransition(Duration.seconds(2));
             delay.setOnFinished(event -> {
                 Stage stage = (Stage) recipeAddButton.getScene().getWindow();
                 stage.close();
             });
             delay.play();
+
         } catch (Exception e) {
-            statusLabel.setText("Something went wrong during adding recipe.");
+            statusLabel.setText(props.getString("label.failedrecipeAdd"));
             statusLabel.setStyle("-fx-text-fill: red;");
             statusLabel.setVisible(true);
             System.out.println("Something went wrong during the creation of a recipe: " + e.getMessage());
         }
     }
+
 
     /**
      * * Checks whether the given input suffices the criteria * Also makes sure
@@ -149,13 +159,15 @@ public class AddButtonCtrl {
      * user
      */
     private boolean recipeValidation(String query) {
+        ResourceBundle props = getTranslationsBundle();
+
         if (query.length() > 20) {
-            statusLabel.setText("The name is longer than 20 characters.");
+            statusLabel.setText(props.getString("label.tooLongName"));
             statusLabel.setStyle("-fx-text-fill: red;");
             return false;
         }
         if (query.matches(".*[\\*\"'\\@].*")) {
-            statusLabel.setText("The name contains illegal characters.");
+            statusLabel.setText(props.getString("label.illegalName"));
             statusLabel.setStyle("-fx-text-fill: red;");
             return false;
         }
@@ -163,24 +175,29 @@ public class AddButtonCtrl {
     }
 
     /**
-     * * Validates servings input. * @param text the user input to be converted
-     *
-     * * @return -1 if invalid, number of servings otherwise
+     * Validates servings input.
+     * @param text the user input to be converted
+     * @return -1 if invalid, number of servings otherwise
      */
     @FXML
     private int validateServings(String text) {
+        ResourceBundle props = getTranslationsBundle();
+
         try {
             int servings = Integer.parseInt(text);
             if (servings < 1) {
-                showError("More Than 0", "Servings must be an integer more than 0.");
+                showError(props.getString("label.negativeServings"),
+                        props.getString("label.negativeServings.body"));
                 return -1;
             }
             return servings;
         } catch (NumberFormatException e) {
-            showError("Must Be Number", "Servings must be a number.");
+            showError(props.getString("label.illegalServing"),
+                    props.getString("label.illegalServing.body"));
             return -1;
         }
     }
+
 
     /**
      * * A method that creates an error alert with a heading and content
@@ -190,8 +207,9 @@ public class AddButtonCtrl {
      * error
      */
     private void showError(String header, String content) {
+        ResourceBundle props = getTranslationsBundle();
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
+        alert.setTitle(props.getString("alert.error"));
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.showAndWait();

@@ -1,7 +1,11 @@
 package client.scenes;
 
-import client.utils.IngredientServerUtils;
+import java.util.ResourceBundle;
+
 import com.google.inject.Inject;
+
+import client.config.ConfigService;
+import client.utils.IngredientServerUtils;
 import commons.Ingredient;
 import commons.Recipe;
 import commons.RecipeIngredient;
@@ -9,10 +13,15 @@ import commons.Unit;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 public class AddRecipeIngredientCtrl {
+
     private Scene nutritionScene;
     private Scene addRecipeIngredientScene;
 
@@ -20,11 +29,14 @@ public class AddRecipeIngredientCtrl {
     private RecipeIngredient recipeIngredient;
 
     private final IngredientServerUtils ingredientServerUtils;
+    private final ConfigService configService;
 
     @Inject
     public AddRecipeIngredientCtrl(
-            IngredientServerUtils ingredientServerUtils) {
+            IngredientServerUtils ingredientServerUtils,
+            ConfigService configService) {
         this.ingredientServerUtils = ingredientServerUtils;
+        this.configService = configService;
     }
 
     // UI Elements
@@ -66,14 +78,22 @@ public class AddRecipeIngredientCtrl {
     }
 
     /**
-     * The ChoiceBoxes have the default value of the first element. Explanation
-     * of unitTypeChoiceBox: selectionModel - in the case of a ChoiceBox it is a
-     * SingleSelectionModel selectedItemProperty - indicates the currently
-     * selected item in the selection model addListener - function that runs
-     * whenever a change is observed
+     * The ChoiceBoxes have the default value of the first element.
      */
     @FXML
     public void onStart() {
+        try {
+            String languageCode = configService.getLanguage();
+            System.out.println("Loaded language from config: " + languageCode);
+
+            ResourceBundle props = ResourceBundle.getBundle("client.scenes.Translations", 
+                new java.util.Locale(languageCode));
+            System.out.println("Translation for 'label.addIngredientInfo': " + 
+                props.getString("label.addIngredientInfo"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         infoLabel.setVisible(false);
         pleaseAddIngredientLabel.setVisible(false);
 
@@ -96,10 +116,9 @@ public class AddRecipeIngredientCtrl {
 
         unitTypeChoiceBox.getSelectionModel()
                 .selectedItemProperty()
-                .addListener((observable, oldValue, newValue) -> {
-                    updateUnitChoiceBoxVisibility(newValue);
-                });
+                .addListener((observable, oldValue, newValue) -> updateUnitChoiceBoxVisibility(newValue));
     }
+
 
     /**
      * Updates the visibility of the unit choice box based on the selected unit
