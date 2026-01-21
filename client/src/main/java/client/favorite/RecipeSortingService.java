@@ -4,6 +4,7 @@ import client.search.RecipeCollection;
 import com.google.inject.Inject;
 import commons.Recipe;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -102,21 +103,15 @@ public class RecipeSortingService {
      * @return a limited, sorted list of recipes
      */
     public List<Recipe> getPreview(List<Recipe> collection, int max) {
-        System.out.println("Creating recipe preview...");
-
         if (!isSortable(collection)) {
-            System.out.println("Collection not sortable");
             return List.of();
         }
 
         List<Recipe> sorted = sortByTitleAsc(collection);
-        List<Recipe> preview = sorted.subList(
-                0,
-                Math.min(sorted.size(), max)
-        );
 
-        System.out.println("Preview result: " + preview);
-        return preview;
+        return List.copyOf( // This creates a copy rather than previewing actual memory. This is safer.
+                sorted.subList(0, Math.min(sorted.size(), max))
+        );
     }
 
     /**
@@ -126,7 +121,8 @@ public class RecipeSortingService {
      * @return the list with the max applied.
      */
     public List<Recipe> limit(List<Recipe> recipes, int max) {
-        return recipes.subList(0, Math.min(recipes.size(), max));
+        return List.copyOf( // This creates a copy rather than previewing actual memory. This is safer.
+                recipes.subList(0, Math.min(recipes.size(), max)));
     }
 
     /**
