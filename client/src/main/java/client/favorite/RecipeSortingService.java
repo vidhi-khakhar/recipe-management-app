@@ -44,11 +44,17 @@ public class RecipeSortingService {
      * @return the sorted collection by title.
      */
     public List<Recipe> sortByTitleAsc(List<Recipe> collection) {
-        collection.sort(Comparator.comparing(
+        if (!isSortable(collection)) {
+            return List.of();
+        }
+
+        List<Recipe> sorted = new ArrayList<>(collection);
+        sorted.sort(Comparator.comparing(
                 Recipe::getTitle,
                 String.CASE_INSENSITIVE_ORDER
         ));
-        return collection;
+
+        return List.copyOf(sorted);
     }
 
     /**
@@ -58,39 +64,39 @@ public class RecipeSortingService {
      * @return the sorted collection by title.
      */
     public List<Recipe> sortByTitleDesc(List<Recipe> collection) {
-        collection.sort(Comparator.comparing(
+        if (!isSortable(collection)) {
+            return List.of();
+        }
+
+        List<Recipe> sorted = new ArrayList<>(collection);
+        sorted.sort(Comparator.comparing(
                 Recipe::getTitle,
                 String.CASE_INSENSITIVE_ORDER
-        ));
-        return collection.reversed();
+        ).reversed());
+
+        return List.copyOf(sorted);
     }
 
     /**
      * Sorts the given list by time of creation of the recipes (OLD -> NEW).
      * This is done by using the original list as sorted by date.
      *
-     * @param collection the collection to be sorted.
      * @return the sorted collection by date.
      */
-    public List<Recipe> sortByDateAsc(List<Recipe> collection) {
-        // This way the collection actually gets modified. Might not be necessary.
-        collection.clear();
-        collection.addAll(recipeCollection.getAll());
-        return collection;
-    }
 
+    public List<Recipe> sortByDateAsc() {
+        List<Recipe> sorted = new ArrayList<>(recipeCollection.getAll());
+        return List.copyOf(sorted);
+    }
     /**
      * Sorts the given list by time of creation of the recipes (NEW -> OLD).
      * This is done by using the original list as sorted by date.
      *
-     * @param collection the collection to be sorted.
      * @return the sorted collection by date.
      */
-    public List<Recipe> sortByDateDesc(List<Recipe> collection) {
-        // This way the collection actually gets modified. Might not be necessary.
-        collection.clear();
-        collection.addAll(recipeCollection.getAll());
-        return collection.reversed();
+    public List<Recipe> sortByDateDesc() {
+        List<Recipe> sorted = new ArrayList<>(recipeCollection.getAll().reversed());
+        return List.copyOf(sorted);
     }
 
     // --- helpers ---
@@ -108,8 +114,7 @@ public class RecipeSortingService {
         }
 
         List<Recipe> sorted = sortByTitleAsc(collection);
-
-        return List.copyOf( // This creates a copy rather than previewing actual memory. This is safer.
+        return List.copyOf(
                 sorted.subList(0, Math.min(sorted.size(), max))
         );
     }
@@ -121,8 +126,13 @@ public class RecipeSortingService {
      * @return the list with the max applied.
      */
     public List<Recipe> limit(List<Recipe> recipes, int max) {
-        return List.copyOf( // This creates a copy rather than previewing actual memory. This is safer.
-                recipes.subList(0, Math.min(recipes.size(), max)));
+        if (!isSortable(recipes)) {
+            return List.of();
+        }
+
+        return List.copyOf(
+                recipes.subList(0, Math.min(recipes.size(), max))
+        );
     }
 
     /**
