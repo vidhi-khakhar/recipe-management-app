@@ -4,10 +4,7 @@ import client.utils.RecipeServerUtils;
 import commons.Recipe;
 import jakarta.inject.Inject;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 /**
  * Note: This class has borrowed heavily from
@@ -16,6 +13,9 @@ import javafx.scene.control.TextField;
 public class EditTitleCtrl {
     private final MainCtrl mainCtrl;
     private final RecipeServerUtils recipeServerUtils;
+
+    @FXML
+    private TextField servingsInput;
 
     @Inject
     public EditTitleCtrl(MainCtrl mainCtrl, RecipeServerUtils recipeServerUtils) {
@@ -52,6 +52,14 @@ public class EditTitleCtrl {
                         recipe.setLanguage("Es");
                     }
 
+                    int servings = validateServings(servingsInput.getText());
+                    if (servings == -1) {
+                        return;
+                    } else {
+                        recipe.setServings(servings);
+                        servingsInput.clear();
+                    }
+
                     recipeServerUtils.replaceRecipe(recipe.getRecipeId(), recipe);
 
                     title.clear();
@@ -67,6 +75,7 @@ public class EditTitleCtrl {
                 } catch (Exception e) {
                     statusLabel.setText("Error editing title of recipe.");
                     statusLabel.setStyle("-fx-text-fill: red;");
+                    mainCtrl.recoverFromError("Error editing title of recipe!");
                 }
             }
         }
@@ -97,6 +106,42 @@ public class EditTitleCtrl {
     public void initialize() {
         languageChoiceBox.getItems().addAll("English", "Dutch", "Romanian", "Spanish");
         languageChoiceBox.getSelectionModel().selectFirst();
+    }
+
+    /**
+     * Validates servings input.
+     * @param text the user input to be converted
+     * @return -1 if invalid, number of servings otherwise
+     */
+    @FXML
+    private int validateServings(String text) {
+        try {
+            int servings = Integer.parseInt(text);
+
+            if (servings < 1) {
+                showError("More Than 0", "Servings must be an integer more than 0.");
+                return -1;
+            }
+
+            return servings;
+
+        } catch (NumberFormatException e) {
+            showError("Must Be Number", "Servings must be a number.");
+            return -1;
+        }
+    }
+
+    /**
+     * A method that creates an error alert with a heading and content
+     * @param header The header of the error
+     * @param content the content of the error
+     */
+    private void showError(String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 
 

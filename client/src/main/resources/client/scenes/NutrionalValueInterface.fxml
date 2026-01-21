@@ -17,7 +17,7 @@
    <children>
       <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
-            <HBox prefHeight="64.0" prefWidth="600.0" styleClass="headerlabel" BorderPane.alignment="CENTER">
+            <HBox prefHeight="64.0" prefWidth="600.0" styleClass="header" BorderPane.alignment="CENTER">
                <children>
                   <HBox layoutX="394.0" layoutY="18.0" prefHeight="63.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
                   <HBox prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
@@ -30,6 +30,9 @@
                               <String fx:value="h1" />
                               <String fx:value="headerlabel" />
                            </styleClass>
+                           <HBox.margin>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </HBox.margin>
                         </Label>
                      </children>
                   </HBox>
@@ -54,7 +57,7 @@
                   </VBox>
                   <HBox alignment="CENTER" prefHeight="50.0" prefWidth="266.0" VBox.vgrow="NEVER">
                      <children>
-                        <Button fx:id="addIngredientButton" mnemonicParsing="false" onAction="#addIngredient" prefHeight="38.0" prefWidth="161.0" styleClass="h3" text="+ Add" HBox.hgrow="ALWAYS">
+                        <Button fx:id="addIngredientButton" mnemonicParsing="false" onAction="#addIngredient" prefHeight="40.0" prefWidth="80.0" styleClass="h3" text="+ Add" HBox.hgrow="ALWAYS">
                            <font>
                               <Font size="17.0" />
                            </font>
@@ -67,12 +70,20 @@
                               <Font size="17.0" />
                            </font>
                            <HBox.margin>
-                              <Insets left="5.0" />
+                              <Insets left="5.0" right="5.0" />
                            </HBox.margin>
                            <styleClass>
                               <String fx:value="h3" />
                               <String fx:value="minusbutton" />
                            </styleClass>
+                        </Button>
+                        <Button fx:id="healthButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#showHealthChart" prefHeight="40.0" prefWidth="87.0" styleClass="minusbutton" stylesheets="@NutritionalValue.css" text="Health">
+                           <HBox.margin>
+                              <Insets left="5.0" />
+                           </HBox.margin>
+                           <font>
+                              <Font size="17.0" />
+                           </font>
                         </Button>
                      </children>
                      <VBox.margin>

@@ -34,8 +34,8 @@ public class ShoppingListCtrl {
     @FXML private Button downloadShoppingListButton;
     @FXML private VBox shoppingList;
     @FXML private ScrollPane shoppingScrollPane;
-    @FXML private javafx.scene.layout.AnchorPane emptyShoppingList;
-    @FXML private javafx.scene.layout.AnchorPane notEmptyShoppingList;
+    @FXML private VBox emptyShoppingList;
+    @FXML private VBox notEmptyShoppingList;
     @FXML private Button resetShoppingListButton;
 
     private ShoppingList shoppingListModel;

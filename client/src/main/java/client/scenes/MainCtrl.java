@@ -15,6 +15,7 @@
  */
 package client.scenes;
 
+<<<<<<< client/src/main/java/client/scenes/MainCtrl.java
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,13 +32,16 @@ import org.controlsfx.control.CheckComboBox;
 
 import com.google.inject.Inject;
 
+=======
+>>>>>>> client/src/main/java/client/scenes/MainCtrl.java
 import client.RecipeFormatter;
 import client.config.ConfigService;
 import client.favorite.FavoriteService;
+import client.scenes.state.EmptyStateReason;
 import client.search.RecipeCollection;
 import client.search.SearchService;
 import client.utils.RecipeServerUtils;
-import commons.Ingredient;
+import com.google.inject.Inject;
 import commons.Recipe;
 import commons.RecipeIngredient;
 import commons.RecipeIngredientKey;
@@ -48,27 +52,19 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.apache.commons.io.FileUtils;
+import org.controlsfx.control.CheckComboBox;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 public class MainCtrl {
 
@@ -102,6 +98,13 @@ public class MainCtrl {
 
     @FXML
     private Button favoriteS;
+
+    @FXML
+    private Label noIngredientTitle;
+
+    @FXML
+    private Label noIngredientSubtitle;
+
 
     @FXML
     private Button addIngredientButton;
@@ -179,28 +182,33 @@ public class MainCtrl {
     @FXML
     private Label recipeLanguageLabel;
 
+    @FXML
+    private Pane healthStatus;
+
+    @FXML
+    private Label healthyStatus;
 
     /**
      * Initializes the scenes
      *
-     * @param primaryStage the main stage
-     * @param mainUserInterfaceScene the main UI scene
-     * @param nutritionScene the nutrition scene
-     * @param recipeAddScene the add recipe scene
+     * @param primaryStage             the main stage
+     * @param nutritionScene           the nutrition scene
+     * @param recipeAddScene           the add recipe scene
      * @param addRecipeIngredientScene the add ingredient to recipe scene
-     * @param addRecipeIngredientCtrl the add ingredient to recipe controller
-     * @param nutritionalValueCtrl the nutritional value controller
-     * @param recipeShoppingListCtrl the recipe shopping list controller    
+     * @param addRecipeIngredientCtrl  the add ingredient to recipe controller
+     * @param nutritionalValueCtrl     the nutritional value controller
+     * @param recipeShoppingListCtrl   the recipe shopping list controller
      */
     public void initScenes(Stage primaryStage, Scene nutritionScene,
-            Scene recipeAddScene, Scene addRecipeIngredientScene, AddRecipeIngredientCtrl addRecipeIngredientCtrl,
-            Scene editTitleScene, Scene shoppingListScene, Scene recipeShoppingListScene,
-            NutritionalValueCtrl nutritionalValueCtrl,
-            RecipeShoppingListCtrl recipeShoppingListCtrl) {
-            
+                           Scene recipeAddScene, Scene addRecipeIngredientScene,
+                           AddRecipeIngredientCtrl addRecipeIngredientCtrl,
+                           Scene editTitleScene, Scene shoppingListScene, Scene recipeShoppingListScene,
+                           NutritionalValueCtrl nutritionalValueCtrl,
+                           RecipeShoppingListCtrl recipeShoppingListCtrl) {
+
         this.primaryStage = primaryStage;
         this.nutritionScene = nutritionScene;
-        this.recipeAddScene = recipeAddScene; 
+        this.recipeAddScene = recipeAddScene;
         this.addRecipeIngredientScene = addRecipeIngredientScene;
         this.addRecipeIngredientCtrl = addRecipeIngredientCtrl;
         this.editTitleScene = editTitleScene;
@@ -216,9 +224,9 @@ public class MainCtrl {
      * The constructor that connects the ServerUtils to this controller.
      *
      * @param recipeServerUtils the utility class responsible for server
-     * communication.
-     * @param favoriteService the service class responsible for favoriting
-     * logic.
+     *                          communication.
+     * @param favoriteService   the service class responsible for favoriting
+     *                          logic.
      */
     @Inject
     public MainCtrl(RecipeServerUtils recipeServerUtils, SearchService searchService,
@@ -271,6 +279,8 @@ public class MainCtrl {
                 .addListener((obs, oldRecipe, newRecipe) -> {
                     if (newRecipe != null) {
                         onRecipeSelected(newRecipe);
+                        baseServings = newRecipe.getServings();
+                        servingsValueLabel.setText(String.valueOf(baseServings));
                     }
                 });
 
@@ -329,7 +339,7 @@ public class MainCtrl {
             List<Long> removedIDs = favoriteService.removeDeletedFavorites(recipesFromDB);
 
             //Check if a favorited recipe got deleted
-            if(!removedIDs.isEmpty()) {
+            if (!removedIDs.isEmpty()) {
                 showFavoriteRemovedAlert(removedIDs);
             }
 
@@ -347,7 +357,7 @@ public class MainCtrl {
                 } else {
                     sidebarList.getSelectionModel().selectFirst();
                 }
-            }else{
+            } else {
                 sidebarList.getSelectionModel().clearSelection();
             }
 
@@ -359,13 +369,14 @@ public class MainCtrl {
     /**
      * The alert to let the user know their favorite recipe got deleted by
      * someone else.
+     *
      * @param removedIds the removed recipes' IDs
      */
     private void showFavoriteRemovedAlert(List<Long> removedIds) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Favorite deleted");
         alert.setHeaderText("A favorite recipe got deleted");
-        alert.setContentText("Helaas pindakaas — one or more favorites have been removed by someone else.");
+        alert.setContentText("One or more favorites have been removed by someone else.");
         alert.showAndWait();
     }
 
@@ -374,14 +385,39 @@ public class MainCtrl {
      * sidebar list.
      */
     @FXML
-    public void updateRecipeStackPane() {
+    public void updateRecipeStackPane(EmptyStateReason reason) {
         boolean hasRecipes = !sidebarList.getItems().isEmpty();
-        if (!hasRecipes) {
-            noRecipePane.setVisible(true);
-            allRecipePane.setVisible(false);
-        } else {
+
+        if (hasRecipes) {
             noRecipePane.setVisible(false);
             allRecipePane.setVisible(true);
+            return;
+        }
+
+        noRecipePane.setVisible(true);
+        allRecipePane.setVisible(false);
+
+        if (reason == null) return;
+
+        switch (reason) {
+            case NO_RECIPES_EXIST -> {
+                noIngredientTitle.setText("No Recipes Created!");
+                noIngredientSubtitle.setText(
+                        "Please create or select a recipe to view its ingredients and instructions."
+                );
+            }
+            case NO_SEARCH_RESULTS -> {
+                noIngredientTitle.setText("No Recipes Found!");
+                noIngredientSubtitle.setText(
+                        "Please check the spelling or create a new recipe."
+                );
+            }
+            case NO_FAVORITES -> {
+                noIngredientTitle.setText("No Favorites Found!");
+                noIngredientSubtitle.setText(
+                        "Please check if there are any favorites or add a new favorite."
+                );
+            }
         }
     }
 
@@ -390,22 +426,68 @@ public class MainCtrl {
      * @param recipe the recipe that is selected
      */
     private void onRecipeSelected(Recipe recipe) {
-        initScalingValues(recipe);
+        try {
+            recipeServerUtils.getRecipe(recipe.getRecipeId()); // Test if the recipe actually exists.
 
-        if (this.selectedRecipe != null && this.selectedRecipe != recipe) {
-            restoreBaseValues(this.selectedRecipe);
+            initScalingValues(recipe);
+
+            if (this.selectedRecipe != null && this.selectedRecipe != recipe) {
+                restoreBaseValues(this.selectedRecipe);
+            }
+
+            this.selectedRecipe = recipe;
+            String recipeLanguage = recipe.getLanguage();
+            updateRecipeLanguageLabel(recipeLanguage);
+            titleRecipeLabel.setText(recipe.getTitle());
+
+
+            showInstructions(recipe);
+            showIngredients(recipe);
+            showNutritionalValues(recipe);
+            setHealthStatus(recipe);
+
+        } catch (Exception e) {
+            recoverFromError("This recipe was removed or changed.");
         }
-
-        this.selectedRecipe = recipe;
-        String recipeLanguage = recipe.getLanguage();
-        updateRecipeLanguageLabel(recipeLanguage);
-        titleRecipeLabel.setText(recipe.getTitle());
-
-
-        showInstructions(recipe);
-        showIngredients(recipe);
-        showNutritionalValues(recipe);
     }
+
+    /**
+     * Shows an alert that tells the user something went wrong and the UI
+     * will get refreshed. After that, the UI will get refreshed.
+     *
+     * @param userMessage The specific error message passed down by the developer.
+     */
+    public void recoverFromError(String userMessage) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Something went wrong");
+        alert.setHeaderText(userMessage);
+        alert.setContentText("The application will refresh to sync with the server.");
+        alert.showAndWait();
+
+        reloadApplicationState();
+    }
+
+    /**
+     * Reloads the application, this is different from the refresh UI button as
+     * this only does the part needed for the error handling.
+     */
+    private void reloadApplicationState() {
+        try {
+            loadRecipesFromDatabase();
+            favoriteService.loadFromConfig();
+            sidebarList.refresh();
+
+            updateRecipeStackPane(
+                    recipesObservableList.isEmpty()
+                            ? EmptyStateReason.NO_RECIPES_EXIST
+                            : null
+            );
+
+        } catch (Exception e) {
+            showError("Failed to reload data from server.");
+        }
+    }
+
 
     /**
      * Adds the recipe to the list that is displayed by the UI.
@@ -417,7 +499,7 @@ public class MainCtrl {
         recipeCollection.add(recipe);
         applySearch();
         sidebarList.getSelectionModel().select(recipe);
-        updateRecipeStackPane();
+        updateRecipeStackPane(null);
     }
 
     /**
@@ -435,11 +517,11 @@ public class MainCtrl {
 
         removeRecipe(selected);
         // If the selected recipe is a favorite, the favorite id gets removed from config
-        if(favoriteService.isFavorite(selected)) {
+        if (favoriteService.isFavorite(selected)) {
             favoriteService.removeFavorite(selected);
         }
 
-        updateRecipeStackPane();
+        updateRecipeStackPane(null);
 
         if (!recipesObservableList.isEmpty()) {
             sidebarList.getSelectionModel().selectFirst();
@@ -448,15 +530,16 @@ public class MainCtrl {
 
     /**
      * Opens an alert when user clicks the recipe deletion button.
+     *
      * @return true if user confirms the deletion
-     *         false if user cancels the deletion
+     * false if user cancels the deletion
      */
     private boolean deleteConfirmation() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmation");
         alert.setHeaderText("Are you sure you want to delete this recipe?");
 
-        if(favoriteService.isFavorite(selectedRecipe)) {
+        if (favoriteService.isFavorite(selectedRecipe)) {
             alert.setContentText("This is one of your favorites!");
         }
 
@@ -505,6 +588,7 @@ public class MainCtrl {
         String query = searchBar.getText();
         boolean searchFavorites = "★ Only".equals(favoriteS.getText());
 
+<<<<<<< client/src/main/java/client/scenes/MainCtrl.java
         List<Recipe> fromServer = searchService.search(query, searchFavorites);
 
         List<Recipe> filtered = fromServer.stream()
@@ -517,22 +601,34 @@ public class MainCtrl {
                 })
                         .collect(Collectors.toList());
 
+=======
+        List<Recipe> filtered = searchService.search(query, searchFavorites);
+>>>>>>> client/src/main/java/client/scenes/MainCtrl.java
         recipesObservableList.setAll(filtered);
-        updateRecipeStackPane();
 
-        if (previouslySelected != null && filtered.contains(previouslySelected)) {
-            sidebarList.getSelectionModel().select(previouslySelected);
-        } else if (!filtered.isEmpty()) {
-            sidebarList.getSelectionModel().selectFirst();
+        if (filtered.isEmpty() && searchFavorites) {
+            updateRecipeStackPane(EmptyStateReason.NO_FAVORITES);
+        } else if (filtered.isEmpty() && query.trim().equals("")) {
+            updateRecipeStackPane(EmptyStateReason.NO_RECIPES_EXIST);
+        } else if (filtered.isEmpty()) {
+            updateRecipeStackPane(EmptyStateReason.NO_SEARCH_RESULTS);
+        } else {
+            updateRecipeStackPane(null);
+
+            if (previouslySelected != null && filtered.contains(previouslySelected)) {
+                sidebarList.getSelectionModel().select(previouslySelected);
+            } else if (!filtered.isEmpty()) {
+                sidebarList.getSelectionModel().selectFirst();
+            }
         }
     }
 
 
     @FXML
     private void searchFavorites() {
-        if(favoriteS.getText() == "★ Only"){
+        if (favoriteS.getText().equals("★ Only")) {
             favoriteS.setText("☆ Only");
-        }else{
+        } else {
             favoriteS.setText("★ Only");
         }
 
@@ -544,11 +640,18 @@ public class MainCtrl {
      */
     @FXML
     private void refreshButtonClicked() {
-        configService.reload(); // this makes sure the client has the up to date config
-        loadRecipesFromDatabase();
-        favoriteService.loadFromConfig();
-        sidebarList.refresh();
-        showIngredients(sidebarList.getSelectionModel().getSelectedItem());
+        try {
+            configService.reload();
+            reloadApplicationState();
+
+            Recipe selected = sidebarList.getSelectionModel().getSelectedItem();
+            if (selected != null) {
+                showIngredients(selected);
+            }
+
+        } catch (Exception e) {
+            showError("Refresh failed.");
+        }
     }
 
     // RECIPE INGREDIENTS METHODS
@@ -567,20 +670,23 @@ public class MainCtrl {
         for (RecipeIngredient ingredient : ingredients) {
             addRecipeIngredientToUI(ingredient);
         }
+
+        showNutritionalValues(recipe);
+        setHealthStatus(recipe);
     }
 
     /**
      * Opens the add ingredient to recipe popup window.
      */
     @FXML
-    void showAddRecipeIngredientWindow() {
+    void showAddRecipeIngredientWindow(boolean isAdd) {
         if (addRecipeIngredientScene == null) {
             System.err.println("AddRecipeIngredientScene not initialized!");
             return;
         }
 
         Stage secondaryStage = new Stage();
-        addRecipeIngredientCtrl.onStart();
+        addRecipeIngredientCtrl.onStart(isAdd);
         addRecipeIngredientCtrl.initScenes(nutritionScene, addRecipeIngredientScene);
         secondaryStage.setTitle("Add Ingredient to Recipe");
         secondaryStage.setScene(addRecipeIngredientScene);
@@ -593,31 +699,35 @@ public class MainCtrl {
      * Adds an ingredient to a recipe.
      */
     @FXML
-    private void ingredientAddButtonClicked() throws IOException {
-        Recipe selectedRecipe = getSelectedRecipe();
+    private void ingredientAddButtonClicked() {
+        try {
+            Recipe selectedRecipe = getSelectedRecipe();
 
-        requireSelectedRecipe();
+            requireSelectedRecipe();
 
-        addRecipeIngredientCtrl.setRecipe(selectedRecipe);
-        showAddRecipeIngredientWindow();
+            addRecipeIngredientCtrl.setRecipe(selectedRecipe);
+            showAddRecipeIngredientWindow(true);
 
-        RecipeIngredient newIngredient =
-                addRecipeIngredientCtrl.getRecipeIngredient();
+            RecipeIngredient newIngredient =
+                    addRecipeIngredientCtrl.getRecipeIngredient();
 
-        if (newIngredient != null) {
-            newIngredient.setRecipe(selectedRecipe);
+            if (newIngredient != null) {
+                newIngredient.setRecipe(selectedRecipe);
 
-            this.recipeServerUtils.createRecipeIngredient(newIngredient);
+                this.recipeServerUtils.createRecipeIngredient(newIngredient);
 
-            selectedRecipe.getIngredients().add(newIngredient);
+                selectedRecipe.getIngredients().add(newIngredient);
 
-            if (newIngredient.isFormal()) {
-                baseAmounts.put(newIngredient, newIngredient.getAmount());
-                baseUnits.put(newIngredient, newIngredient.getUnit());
+                if (newIngredient.isFormal()) {
+                    baseAmounts.put(newIngredient, newIngredient.getAmount());
+                    baseUnits.put(newIngredient, newIngredient.getUnit());
+                }
             }
-        }
 
-        showIngredients(selectedRecipe);
+            showIngredients(selectedRecipe);
+        } catch (Exception e) {
+            recoverFromError("Could not add recipe ingredient.");
+        }
     }
 
     private void addRecipeIngredientToUI(RecipeIngredient recipeIngredient) {
@@ -651,7 +761,7 @@ public class MainCtrl {
         Button removeButton = new Button("remove");
         removeButton.setOnAction(this::ingredientRemoveButtonClicked);
         removeButton.setUserData(recipeIngredient.getId()); // To be able to identify which recipeIngredient to delete
-                                                            // when remove button is clicked
+        // when remove button is clicked
 
         // Put it all into HBox
         ingredientItem.getChildren().addAll(itemLabel, spacer, editButton, removeButton);
@@ -674,16 +784,16 @@ public class MainCtrl {
         HBox ingredientToRemove = (HBox) removeButton.getParent(); // To delete the whole row
         RecipeIngredientKey id = (RecipeIngredientKey) ingredientToRemove.getUserData();
 
-        if(id == null) return;
+        if (id == null) return;
 
-        try{
+        try {
             boolean success = this.recipeServerUtils.deleteRecipeIngredient(id.getRecipeId(),
                     id.getIngredientId());
 
             if (success) {
                 ingredientList.getChildren().remove(ingredientToRemove);
 
-                if(selectedRecipe != null) {
+                if (selectedRecipe != null) {
                     selectedRecipe.getIngredients().removeIf(ri ->
                             ri.getId().equals(id)
                     );
@@ -700,7 +810,6 @@ public class MainCtrl {
 
 
     }
-
 
 
     /**
@@ -721,17 +830,24 @@ public class MainCtrl {
             return;
         }
 
+        RecipeIngredientKey id = (RecipeIngredientKey) ingredientToEdit.getUserData();
+
         addRecipeIngredientCtrl.setRecipe(selectedRecipe);
-        showAddRecipeIngredientWindow();
+        addRecipeIngredientCtrl.setIngredient(id.getIngredientId());
+
+        showAddRecipeIngredientWindow(false);
         RecipeIngredient updated = addRecipeIngredientCtrl.getRecipeIngredient();
 
-        if(updated != null) {
-            RecipeIngredientKey id = (RecipeIngredientKey) ingredientToEdit.getUserData();
+        if (updated != null) {
+
+            baseAmounts.put(updated, updated.getAmount());
+            baseUnits.put(updated, updated.getUnit());
+
             this.recipeServerUtils.updateRecipeIngredient(id.getRecipeId(), id.getIngredientId(), updated);
 
             List<RecipeIngredient> ingredients = selectedRecipe.getIngredients();
-            for(int i = 0; i < ingredients.size(); i++) {
-                if(ingredients.get(i).getId().equals(id)) {
+            for (int i = 0; i < ingredients.size(); i++) {
+                if (ingredients.get(i).getId().equals(id)) {
                     updated.setRecipe(selectedRecipe);
                     ingredients.set(i, updated);
                     break;
@@ -784,8 +900,8 @@ public class MainCtrl {
     /**
      * Creates a row for a preparation step.
      *
-     * @param index the index of the step
-     * @param initialText the initial text of the step
+     * @param index         the index of the step
+     * @param initialText   the initial text of the step
      * @param startEditable whether the step is initially editable
      */
     private HBox createExecutionStepRow(int index, String initialText, boolean startEditable) {
@@ -830,7 +946,7 @@ public class MainCtrl {
             try {
                 recipeServerUtils.replaceRecipe(selectedRecipe.getRecipeId(), selectedRecipe);
             } catch (Exception e) {
-                System.err.println("Failed to save recipe: " + e.getMessage());
+                recoverFromError("Could not save the instruction!");
             }
 
             editSaveButton.setText("✏");
@@ -915,8 +1031,10 @@ public class MainCtrl {
         secondaryStage.setTitle("Nutritional Values");
         secondaryStage.setScene(nutritionScene);
         secondaryStage.initOwner(primaryStage); // makes it modal to main window if desired
+        secondaryStage.setResizable(false);
         secondaryStage.showAndWait();
 
+        sidebarList.getSelectionModel().clearSelection();
     }
 
     /**
@@ -1022,12 +1140,12 @@ public class MainCtrl {
             Long newId = recipeServerUtils.createRecipe(newRecipe);
             newRecipe.setRecipeId(newId);
 
-            for(RecipeIngredient oldI : original.getIngredients()) {
+            for (RecipeIngredient oldI : original.getIngredients()) {
                 RecipeIngredient newI;
 
-                if(oldI.isFormal()){
-                    newI = RecipeIngredient.formal(newRecipe, oldI.getIngredient(), oldI.getAmount(),  oldI.getUnit());
-                }else{
+                if (oldI.isFormal()) {
+                    newI = RecipeIngredient.formal(newRecipe, oldI.getIngredient(), oldI.getAmount(), oldI.getUnit());
+                } else {
                     newI = RecipeIngredient.informal(newRecipe, oldI.getIngredient(), oldI.getInformal());
                 }
 
@@ -1043,7 +1161,7 @@ public class MainCtrl {
             System.out.println("It worked! Cloned recipe ID: " + newId);
 
         } catch (Exception e) {
-            System.err.println("Clone failed: " + e.getMessage());
+            recoverFromError("Clone recipe failed!");
         }
     }
 
@@ -1115,6 +1233,7 @@ public class MainCtrl {
         editTitleStage.setResizable(false);
 
         editTitleStage.show();
+        baseServings = getSelectedRecipe().getServings();
     }
 
     /**
@@ -1140,7 +1259,7 @@ public class MainCtrl {
 
     /**
      * Shows an error message dialog.
-     * 
+     *
      * @param message error message
      */
     private void showError(String message) {
@@ -1157,6 +1276,7 @@ public class MainCtrl {
 
     /**
      * changing the Recipe language
+     *
      * @param recipeLanguage
      */
     public void updateRecipeLanguageLabel(String recipeLanguage) {
@@ -1165,8 +1285,11 @@ public class MainCtrl {
     }
 
 
+<<<<<<< client/src/main/java/client/scenes/MainCtrl.java
 
     
+=======
+>>>>>>> client/src/main/java/client/scenes/MainCtrl.java
     @FXML
     private void downloadButtonClicked() throws IOException {
         Recipe selectedRecipe = (Recipe) sidebarList.getSelectionModel().getSelectedItem();
@@ -1182,7 +1305,7 @@ public class MainCtrl {
     /**
      * creates a menuitem for all flags
      * @param languageName the name of the language
-     * @param imagePath the path to the flag
+     * @param imagePath    the path to the flag
      * @return a menuitem with the flag
      */
     private MenuItem makeLanguageImage(String languageName, String imagePath) {
@@ -1191,7 +1314,7 @@ public class MainCtrl {
         if (stream == null) {
             return new MenuItem(languageName + " (no icon)");
         }
-        Image image = new Image (Objects.requireNonNull(getClass().getResourceAsStream(path)));
+        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(path)));
         ImageView imageView = new ImageView(image);
 
         imageView.setFitHeight(20);
@@ -1249,8 +1372,6 @@ public class MainCtrl {
     private final Map<RecipeIngredient, Unit> baseUnits = new HashMap<>();
 
     private void initScalingValues(Recipe recipe) {
-        baseServings = recipe.getServings();
-
         for (RecipeIngredient ri : recipe.getIngredients()) {
             if (ri.getAmount() != null && ri.getUnit() != null) {
                 baseAmounts.put(ri, ri.getAmount());
@@ -1260,21 +1381,25 @@ public class MainCtrl {
     }
 
     private double calculateKcal(Recipe recipe) {
-        List<Ingredient> ingredients = recipe.getIngredients().stream()
-                .map(recipeIngredient -> {
-                    if(recipeIngredient.isFormal()) {
-                        return recipeIngredient.getIngredient();
-                    }
+        List<RecipeIngredient> ingredients = recipe.getIngredients().stream()
+                .filter(ri -> ri.isFormal()).toList();
 
-                    return null;
-                }).toList();
-
-        double kcals = 0;
-        for (Ingredient ingredient : ingredients) {
-            kcals += (ingredient.getFatPer100g() + ingredient.getCarbsPer100g() + ingredient.getProteinPer100g());
+        int factor = 1;
+        if (scaler.getValue() != null) {
+            factor = scaler.getValue();
         }
 
-        return kcals / ingredients.size();
+        double kcals = 0;
+        double weight = 0;
+        for (RecipeIngredient ingredient : ingredients) {
+            kcals += ingredient.getIngredient().getKcalPer100g() * baseAmounts.get(ingredient)
+                    * factor / 100;
+            weight += ingredient.getAmount();
+        }
+
+        if (ingredients.isEmpty())
+            return 0;
+        return kcals / weight * 100;
     }
 
     private void showNutritionalValues(Recipe recipe) {
@@ -1287,7 +1412,11 @@ public class MainCtrl {
             return;
         }
 
-        int factor = scaler.getValue();
+        int factor = 1;
+        if (scaler.getValue() != null) {
+            factor = scaler.getValue();
+        }
+
         recipe.setServings(baseServings * factor);
 
         for (RecipeIngredient ri : recipe.getIngredients()) {
@@ -1296,6 +1425,8 @@ public class MainCtrl {
             }
         }
 
+        inferredKcalsLabel.setText(String.valueOf(calculateKcal(recipe)));
+        servingsValueLabel.setText(String.valueOf(baseServings * factor));
         normalizeUnits(recipe);
         showNutritionalValues(recipe);
         showIngredients(recipe);
@@ -1307,8 +1438,7 @@ public class MainCtrl {
 
             if (ri.getUnit() == Unit.G && ri.getAmount() >= 1000) {
                 ri.setFormal(ri.getAmount() / 1000, Unit.KG);
-            }
-            else if (ri.getUnit() == Unit.ML && ri.getAmount() >= 1000) {
+            } else if (ri.getUnit() == Unit.ML && ri.getAmount() >= 1000) {
                 ri.setFormal(ri.getAmount() / 1000, Unit.L);
             }
         }
@@ -1376,4 +1506,43 @@ public class MainCtrl {
 
 
 
+    private void setHealthStatus(Recipe recipe) {
+        double kcals = calculateKcal(recipe);
+
+        if (kcals < 200) {
+            healthStatus.setStyle("-fx-background-color: green");
+            healthyStatus.setText("Healthy");
+            healthyStatus.setStyle("-fx-text-fill: #ffffff");
+        } else if (kcals < 500) {
+            healthStatus.setStyle("-fx-background-color: yellow");
+            healthyStatus.setText("Moderately Healthy");
+            healthyStatus.setStyle("-fx-text-fill: #000000");
+        } else {
+            healthyStatus.setText("Unhealthy");
+            healthStatus.setStyle("-fx-background-color: red");
+            healthyStatus.setStyle("-fx-text-fill: #ffffff");
+        }
+    }
+
+    @FXML
+    private void onInfoHealthButtonClicked() {
+        VBox root = new VBox();
+        Label text = new Label("""
+                Healthiness is calculated according to the following principle:
+                  • less than 200 kcals/100g → healthy
+                  • less than 500 kcals/100g → moderately healthy
+                  • otherwise → unhealthy""");
+
+        text.setStyle("-fx-text-fill: #ffffff");
+        root.getChildren().add(text);
+        root.setAlignment(Pos.CENTER);
+        root.setStyle("-fx-background-color: #8191b3");
+
+        Stage popup = new Stage();
+        popup.setTitle("Health Information");
+        popup.setResizable(false);
+        popup.setScene(new Scene(root, 400, 200));
+        popup.show();
+    }
 }
+
