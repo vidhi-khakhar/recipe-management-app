@@ -4,7 +4,11 @@ import client.utils.RecipeServerUtils;
 import commons.Recipe;
 import jakarta.inject.Inject;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 
 /**
  * Note: This class has borrowed heavily from
@@ -17,10 +21,27 @@ public class EditTitleCtrl {
     @FXML
     private TextField servingsInput;
 
+    @FXML
+    private ChoiceBox<String> languageChoiceBox;
+    @FXML
+    private Button editTitleButton;
+
+    @FXML
+    private TextField title;
+
+    @FXML
+    private Label statusLabel;
+
     @Inject
     public EditTitleCtrl(MainCtrl mainCtrl, RecipeServerUtils recipeServerUtils) {
         this.mainCtrl = mainCtrl;
         this.recipeServerUtils = recipeServerUtils;
+    }
+
+    @FXML
+    public void initialize() {
+        languageChoiceBox.getItems().addAll("English", "Dutch", "Romanian", "Spanish");
+        languageChoiceBox.getSelectionModel().selectFirst();
     }
 
     /**
@@ -102,12 +123,6 @@ public class EditTitleCtrl {
         return true;
     }
 
-    @FXML
-    public void initialize() {
-        languageChoiceBox.getItems().addAll("English", "Dutch", "Romanian", "Spanish");
-        languageChoiceBox.getSelectionModel().selectFirst();
-    }
-
     /**
      * Validates servings input.
      * @param text the user input to be converted
@@ -146,14 +161,4 @@ public class EditTitleCtrl {
 
 
 
-    @FXML
-    private ChoiceBox<String> languageChoiceBox;
-    @FXML
-    private Button editTitleButton;
-
-    @FXML
-    private TextField title;
-
-    @FXML
-    private Label statusLabel;
 }

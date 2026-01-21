@@ -37,7 +37,6 @@ import client.scenes.state.EmptyStateReason;
 import client.search.RecipeCollection;
 import client.search.SearchService;
 import client.utils.RecipeServerUtils;
-import commons.Ingredient;
 import commons.Recipe;
 import commons.RecipeIngredient;
 import commons.RecipeIngredientKey;
@@ -62,6 +61,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -144,6 +144,12 @@ public class MainCtrl {
 
     @FXML
     private Button removeRecipeButton;
+
+    @FXML
+    private Pane healthStatus;
+
+    @FXML
+    private Label healthyStatus;
 
     @FXML
     private Button nutritionalValueButton;
@@ -290,6 +296,8 @@ public class MainCtrl {
                 .addListener((obs, oldRecipe, newRecipe) -> {
                     if (newRecipe != null) {
                         onRecipeSelected(newRecipe);
+                        baseServings = newRecipe.getServings();
+                        servingsValueLabel.setText(String.valueOf(baseServings));
                     }
                 });
 
@@ -454,6 +462,7 @@ public class MainCtrl {
             showInstructions(recipe);
             showIngredients(recipe);
             showNutritionalValues(recipe);
+            setHealthStatus(recipe);
         } catch (Exception e) {
             // Use the translation bundle instead of hardcoded string
             java.util.ResourceBundle props = getTranslationsBundle();
@@ -666,6 +675,9 @@ public class MainCtrl {
         for (RecipeIngredient ingredient : ingredients) {
             addRecipeIngredientToUI(ingredient);
         }
+
+        showNutritionalValues(recipe);
+        setHealthStatus(recipe);
     }
 
     /**
@@ -763,7 +775,10 @@ public class MainCtrl {
         // Put it all into HBox
         ingredientItem.getChildren().addAll(itemLabel, spacer, editButton, removeButton);
 
-        ingredientList.getChildren().add(ingredientItem);
+        // Put the HBox (the row) in the ingredientList
+        ingredientList
+                .getChildren()
+                .add(ingredientItem);
     }
 
     /**
@@ -822,12 +837,15 @@ public class MainCtrl {
             return;
         }
 
+        RecipeIngredientKey id = (RecipeIngredientKey) ingredientToEdit.getUserData();
         addRecipeIngredientCtrl.setRecipe(selectedRecipe);
+        addRecipeIngredientCtrl.setIngredient(id.getIngredientId());
         showAddRecipeIngredientWindow(false);
         RecipeIngredient updated = addRecipeIngredientCtrl.getRecipeIngredient();
 
         if (updated != null) {
-            RecipeIngredientKey id = (RecipeIngredientKey) ingredientToEdit.getUserData();
+            baseAmounts.put(updated, updated.getAmount());
+            baseUnits.put(updated, updated.getUnit());
             this.recipeServerUtils.updateRecipeIngredient(id.getRecipeId(), id.getIngredientId(), updated);
 
             List<RecipeIngredient> ingredients = selectedRecipe.getIngredients();
@@ -975,8 +993,6 @@ public class MainCtrl {
         }
     }
 
-// WE STOPPED HERE!!!!!!!!!!!!!!!!!!!!!
-
 
     /**
      * Makes sure the window with the nutrition information is opened once the
@@ -998,7 +1014,7 @@ public class MainCtrl {
         secondaryStage.initOwner(primaryStage); // makes it modal to main window if desired
         secondaryStage.setResizable(false);
         secondaryStage.showAndWait();
-
+        sidebarList.getSelectionModel().clearSelection();
     }
 
     /**
@@ -1394,7 +1410,6 @@ public class MainCtrl {
     private final Map<RecipeIngredient, Unit> baseUnits = new HashMap<>();
 
     private void initScalingValues(Recipe recipe) {
-        baseServings = recipe.getServings();
 
         for (RecipeIngredient ri : recipe.getIngredients()) {
             if (ri.getAmount() != null && ri.getUnit() != null) {
@@ -1405,22 +1420,27 @@ public class MainCtrl {
     }
 
     private double calculateKcal(Recipe recipe) {
-        List<Ingredient> ingredients = recipe.getIngredients().stream()
-                .map(recipeIngredient -> {
-                    if (recipeIngredient.isFormal()) {
-                        return recipeIngredient.getIngredient();
-                    }
+        List<RecipeIngredient> ingredients = recipe.getIngredients().stream()
+                .filter(ri -> ri.isFormal()).toList();
 
-                    return null;
-                }).toList();
-
-        double kcals = 0;
-        for (Ingredient ingredient : ingredients) {
-            kcals += (ingredient.getFatPer100g() + ingredient.getCarbsPer100g() + ingredient.getProteinPer100g());
+        int factor = 1;
+        if (scaler.getValue() != null) {
+            factor = scaler.getValue();
         }
 
-        return kcals / ingredients.size();
+        double kcals = 0;
+        double weight = 0;
+        for (RecipeIngredient ingredient : ingredients) {
+            kcals += ingredient.getIngredient().getKcalPer100g() * baseAmounts.get(ingredient)
+                    * factor / 100;
+            weight += ingredient.getAmount();
+        }
+
+        if (ingredients.isEmpty())
+            return 0;
+        return kcals / weight * 100;
     }
+
 
     private void showNutritionalValues(Recipe recipe) {
         inferredKcalsLabel.setText(String.valueOf(calculateKcal(recipe)));
@@ -1432,7 +1452,11 @@ public class MainCtrl {
             return;
         }
 
-        int factor = scaler.getValue();
+        int factor = 1;
+        if (scaler.getValue() != null) {
+            factor = scaler.getValue();
+        }
+
         recipe.setServings(baseServings * factor);
 
         for (RecipeIngredient ri : recipe.getIngredients()) {
@@ -1441,16 +1465,17 @@ public class MainCtrl {
             }
         }
 
+        inferredKcalsLabel.setText(String.valueOf(calculateKcal(recipe)));
+        servingsValueLabel.setText(String.valueOf(baseServings * factor));
         normalizeUnits(recipe);
         showNutritionalValues(recipe);
         showIngredients(recipe);
     }
 
+
     private void normalizeUnits(Recipe recipe) {
         for (RecipeIngredient ri : recipe.getIngredients()) {
-            if (!ri.isFormal()) {
-                continue;
-            }
+            if (!ri.isFormal()) continue;
 
             if (ri.getUnit() == Unit.G && ri.getAmount() >= 1000) {
                 ri.setFormal(ri.getAmount() / 1000, Unit.KG);
@@ -1472,39 +1497,54 @@ public class MainCtrl {
             }
         }
     }
-
+    
     /**
      * Ensures a recipe is selected; shows an error if not.
-     *
      * @return true if a recipe is selected, false otherwise
      */
     private boolean requireSelectedRecipe() {
         ResourceBundle props = getTranslationsBundle();
-
         if (getSelectedRecipe() == null) {
             showError(props.getString("alert.selectARecipe"));
             return false;
         }
-
         return true;
     }
 
+    private void setHealthStatus(Recipe recipe) {
+        ResourceBundle props = getTranslationsBundle();
+        double kcals = calculateKcal(recipe);
+
+        if (kcals < 200) {
+            healthStatus.setStyle("-fx-background-color: green");
+            healthyStatus.setText(props.getString("label.healthyRecipe"));
+            healthyStatus.setStyle("-fx-text-fill: #ffffff");
+        } else if (kcals < 500) {
+            healthStatus.setStyle("-fx-background-color: yellow");
+            healthyStatus.setText(props.getString("label.moderatelyHealthy"));
+            healthyStatus.setStyle("-fx-text-fill: #000000");
+        } else {
+            healthyStatus.setText(props.getString("label.unhealthyRecipe"));
+            healthyStatus.setStyle("-fx-text-fill: #ffffff");
+            healthStatus.setStyle("-fx-background-color: red");
+        }
+    }
+
+
     @FXML
     private void onInfoHealthButtonClicked() {
-        VBox root = new VBox();
-        Label text = new Label("""
-                Healthiness is calculated according to the following principle:
-                  • less than 200 kcals/100g → healthy
-                  • less than 500 kcals/100g → moderately healthy
-                  • otherwise → unhealthy""");
+        ResourceBundle props = getTranslationsBundle();
 
+        VBox root = new VBox();
+        Label text = new Label(props.getString("label.healthyInfo"));
         text.setStyle("-fx-text-fill: #ffffff");
+
         root.getChildren().add(text);
         root.setAlignment(Pos.CENTER);
         root.setStyle("-fx-background-color: #8191b3");
 
         Stage popup = new Stage();
-        popup.setTitle("Health Information");
+        popup.setTitle(props.getString("label.healthInfo"));
         popup.setResizable(false);
         popup.setScene(new Scene(root, 400, 200));
         popup.show();
