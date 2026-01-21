@@ -587,6 +587,7 @@ public class NutritionalValueCtrl {
         Stage popup = new Stage();
         popup.setTitle("Health Overview");
         popup.setScene(new Scene(root, 400, 400));
+        popup.setResizable(false);
         popup.show();
     }
 }

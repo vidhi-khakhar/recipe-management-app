@@ -2,10 +2,7 @@ package client.scenes;
 
 import client.utils.IngredientServerUtils;
 import com.google.inject.Inject;
-import commons.Ingredient;
-import commons.Recipe;
-import commons.RecipeIngredient;
-import commons.Unit;
+import commons.*;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -18,6 +15,7 @@ public class AddRecipeIngredientCtrl {
 
     private Recipe recipe;
     private RecipeIngredient recipeIngredient;
+    private Long ingredientId;
 
     private final IngredientServerUtils ingredientServerUtils;
 
@@ -30,6 +28,9 @@ public class AddRecipeIngredientCtrl {
     // UI Elements
     @FXML
     private Button saveButton;
+
+    @FXML
+    private Label titleLabel;
 
     @FXML
     private Button cancelButton;
@@ -82,12 +83,21 @@ public class AddRecipeIngredientCtrl {
 
         populateIngredientDropdown();
 
-        if (!ingredientServerUtils.getAllIngredients().isEmpty()) {
+        if (!ingredientServerUtils.getAllIngredients().isEmpty() && isAdd) {
             ingredientChoiceBox.setValue(ingredientChoiceBox.getItems().get(0));
+            ingredientChoiceBox.setDisable(false);
+            titleLabel.setText("Add Ingredient");
+        } else if (!ingredientServerUtils.getAllIngredients().isEmpty() && !isAdd) {
+            ingredientChoiceBox.setValue(getIngredient(ingredientId));
+            ingredientChoiceBox.setDisable(true);
+            ingredientChoiceBox.setStyle("-fx-background-color: #E6E6FA");
+            titleLabel.setText("Edit Ingredient");
+
         } else {
             showError("No ingredients", "Please add an ingredient.");
             pleaseAddIngredientLabel.setVisible(true);
         }
+
 
         unitTypeChoiceBox.getItems().clear();
         unitTypeChoiceBox.getItems().addAll("Formal", "Informal");
@@ -272,5 +282,19 @@ public class AddRecipeIngredientCtrl {
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+    public void setIngredient(Long id) {
+        this.ingredientId = id;
+    }
+
+    private Ingredient getIngredient(Long id) {
+        for (Ingredient i : ingredientChoiceBox.getItems()) {
+            if (i.getId().equals(id)) {
+                return i;
+            }
+        }
+
+        return null;
     }
 }

@@ -765,16 +765,19 @@ public class MainCtrl {
             return;
         }
 
+        RecipeIngredientKey id = (RecipeIngredientKey) ingredientToEdit.getUserData();
+
         addRecipeIngredientCtrl.setRecipe(selectedRecipe);
+        addRecipeIngredientCtrl.setIngredient(id.getIngredientId());
+
         showAddRecipeIngredientWindow(false);
         RecipeIngredient updated = addRecipeIngredientCtrl.getRecipeIngredient();
 
         if (updated != null) {
-            RecipeIngredientKey id = (RecipeIngredientKey) ingredientToEdit.getUserData();
 
             baseAmounts.put(updated, updated.getAmount());
             baseUnits.put(updated, updated.getUnit());
-            
+
             this.recipeServerUtils.updateRecipeIngredient(id.getRecipeId(), id.getIngredientId(), updated);
 
             List<RecipeIngredient> ingredients = selectedRecipe.getIngredients();

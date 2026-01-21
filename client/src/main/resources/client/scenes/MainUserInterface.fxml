@@ -1,29 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.String?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.MenuButton?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Spinner?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.paint.Color?>
-<?import javafx.scene.paint.RadialGradient?>
-<?import javafx.scene.paint.Stop?>
-<?import javafx.scene.text.Font?>
-<?import org.controlsfx.control.CheckComboBox?>
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+<?import org.controlsfx.control.*?>
 
-<AnchorPane prefHeight="589.0" prefWidth="905.0" stylesheets="@FoodPal.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MainCtrl">
+<AnchorPane prefHeight="589.0" prefWidth="905.0" stylesheets="@FoodPal.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MainCtrl">
     <children>
         <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <top>
@@ -345,7 +330,7 @@
                                                                 <VBox prefHeight="200.0" prefWidth="100.0">
                                                                     <children>
 
-                                                                        <SplitPane dividerPositions="0.19256756756756757, 0.2989864864864865, 0.46452702702702703, 0.5658783783783784, 0.7905405405405406" prefHeight="33.0" prefWidth="598.0">
+                                                                        <SplitPane dividerPositions="0.19256756756756757, 0.34121621621621623, 0.4814189189189189, 0.6013513513513513, 0.7905405405405406" prefHeight="33.0" prefWidth="598.0">
                                                                             <items>
                                                                                 <VBox prefHeight="200.0" prefWidth="100.0">
                                                                                     <children>
@@ -354,7 +339,7 @@
                                                                                 </VBox>
                                                                                 <VBox prefHeight="200.0" prefWidth="100.0">
                                                                                     <children>
-                                                                                        <Label fx:id="inferredKcalsLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="34.0" prefWidth="60.0" styleClass="recipe-item" text="value">
+                                                                                        <Label fx:id="inferredKcalsLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="28.0" prefWidth="87.0" styleClass="recipe-item" text="value">
                                                                                             <textFill>
                                                                                                 <RadialGradient centerX="0.5" centerY="0.5" radius="0.5">
                                                                                                     <stops>
@@ -410,7 +395,7 @@
                                                                                     <children>
                                                                                         <Pane fx:id="healthStatus" prefHeight="200.0" prefWidth="200.0">
                                                                                             <children>
-                                                                                                <Label fx:id="healthyStatus" alignment="CENTER" contentDisplay="CENTER" layoutX="-1.0" layoutY="1.0" prefHeight="26.0" prefWidth="147.0" text="Label" />
+                                                                                                <Label fx:id="healthyStatus" alignment="CENTER" contentDisplay="CENTER" layoutX="-1.0" layoutY="1.0" prefHeight="26.0" prefWidth="122.0" text="Label" />
                                                                                             </children></Pane>
                                                                                     </children>
                                                                                 </VBox>
@@ -422,7 +407,7 @@
                                                                                 <HBox alignment="BOTTOM_RIGHT" prefHeight="36.0" prefWidth="540.0">
                                                                                     <children>
                                                                                         <Button fx:id="infoHealthyButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onInfoHealthButtonClicked" prefHeight="34.0" prefWidth="74.0" styleClass="roundbutton" text="ⓘ" />
-                                                                                        <Region prefHeight="36.0" prefWidth="435.0" />
+                                                                                        <Region prefHeight="36.0" prefWidth="435.0" HBox.hgrow="ALWAYS" />
                                                                                         <Button fx:id="downloadButton" alignment="TOP_CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#downloadButtonClicked" prefHeight="34.0" prefWidth="99.0" text="Download" />
                                                                                     </children>
                                                                                     <VBox.margin>
