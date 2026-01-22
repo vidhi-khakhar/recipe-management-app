@@ -183,7 +183,7 @@
                                        <children>
                                           <Label fx:id="sortLabel" prefHeight="18.0" prefWidth="66.0" text="%label.sort" textFill="WHITE">
                                              <HBox.margin>
-                                                <Insets left="8.0" top="5.0" />
+                                                <Insets left="10.0" top="7.0" />
                                              </HBox.margin>
                                           </Label>
                                           <ComboBox fx:id="sortComboBox" maxHeight="20.0" prefWidth="130.0" promptText="Sort by">

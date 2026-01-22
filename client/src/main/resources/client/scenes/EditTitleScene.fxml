@@ -9,22 +9,22 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0" prefWidth="450.0" stylesheets="@AddRecipeInterface.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.EditTitleCtrl">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0" prefWidth="500.0" stylesheets="@AddRecipeInterface.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.EditTitleCtrl">
     <children>
-        <VBox alignment="CENTER" prefHeight="350.0" prefWidth="450.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <VBox alignment="CENTER" prefHeight="350.0" prefWidth="500.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
-                <VBox alignment="CENTER" maxHeight="-Infinity" prefHeight="350.0" prefWidth="450.0" spacing="19.0" VBox.vgrow="ALWAYS">
+                <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="15.0" VBox.vgrow="ALWAYS">
                     <children>
                         <Label fx:id="editRecipeWindowTitle" styleClass="h3" text="%label.editRecipeDetails" VBox.vgrow="ALWAYS">
                             <VBox.margin>
-                                <Insets top="15.0" />
+                                <Insets bottom="15.0" top="15.0" />
                             </VBox.margin>
                         </Label>
-                        <HBox alignment="CENTER" VBox.vgrow="ALWAYS">
+                        <HBox alignment="CENTER" maxHeight="-Infinity" prefHeight="62.0" prefWidth="500.0" VBox.vgrow="ALWAYS">
                             <children>
-                                <HBox alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" prefWidth="309.0" spacing="6.0" styleClass="searchbar-background" HBox.hgrow="ALWAYS">
+                                <HBox alignment="CENTER" maxHeight="-Infinity" prefHeight="52.0" prefWidth="309.0" spacing="6.0" styleClass="searchbar-background" HBox.hgrow="ALWAYS">
                                     <children>
-                                        <TextField fx:id="editRecipeTitle" prefHeight="50.0" prefWidth="239.0" promptText="%label.addRecipeName" styleClass="searchbar" HBox.hgrow="ALWAYS" />
+                                        <TextField fx:id="editRecipeTitle" minHeight="-Infinity" prefHeight="35.0" prefWidth="239.0" promptText="%label.addRecipeName" styleClass="searchbar" HBox.hgrow="ALWAYS" />
                                     </children>
                                     <HBox.margin>
                                         <Insets left="50.0" right="50.0" />
@@ -37,9 +37,9 @@
                         </HBox>
                   <HBox alignment="CENTER" layoutX="10.0" layoutY="107.0">
                      <children>
-                        <HBox alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" prefWidth="309.0" spacing="6.0" styleClass="searchbar-background" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER" maxHeight="-Infinity" prefHeight="52.0" prefWidth="309.0" spacing="6.0" styleClass="searchbar-background" HBox.hgrow="ALWAYS">
                            <children>
-                              <TextField fx:id="servingsInput" prefHeight="39.0" prefWidth="239.0" promptText="%label.addRecipeServings" styleClass="searchbar" HBox.hgrow="ALWAYS" />
+                              <TextField fx:id="servingsInput" minHeight="-Infinity" prefHeight="35.0" prefWidth="239.0" promptText="%label.addRecipeServings" styleClass="searchbar" HBox.hgrow="ALWAYS" />
                            </children>
                            <HBox.margin>
                               <Insets left="50.0" right="50.0" />
@@ -59,20 +59,16 @@
                         </HBox>
                      </children>
                   </HBox>
-                  <HBox prefHeight="100.0" prefWidth="200.0">
+                  <HBox prefHeight="50.0" prefWidth="500.0">
                      <children>
-                        <HBox prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
-                                  <Button fx:id="editTitleAddButton" alignment="CENTER" contentDisplay="CENTER" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#editTitle" prefHeight="39.0" prefWidth="128.0" styleClass="add-button" text="%label.editButton">
-                           <HBox.margin>
-                              <Insets />
-                           </HBox.margin>
-                        </Button>
-                        <HBox prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+                        <HBox prefHeight="100.0" prefWidth="200.0" />
+                                  <Button fx:id="editTitleAddButton" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#editTitle" prefHeight="39.0" prefWidth="139.0" styleClass="add-button" text="%label.editButton" HBox.hgrow="ALWAYS" />
+                        <HBox prefHeight="100.0" prefWidth="200.0" />
                      </children>
                   </HBox>
                         <Label fx:id="statusLabel" styleClass="h4" VBox.vgrow="ALWAYS">
                      <VBox.margin>
-                        <Insets bottom="10.0" />
+                        <Insets bottom="7.0" />
                      </VBox.margin></Label>
                     </children>
                 </VBox>
