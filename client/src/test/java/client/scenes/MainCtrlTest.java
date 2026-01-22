@@ -41,7 +41,7 @@ public class MainCtrlTest {
 
     @BeforeEach
     public void setup() {
-        sut = new MainCtrl(recipeServerUtils, searchService, favoriteService, recipeCollection, recipeSortingService, configService);
+        sut = new MainCtrl(recipeServerUtils, searchService, favoriteService, recipeCollection, configService, recipeSortingService);
     }
 
     @Test

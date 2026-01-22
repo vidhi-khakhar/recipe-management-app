@@ -23,8 +23,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import javafx.collections.ListChangeListener;
 import java.util.ResourceBundle;
 
+import javafx.scene.control.*;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.CheckComboBox;
 
@@ -48,17 +51,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -69,6 +62,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import java.util.*;
 
 public class MainCtrl {
 
@@ -93,8 +87,9 @@ public class MainCtrl {
     private final SearchService searchService;
     private final RecipeSortingService recipeSortingService;
     private final RecipeCollection recipeCollection;
+    private final List<String> filteredLanguages = new ArrayList<>();
 
-    private ConfigService configService;
+    private final ConfigService configService;
 
     @FXML
     private Spinner<Integer> scaler;
@@ -214,12 +209,12 @@ public class MainCtrl {
 
     @FXML
     private Label servingsLabel;
+
     @FXML
     private ComboBox<String> sortComboBox;
 
     @FXML
     private Button sortButton;
-
 
     /**
      * Initializes the scenes
@@ -266,7 +261,7 @@ public class MainCtrl {
     @Inject
     public MainCtrl(RecipeServerUtils recipeServerUtils, SearchService searchService,
             FavoriteService favoriteService, RecipeCollection recipeCollection,
-                    RecipeSortingService recipeSortingService, ConfigService configService) {
+                    ConfigService configService, RecipeSortingService recipeSortingService) {
         this.recipeServerUtils = recipeServerUtils;
         this.searchService = searchService;
         this.favoriteService = favoriteService;
@@ -302,6 +297,10 @@ public class MainCtrl {
             default ->
                 setEnglishLanguage();
         }
+
+        languageCheckBox.getItems().addAll("English", "Dutch", "Romanian", "Spanish");
+
+        languageCheckBox.getCheckModel().getCheckedItems().addListener(this::filterLanguages);
 
         sidebarList.setItems(recipesObservableList);
 
@@ -632,38 +631,56 @@ public class MainCtrl {
 
         String query = searchBar.getText();
         boolean searchFavorites = props.getString("label.displayFavouriteRecipesToggleOn")
-            .equals(favoritesOnly.getText());
+                .equals(favoritesOnly.getText());
 
-        List<Recipe> filtered = searchService.search(query, searchFavorites);
+        // 1. Fetch and Filter
+        List<Recipe> fromServer = searchService.search(query, searchFavorites);
 
+        List<Recipe> filtered = fromServer.stream()
+                .filter(recipe -> filteredLanguages.isEmpty() ||
+                        filteredLanguages.contains(recipe.getLanguage().toLowerCase().trim()))
+                .collect(Collectors.toList());
+
+        // 2. Sort
         String sortType = sortComboBox.getValue();
-
-        if(sortType.equals("A-Z")){
+        if ("A-Z".equals(sortType)) {
             filtered = recipeSortingService.sortByTitleAsc(filtered);
-        }else{
+        } else {
             filtered = recipeSortingService.sortByDateDesc(filtered);
         }
 
-        if(sortButton.getText().equals("↑☰")){
+        if ("↑☰".equals(sortButton.getText())) {
             filtered = filtered.reversed();
         }
 
+        // 3. Update List
         recipesObservableList.setAll(filtered);
 
-        if (filtered.isEmpty() && searchFavorites) {
-            updateRecipeStackPane(EmptyStateReason.NO_FAVORITES);
-        } else if (filtered.isEmpty() && query.trim().equals("")) {
-            updateRecipeStackPane(EmptyStateReason.NO_RECIPES_EXIST);
-        } else if (filtered.isEmpty()) {
-            updateRecipeStackPane(EmptyStateReason.NO_SEARCH_RESULTS);
-        } else {
-            updateRecipeStackPane(null);
+        // 4. Handle UI State (Extracted to reduce CC)
+        updateSearchInterfaceState(filtered, query, searchFavorites, previouslySelected);
+    }
 
-            if (previouslySelected != null && filtered.contains(previouslySelected)) {
-                sidebarList.getSelectionModel().select(previouslySelected);
-            } else if (!filtered.isEmpty()) {
-                sidebarList.getSelectionModel().selectFirst();
+    private void updateSearchInterfaceState(List<Recipe> filtered, String query,
+                                            boolean searchFavorites, Recipe previouslySelected) {
+        // Handle Empty States
+        if (filtered.isEmpty()) {
+            if (searchFavorites) {
+                updateRecipeStackPane(EmptyStateReason.NO_FAVORITES);
+            } else if (query.trim().isEmpty()) {
+                updateRecipeStackPane(EmptyStateReason.NO_RECIPES_EXIST);
+            } else {
+                updateRecipeStackPane(EmptyStateReason.NO_SEARCH_RESULTS);
             }
+            return; // Guard clause prevents unnecessary checking below
+        }
+
+        // Handle Selection State (List is not empty)
+        updateRecipeStackPane(null);
+
+        if (previouslySelected != null && filtered.contains(previouslySelected)) {
+            sidebarList.getSelectionModel().select(previouslySelected);
+        } else {
+            sidebarList.getSelectionModel().selectFirst();
         }
     }
 
@@ -1104,7 +1121,7 @@ public class MainCtrl {
             System.err.println("Recipe shopping list scene or controller not initialized!");
             return;
         }
-    
+
         requireSelectedRecipe();
         Stage secondaryStage = new Stage();
         secondaryStage.setTitle(props.getString("label.shoppingListTitle") + selectedRecipe.getTitle());
@@ -1315,7 +1332,6 @@ public class MainCtrl {
         recipeLanguageLabel.setText(fullLanguage);
     }
 
-
     @FXML
     private void downloadButtonClicked() throws IOException {
         ResourceBundle props = getTranslationsBundle();
@@ -1376,7 +1392,7 @@ public class MainCtrl {
         languageSetter.setText(""); // this line is neccesary bc otherwise you still get ... next to the flag.
 
     }
-    
+
     /** Binds all the UI text properties to the current ResourceBundle
      * Call  this whenever the language changes
      */
@@ -1546,7 +1562,7 @@ public class MainCtrl {
             }
         }
     }
-    
+
     /**
      * Ensures a recipe is selected; shows an error if not.
      * @return true if a recipe is selected, false otherwise
@@ -1561,8 +1577,41 @@ public class MainCtrl {
     }
 
     /**
-     * Sets the health status of meaningful extension
+     * filter the languages
+     * @param change the change from the languagecheckbox
      */
+    @FXML
+    private void filterLanguages(ListChangeListener.Change<? extends String> change) {
+        boolean added;
+        String language = "";
+        String changed = change.toString();
+
+
+        added = changed.contains("addition");
+
+        if (changed.contains("English")) {
+            language = "en";
+        } else if (changed.contains("Dutch")) {
+            language = "nl";
+        } else if (changed.contains("Romanian")) {
+            language = "ro";
+        } else if (changed.contains("Spanish")) {
+            language = "es";
+        }
+
+        if (added) {
+            filteredLanguages.add(language);
+        } else {
+            filteredLanguages.remove(language);
+        }
+
+        configService.getConfig().setFilteredLanguages(new ArrayList<>(filteredLanguages));
+        configService.save();
+        applySearch();
+    }
+
+
+
     private void setHealthStatus(Recipe recipe) {
         ResourceBundle props = getTranslationsBundle();
         double kcals = calculateKcal(recipe);
