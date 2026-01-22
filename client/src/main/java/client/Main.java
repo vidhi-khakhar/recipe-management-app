@@ -146,6 +146,7 @@ public class Main extends Application {
         var editTitleInterface =
                 fxml.load(EditTitleCtrl.class, bundle, "client", "scenes", "EditTitleScene.fxml");
         var editTitleScene = new Scene(editTitleInterface.getValue());
+        var editTitleCtrl = editTitleInterface.getKey();
 
         // add stylesheets if needed
         String cssPath = getClass().getResource("/client/scenes/FoodPal.css").toExternalForm();
@@ -158,6 +159,7 @@ public class Main extends Application {
         recipeIngredientScene.getStylesheets().add(cssPathRecipe);
         shoppingListScene.getStylesheets().add(cssPathNutri);
         recipeShoppingListScene.getStylesheets().add(cssPathNutri);
+        editTitleScene.getStylesheets().add(cssPathRecipe);
 
         primaryStage.setMinWidth(600);
         primaryStage.setMinHeight(500);
@@ -171,6 +173,6 @@ public class Main extends Application {
         controller.initScenes(primaryStage, nutritionScene, recipeAddScene,
                 recipeIngredientScene, recipeIngredientCtrl, editTitleScene,
                 shoppingListScene, recipeShoppingListScene, nutritionCtrl, recipeShoppingListCtrl,
-                addButtonCtrl);
+                addButtonCtrl, editTitleCtrl);
     }
 }

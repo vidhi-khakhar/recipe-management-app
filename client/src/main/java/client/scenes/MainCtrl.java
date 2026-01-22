@@ -28,19 +28,12 @@ import java.util.ResourceBundle;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.CheckComboBox;
 
-import client.favorite.RecipeSortingService;
-import javafx.scene.control.*;
-import org.apache.commons.io.FileUtils;
-import org.controlsfx.control.CheckComboBox;
-
-import com.google.inject.Inject;
-
-import client.RecipeFormatter;
 import com.google.inject.Inject;
 
 import client.RecipeFormatter;
 import client.config.ConfigService;
 import client.favorite.FavoriteService;
+import client.favorite.RecipeSortingService;
 import client.scenes.state.EmptyStateReason;
 import client.search.RecipeCollection;
 import client.search.SearchService;
@@ -55,10 +48,10 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuButton;
@@ -91,6 +84,7 @@ public class MainCtrl {
     private RecipeShoppingListCtrl recipeShoppingListCtrl;
     private NutritionalValueCtrl nutritionalValueCtrl;
     private AddButtonCtrl addButtonCtrl;
+    private EditTitleCtrl editTitleCtrl;
 
     private final RecipeServerUtils recipeServerUtils;
     private final FavoriteService favoriteService;
@@ -143,6 +137,9 @@ public class MainCtrl {
 
     @FXML
     private Label itemLabel;
+
+    @FXML
+    private Label sortLabel;
 
     @FXML
     private Label FoodPalLabel;
@@ -241,7 +238,7 @@ public class MainCtrl {
             Scene editTitleScene, Scene shoppingListScene, Scene recipeShoppingListScene,
             NutritionalValueCtrl nutritionalValueCtrl,
             RecipeShoppingListCtrl recipeShoppingListCtrl,
-            AddButtonCtrl addButtonCtrl) {
+            AddButtonCtrl addButtonCtrl, EditTitleCtrl editTitleCtrl) {
 
         this.primaryStage = primaryStage;
         this.nutritionScene = nutritionScene;
@@ -254,6 +251,7 @@ public class MainCtrl {
         this.recipeShoppingListCtrl = recipeShoppingListCtrl;
         this.nutritionalValueCtrl = nutritionalValueCtrl;
         this.addButtonCtrl = addButtonCtrl;
+        this.editTitleCtrl = editTitleCtrl;
         primaryStage.show();
     }
 
@@ -289,7 +287,7 @@ public class MainCtrl {
      */
     @FXML
     public void initialize() {
-
+        ResourceBundle props = getTranslationsBundle();
         // Set initial flag based on saved config
         String currentLang = configService.getLanguage();
         switch (currentLang) {
@@ -333,7 +331,7 @@ public class MainCtrl {
             }
         });
 
-        ObservableList<String> sortItems =  FXCollections.observableArrayList("A-Z", "Newest");
+        ObservableList<String> sortItems =  FXCollections.observableArrayList("A-Z", props.getString("label.newest"));
         sortComboBox.setItems(sortItems);
         sortComboBox.getSelectionModel().select(0);
 
@@ -1106,14 +1104,16 @@ public class MainCtrl {
             System.err.println("Recipe shopping list scene or controller not initialized!");
             return;
         }
-
+    
         requireSelectedRecipe();
         Stage secondaryStage = new Stage();
         secondaryStage.setTitle(props.getString("label.shoppingListTitle") + selectedRecipe.getTitle());
         secondaryStage.setScene(recipeShoppingListScene);
         secondaryStage.initOwner(primaryStage);
 
+        recipeShoppingListCtrl.loadLanguages();
         recipeShoppingListCtrl.initializeWithRecipe(selectedRecipe);
+
 
         secondaryStage.show();
     }
@@ -1277,7 +1277,7 @@ public class MainCtrl {
         editTitleStage.setScene(editTitleScene);
         editTitleStage.initOwner(primaryStage);
         editTitleStage.setResizable(false);
-
+        editTitleCtrl.loadLanguages();
         editTitleStage.show();
     }
 
@@ -1287,8 +1287,7 @@ public class MainCtrl {
 
     /**
      * Shows an error message dialog.
-     *
-     * @param messageKey error message
+     * @param messageKey
      */
     private void showError(String messageKey) {
         ResourceBundle props = getTranslationsBundle();
@@ -1377,7 +1376,7 @@ public class MainCtrl {
         languageSetter.setText(""); // this line is neccesary bc otherwise you still get ... next to the flag.
 
     }
-
+    
     /** Binds all the UI text properties to the current ResourceBundle
      * Call  this whenever the language changes
      */
@@ -1408,6 +1407,7 @@ public class MainCtrl {
         downloadButton.setText(props.getString("label.downloadButton"));
         noRecipeTitle.setText(props.getString("label.noRecipeTitle"));
         noRecipeSubtitle.setText(props.getString("label.noRecipeSubtitle"));
+        sortLabel.setText(props.getString("label.sort"));
     }
 
     private void updateSelectedRecipeLabels(ResourceBundle props) {
@@ -1546,7 +1546,7 @@ public class MainCtrl {
             }
         }
     }
-
+    
     /**
      * Ensures a recipe is selected; shows an error if not.
      * @return true if a recipe is selected, false otherwise
