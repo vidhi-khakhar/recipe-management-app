@@ -73,7 +73,7 @@
                                 </Label>
                                 <HBox alignment="BOTTOM_RIGHT" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                                     <children>
-                                        <CheckComboBox fx:id="languageCheckBox" prefHeight="30.0" prefWidth="154.0" title="RecipeLanguage" HBox.hgrow="ALWAYS">
+                                        <CheckComboBox fx:id="languageCheckBox" prefHeight="30.0" prefWidth="154.0" title="%label.filterLabel" HBox.hgrow="ALWAYS">
                                             <HBox.margin>
                                                 <Insets bottom="7.0" right="10.0" />
                                             </HBox.margin>
