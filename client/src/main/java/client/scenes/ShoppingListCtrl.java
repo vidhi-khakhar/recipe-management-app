@@ -259,9 +259,11 @@ public class ShoppingListCtrl {
     }
 
     private void setupEditFields(TextField nameField, TextField amountField, TextField unitField) {
-        nameField.setPromptText("Item name");
-        amountField.setPromptText("Quantity");
-        unitField.setPromptText("Units");
+        ResourceBundle props = getTranslationsBundle();
+
+        nameField.setPromptText(props.getString("label.ingredientNamePrompt"));
+        amountField.setPromptText(props.getString("label.ingredientAmountPrompt"));
+        unitField.setPromptText(props.getString("label.ingredientUnitPrompt"));
     }
 
     private Runnable createSaveAction(
