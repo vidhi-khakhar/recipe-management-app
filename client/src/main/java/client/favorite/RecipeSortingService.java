@@ -1,8 +1,10 @@
 package client.favorite;
 
 import client.search.RecipeCollection;
+import com.google.inject.Inject;
 import commons.Recipe;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +13,17 @@ import java.util.Optional;
  * The blueprint for creating the meaningful addition to the Search Extension
  */
 public class RecipeSortingService {
+    private final RecipeCollection recipeCollection;
+
+    /**
+     * The constructor for this class. This allows access to the "actual" list
+     * of recipes.
+     * @param recipeCollection the main source of truth.
+     */
+    @Inject
+    public RecipeSortingService(RecipeCollection recipeCollection) {
+        this.recipeCollection = recipeCollection;
+    }
 
     // --- validation ---
 
@@ -18,37 +31,71 @@ public class RecipeSortingService {
      * Returns whether the collection can be sorted.
      * Blueprint.
      */
-    public boolean isSortable(RecipeCollection collection) {
+    public boolean isSortable(List<Recipe> collection) {
         return collection != null && !collection.isEmpty();
     }
 
     // --- sorting ---
 
     /**
-     * Sorts recipes alphabetically by title.
-     * Might not yet work completely.
+     * Sorts recipes alphabetically (A-Z) by title.
      *
      * @param collection the collection to be sorted.
      * @return the sorted collection by title.
      */
-    public List<Recipe> sortByTitle(RecipeCollection collection) {
-        System.out.println("Before sort: " + collection);
-        List<Recipe> result = collection.getAll();
-        result.sort(Comparator.comparing(Recipe::getTitle));
-        System.out.println("After sort: " + result);
-        return result;
+    public List<Recipe> sortByTitleAsc(List<Recipe> collection) {
+        if (!isSortable(collection)) {
+            return List.of();
+        }
+
+        List<Recipe> sorted = new ArrayList<>(collection);
+        sorted.sort(Comparator.comparing(
+                Recipe::getTitle,
+                String.CASE_INSENSITIVE_ORDER
+        ));
+
+        return List.copyOf(sorted);
     }
 
     /**
-     * Sorts the given list by date/time of creation of the recipes
+     * Sorts recipes reversed alphabetically (Z-A) by title.
+     *
      * @param collection the collection to be sorted.
+     * @return the sorted collection by title.
+     */
+    public List<Recipe> sortByTitleDesc(List<Recipe> collection) {
+        if (!isSortable(collection)) {
+            return List.of();
+        }
+
+        List<Recipe> sorted = new ArrayList<>(collection);
+        sorted.sort(Comparator.comparing(
+                Recipe::getTitle,
+                String.CASE_INSENSITIVE_ORDER
+        ).reversed());
+
+        return List.copyOf(sorted);
+    }
+
+    /**
+     * Sorts the given list by time of creation of the recipes (OLD -> NEW).
+     * This is done by using the original list as sorted by date.
+     *
      * @return the sorted collection by date.
      */
-    public List<Recipe> sortByDate(RecipeCollection collection) {
-        System.out.println("Before sort: " + collection);
-        List<Recipe> result = collection.getAll();
-        System.out.println("After sort: " + result);
-        return result;
+
+    public List<Recipe> sortByDateAsc(List<Recipe> recipes) {
+        return List.copyOf(recipes);
+    }
+    /**
+     * Sorts the given list by time of creation of the recipes (NEW -> OLD).
+     * This is done by using the original list as sorted by date.
+     *
+     * @return the sorted collection by date.
+     */
+    public List<Recipe> sortByDateDesc() {
+        List<Recipe> sorted = new ArrayList<>(recipeCollection.getAll().reversed());
+        return List.copyOf(sorted);
     }
 
     // --- helpers ---
@@ -60,22 +107,15 @@ public class RecipeSortingService {
      * @param max the maximum number of recipes in the preview
      * @return a limited, sorted list of recipes
      */
-    public List<Recipe> getPreview(RecipeCollection collection, int max) {
-        System.out.println("Creating recipe preview...");
-
+    public List<Recipe> getPreview(List<Recipe> collection, int max) {
         if (!isSortable(collection)) {
-            System.out.println("Collection not sortable");
             return List.of();
         }
 
-        List<Recipe> sorted = sortByTitle(collection);
-        List<Recipe> preview = sorted.subList(
-                0,
-                Math.min(sorted.size(), max)
+        List<Recipe> sorted = sortByTitleAsc(collection);
+        return List.copyOf(
+                sorted.subList(0, Math.min(sorted.size(), max))
         );
-
-        System.out.println("Preview result: " + preview);
-        return preview;
     }
 
     /**
@@ -85,10 +125,13 @@ public class RecipeSortingService {
      * @return the list with the max applied.
      */
     public List<Recipe> limit(List<Recipe> recipes, int max) {
-        System.out.println("Before limit: " + recipes);
-        List<Recipe> result = recipes.subList(0, Math.min(recipes.size(), max));
-        System.out.println("After limit: " + result);
-        return recipes;
+        if (!isSortable(recipes)) {
+            return List.of();
+        }
+
+        return List.copyOf(
+                recipes.subList(0, Math.min(recipes.size(), max))
+        );
     }
 
     /**
@@ -97,9 +140,9 @@ public class RecipeSortingService {
      * @return the first recipe
      */
     public Optional<Recipe> getFirst(List<Recipe> recipes) {
-        System.out.println("Before getFirst: " + recipes);
-        List<Recipe> result = recipes.subList(0, Math.min(recipes.size(), recipes.size()));
-        System.out.println("After getFirst: " + result);
-        return Optional.empty();
+        if (recipes == null || recipes.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(recipes.getFirst());
     }
 }

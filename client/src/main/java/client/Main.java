@@ -2,7 +2,8 @@
  * Copyright 2021 Delft University of Technology
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ *
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *    http://www.apache.org/licenses/LICENSE-2.0
@@ -17,9 +18,9 @@ package client;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.nio.file.Paths;
 
 import static com.google.inject.Guice.createInjector;
 import com.google.inject.Injector;
@@ -63,8 +64,6 @@ public class Main extends Application {
         // Filepath for the config.json
         String configPath = Paths.get("client", "config.json").toString();
 
-        ResourceBundle bundle = ResourceBundle.getBundle("client.scenes.Translations", new Locale("en"));
-
         // Check whether the user has entered their own directory for the config file
         var args = getParameters().getRaw();
         for (int i = 0; i < args.size(); i++) {
@@ -76,12 +75,14 @@ public class Main extends Application {
         Injector injector = createInjector(new MyModule(configPath));
         MyFXML fxml = new MyFXML(injector);
 
+        // Load config
         Config config = injector.getInstance(ConfigService.class).getConfig();
 
+        // Step 1: Load the ResourceBundle based on saved language
+        String langCode = config.getLanguage(); // e.g., "en", "nl", "ro", "es"
+        System.out.println("Loaded language from config: " + langCode);
 
-
-        System.out.println("Using server: " + config.getServerUrl()); // Feedback to see which server (url) we are using
-
+        ResourceBundle bundle = ResourceBundle.getBundle("client.scenes.Translations", new Locale(langCode));
 
         var loader = new FXMLLoader(getClass().getResource("/client/scenes/MainUserInterface.fxml"));
         loader.setResources(bundle);
@@ -93,12 +94,9 @@ public class Main extends Application {
 
         var mainUserInterfaceScene = new Scene(mainUserInterface.getValue());
 
-
-
-        loadScenesAndStyles(fxml, mainUserInterfaceScene, primaryStage, controller);
+        loadScenesAndStyles(fxml, bundle, mainUserInterfaceScene, primaryStage, controller);
 
         // pass both scenes into controller
-
 
         System.out.println("Window opened with width: " + primaryStage.getWidth()
                 + " and height: " + primaryStage.getHeight());
@@ -110,47 +108,44 @@ public class Main extends Application {
         primaryStage.heightProperty().addListener((obs, oldHeight, newHeight) -> {
             System.out.println("Window height changed from " + oldHeight + " to " + newHeight);
         });
-
     }
 
-
     private void loadScenesAndStyles(
-            MyFXML fxml, Scene mainUserInterfaceScene, Stage primaryStage, MainCtrl controller) {
+            MyFXML fxml, ResourceBundle bundle, Scene mainUserInterfaceScene, Stage primaryStage, MainCtrl controller) {
         // preload shopping list scene
         var shoppingListInterface =
-                fxml.load(ShoppingListCtrl.class, "client", "scenes", "ShoppingListInterface.fxml");
+                fxml.load(ShoppingListCtrl.class, bundle, "client", "scenes", "ShoppingListInterface.fxml");
         var shoppingListScene = new Scene(shoppingListInterface.getValue());
         shoppingListScene.setUserData(shoppingListInterface.getKey()); // Store controller reference
 
         // preload recipe shopping list scene
         var recipeShoppingListInterface =
-            fxml.load(RecipeShoppingListCtrl.class, "client", "scenes", "RecipeShoppingList.fxml");
+            fxml.load(RecipeShoppingListCtrl.class, bundle, "client", "scenes", "RecipeShoppingList.fxml");
         var recipeShoppingListScene = new Scene(recipeShoppingListInterface.getValue());
         var recipeShoppingListCtrl = recipeShoppingListInterface.getKey();
 
         // preload nutritional values scene
         var nutritionInterface =
-                fxml.load(NutritionalValueCtrl.class, "client", "scenes", "NutrionalValueInterface.fxml");
+                fxml.load(NutritionalValueCtrl.class, bundle, "client", "scenes", "NutritionalValueInterface.fxml");
         var nutritionScene = new Scene(nutritionInterface.getValue());
         var nutritionCtrl = nutritionInterface.getKey();
 
         //preload recipe add scene
         var recipeAddInterface =
-                fxml.load(AddButtonCtrl.class, "client", "scenes", "AddRecipeInterface.fxml");
+                fxml.load(AddButtonCtrl.class, bundle, "client", "scenes", "AddRecipeInterface.fxml");
         var recipeAddScene = new Scene(recipeAddInterface.getValue());
-//        var recipeAddCtrl = recipeAddInterface.getKey(); // The instance of the controller
+        var addButtonCtrl = recipeAddInterface.getKey();
 
         // Load AddRecipeIngredientScene
         var recipeIngredientInterface =
-                fxml.load(AddRecipeIngredientCtrl.class, "client", "scenes", "AddRecipeIngredientScene.fxml");
+                fxml.load(AddRecipeIngredientCtrl.class, bundle, "client", "scenes", "AddRecipeIngredientScene.fxml");
         var recipeIngredientScene = new Scene(recipeIngredientInterface.getValue());
         var recipeIngredientCtrl = recipeIngredientInterface.getKey();
 
         // Load EditTitleScene
         var editTitleInterface =
-                fxml.load(EditTitleCtrl.class, "client", "scenes", "EditTitleScene.fxml");
+                fxml.load(EditTitleCtrl.class, bundle, "client", "scenes", "EditTitleScene.fxml");
         var editTitleScene = new Scene(editTitleInterface.getValue());
-//        var editTitleCtrl = editTitleInterface.getKey();
 
         // add stylesheets if needed
         String cssPath = getClass().getResource("/client/scenes/FoodPal.css").toExternalForm();
@@ -175,7 +170,7 @@ public class Main extends Application {
 
         controller.initScenes(primaryStage, nutritionScene, recipeAddScene,
                 recipeIngredientScene, recipeIngredientCtrl, editTitleScene,
-                shoppingListScene, recipeShoppingListScene, nutritionCtrl, recipeShoppingListCtrl);
-
+                shoppingListScene, recipeShoppingListScene, nutritionCtrl, recipeShoppingListCtrl,
+                addButtonCtrl);
     }
 }
