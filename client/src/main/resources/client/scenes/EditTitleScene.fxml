@@ -7,27 +7,24 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0" prefWidth="500.0" stylesheets="@AddRecipeInterface.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.EditTitleCtrl">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0" prefWidth="450.0" stylesheets="@AddRecipeInterface.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.EditTitleCtrl">
     <children>
-        <VBox alignment="CENTER" prefHeight="325.0" prefWidth="407.0" AnchorPane.bottomAnchor="-69.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <VBox alignment="CENTER" prefHeight="350.0" prefWidth="450.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
-                <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0" VBox.vgrow="ALWAYS">
+                <VBox alignment="CENTER" maxHeight="-Infinity" prefHeight="350.0" prefWidth="450.0" spacing="19.0" VBox.vgrow="ALWAYS">
                     <children>
-                        <Pane prefHeight="84.0" prefWidth="410.0" VBox.vgrow="ALWAYS" />
-                        <Label fx:id="editRecipeWindowTitle" styleClass="h3" text="Edit the title of the recipe" VBox.vgrow="ALWAYS">
+                        <Label fx:id="editRecipeWindowTitle" styleClass="h3" text="%label.editRecipeDetails" VBox.vgrow="ALWAYS">
                             <VBox.margin>
-                                <Insets bottom="15.0" />
+                                <Insets top="15.0" />
                             </VBox.margin>
                         </Label>
                         <HBox alignment="CENTER" VBox.vgrow="ALWAYS">
                             <children>
-                                <HBox alignment="CENTER" maxHeight="-Infinity" prefHeight="52.0" prefWidth="309.0" spacing="6.0" styleClass="searchbar-background" HBox.hgrow="ALWAYS">
+                                <HBox alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" prefWidth="309.0" spacing="6.0" styleClass="searchbar-background" HBox.hgrow="ALWAYS">
                                     <children>
-                                        <TextField fx:id="editRecipeTitle" prefHeight="39.0" prefWidth="239.0" promptText="Enter the recipe name" styleClass="searchbar" HBox.hgrow="ALWAYS" />
-                                        <Button fx:id="editTitleAddButton" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#editTitle" prefHeight="39.0" prefWidth="126.0" styleClass="add-button" text="Edit" HBox.hgrow="ALWAYS" />
+                                        <TextField fx:id="editRecipeTitle" prefHeight="50.0" prefWidth="239.0" promptText="%label.addRecipeName" styleClass="searchbar" HBox.hgrow="ALWAYS" />
                                     </children>
                                     <HBox.margin>
                                         <Insets left="50.0" right="50.0" />
@@ -35,15 +32,14 @@
                                 </HBox>
                             </children>
                             <VBox.margin>
-                                <Insets top="10.0" />
+                                <Insets />
                             </VBox.margin>
                         </HBox>
                   <HBox alignment="CENTER" layoutX="10.0" layoutY="107.0">
                      <children>
-                        <HBox alignment="CENTER" maxHeight="-Infinity" prefHeight="52.0" prefWidth="309.0" spacing="6.0" styleClass="searchbar-background" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" prefWidth="309.0" spacing="6.0" styleClass="searchbar-background" HBox.hgrow="ALWAYS">
                            <children>
-                              <TextField fx:id="servingsInput" prefHeight="39.0" prefWidth="239.0" promptText="Set the number of servings" styleClass="searchbar" HBox.hgrow="ALWAYS" />
-                              <Button fx:id="setServingsButton" alignment="CENTER" contentDisplay="CENTER" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#editTitle" prefHeight="39.0" prefWidth="128.0" styleClass="add-button" text="Set " HBox.hgrow="ALWAYS" />
+                              <TextField fx:id="servingsInput" prefHeight="39.0" prefWidth="239.0" promptText="%label.addRecipeServings" styleClass="searchbar" HBox.hgrow="ALWAYS" />
                            </children>
                            <HBox.margin>
                               <Insets left="50.0" right="50.0" />
@@ -63,8 +59,21 @@
                         </HBox>
                      </children>
                   </HBox>
-                        <Label fx:id="statusLabel" styleClass="h4" VBox.vgrow="ALWAYS" />
-                        <Pane prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                  <HBox prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <HBox prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+                                  <Button fx:id="editTitleAddButton" alignment="CENTER" contentDisplay="CENTER" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#editTitle" prefHeight="39.0" prefWidth="128.0" styleClass="add-button" text="%label.editButton">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </Button>
+                        <HBox prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+                     </children>
+                  </HBox>
+                        <Label fx:id="statusLabel" styleClass="h4" VBox.vgrow="ALWAYS">
+                     <VBox.margin>
+                        <Insets bottom="10.0" />
+                     </VBox.margin></Label>
                     </children>
                 </VBox>
             </children>

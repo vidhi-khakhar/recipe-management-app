@@ -36,10 +36,6 @@ public class EditTitleCtrl {
 
     @FXML
     private Button editTitleAddButton;
-
-    @FXML
-    private Button setServingsButton;
-
     
     @FXML
     private Label statusLabel;
@@ -81,7 +77,6 @@ public class EditTitleCtrl {
         editRecipeTitle.setPromptText(props.getString("label.addRecipeName"));
         servingsInput.setPromptText(props.getString("label.addRecipeServings"));
         editTitleAddButton.setText(props.getString("label.editButton"));
-        setServingsButton.setText(props.getString("label.addServingsButton"));
     }
 
     /**
