@@ -26,9 +26,18 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import javafx.collections.ListChangeListener;
 import java.util.ResourceBundle;
+
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.CheckComboBox;
 
+import client.favorite.RecipeSortingService;
+import javafx.scene.control.*;
+import org.apache.commons.io.FileUtils;
+import org.controlsfx.control.CheckComboBox;
+
+import com.google.inject.Inject;
+
+import client.RecipeFormatter;
 import com.google.inject.Inject;
 
 import client.RecipeFormatter;
@@ -48,6 +57,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -90,6 +100,7 @@ public class MainCtrl {
     private final ObservableList<Recipe> recipesObservableList = FXCollections.observableArrayList();
     private Recipe selectedRecipe;
     private final SearchService searchService;
+    private final RecipeSortingService recipeSortingService;
     private final RecipeCollection recipeCollection;
     private final List<String> filteredLanguages = new ArrayList<>();
 
@@ -227,7 +238,7 @@ public class MainCtrl {
             AddRecipeIngredientCtrl addRecipeIngredientCtrl,
             Scene editTitleScene, Scene shoppingListScene, Scene recipeShoppingListScene,
             NutritionalValueCtrl nutritionalValueCtrl,
-            RecipeShoppingListCtrl recipeShoppingListCtrl, 
+            RecipeShoppingListCtrl recipeShoppingListCtrl,
             AddButtonCtrl addButtonCtrl) {
 
         this.primaryStage = primaryStage;
@@ -290,15 +301,6 @@ public class MainCtrl {
                 setEnglishLanguage();
         }
 
-
-        languageCheckBox.getItems().addAll("English", "Dutch", "Romanian", "Spanish");
-        languageCheckBox.getCheckModel().getCheckedItems().addListener(new ListChangeListener<String>() {
-            @Override
-            public void onChanged(Change<? extends String> change) {
-                filterLanguages(change);
-            }
-        });
-
         sidebarList.setItems(recipesObservableList);
 
         sidebarList.setCellFactory(lv
@@ -326,25 +328,6 @@ public class MainCtrl {
                 searchBar.clear();
             }
         });
-
-        List<String> savedLanguages = configService.getConfig().getFilteredLanguages();
-        for (String languages : savedLanguages) {
-            switch (languages) {
-                case "en":
-                    languageCheckBox.getCheckModel().check("English");
-                    break;
-                case "nl":
-                    languageCheckBox.getCheckModel().check("Dutch");
-                    break;
-                case "ro":
-                    languageCheckBox.getCheckModel().check("Romanian");
-                    break;
-                case "es":
-                    languageCheckBox.getCheckModel().check("Spanish");
-                    break;
-            }
-        }
-        applySearch();
 
         loadRecipesFromDatabase();
         scaler.setPromptText("scale");
@@ -649,9 +632,19 @@ public class MainCtrl {
 
                     return filteredLanguages.contains(recipe.getLanguage().toLowerCase().trim());
                 })
-                        .collect(Collectors.toList());
+                .collect(Collectors.toList());
 
+        String sortType = sortComboBox.getValue();
 
+        if(sortType.equals("A-Z")){
+            filtered = recipeSortingService.sortByTitleAsc(filtered);
+        }else{
+            filtered = recipeSortingService.sortByDateDesc(filtered);
+        }
+
+        if(sortButton.getText().equals("↑☰")){
+            filtered = filtered.reversed();
+        }
         recipesObservableList.setAll(filtered);
 
         if (filtered.isEmpty() && searchFavorites) {
@@ -734,7 +727,7 @@ public class MainCtrl {
             return;
         }
 
-        java.util.ResourceBundle props = getTranslationsBundle(); 
+        java.util.ResourceBundle props = getTranslationsBundle();
 
         Stage secondaryStage = new Stage();
         addRecipeIngredientCtrl.onStart(isAdd);
@@ -1056,7 +1049,7 @@ public class MainCtrl {
         nutritionalValueCtrl.initialize();
         secondaryStage.setTitle(props.getString("label.nutritionalValuesWindow"));
         secondaryStage.setScene(nutritionScene);
-        secondaryStage.initOwner(primaryStage); 
+        secondaryStage.initOwner(primaryStage);
         secondaryStage.setResizable(false);
         secondaryStage.showAndWait();
     }
@@ -1097,7 +1090,7 @@ public class MainCtrl {
             System.err.println("Recipe shopping list scene or controller not initialized!");
             return;
         }
-    
+
         requireSelectedRecipe();
         Stage secondaryStage = new Stage();
         secondaryStage.setTitle(props.getString("label.shoppingListTitle") + selectedRecipe.getTitle());
@@ -1301,10 +1294,10 @@ public class MainCtrl {
      *
      * @param recipeLanguage
      */
-    public void updateRecipeLanguageLabel(String recipeLanguage) { 
+    public void updateRecipeLanguageLabel(String recipeLanguage) {
         ResourceBundle props = getTranslationsBundle();
-        String fullLanguage = RecipeFormatter.getFullRecipeLanguage(recipeLanguage, props); 
-        recipeLanguageLabel.setText(fullLanguage); 
+        String fullLanguage = RecipeFormatter.getFullRecipeLanguage(recipeLanguage, props);
+        recipeLanguageLabel.setText(fullLanguage);
     }
 
     @FXML
@@ -1367,7 +1360,7 @@ public class MainCtrl {
         languageSetter.setText(""); // this line is neccesary bc otherwise you still get ... next to the flag.
 
     }
-    
+
     /** Binds all the UI text properties to the current ResourceBundle
      * Call  this whenever the language changes
      */
@@ -1467,21 +1460,16 @@ public class MainCtrl {
         List<RecipeIngredient> ingredients = recipe.getIngredients().stream()
                 .filter(ri -> ri.isFormal()).toList();
 
-        int factor = 1;
-        if (scaler.getValue() != null) {
-            factor = scaler.getValue();
-        }
-
         double kcals = 0;
         double weight = 0;
         for (RecipeIngredient ingredient : ingredients) {
-            kcals += ingredient.getIngredient().getKcalPer100g() * baseAmounts.get(ingredient)
-                    * factor / 100;
-            weight += ingredient.getAmount();
+            kcals += ingredient.getIngredient().getKcalPer100g() * baseAmounts.get(ingredient) / 100;
+            weight += baseAmounts.get(ingredient);
         }
 
         if (ingredients.isEmpty())
             return 0;
+
         return kcals / weight * 100;
     }
 
@@ -1541,7 +1529,7 @@ public class MainCtrl {
             }
         }
     }
-    
+
     /**
      * Ensures a recipe is selected; shows an error if not.
      * @return true if a recipe is selected, false otherwise
@@ -1556,7 +1544,6 @@ public class MainCtrl {
     }
 
     /**
-<<<<<<< client/src/main/java/client/scenes/MainCtrl.java
      * filter the languages
      * @param change the change from the languagecheckbox
      */
