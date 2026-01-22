@@ -61,6 +61,7 @@ public class EditTitleCtrl {
      */
     @FXML
     public void loadLanguages() {
+        statusLabel.setText("");
         ResourceBundle props = getTranslationsBundle();
 
         languageChoiceBox.getItems().clear();

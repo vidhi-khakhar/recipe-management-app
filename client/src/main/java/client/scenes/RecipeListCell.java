@@ -1,7 +1,11 @@
 package client.scenes;
 
-import client.favorite.FavoriteService;
+import java.util.ResourceBundle;
+
 import com.google.inject.Inject;
+
+import client.config.ConfigService;
+import client.favorite.FavoriteService;
 import commons.Recipe;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -15,6 +19,7 @@ import javafx.scene.layout.HBox;
  */
 public class RecipeListCell extends ListCell<Recipe> {
     private final FavoriteService favoriteService;
+    private ConfigService configService;
 
     private final Label titleLabel = new Label();
     private final Button starButton = new Button();
@@ -27,8 +32,9 @@ public class RecipeListCell extends ListCell<Recipe> {
      * @param favoriteService service used to check and update favorite recipes
      */
     @Inject
-    public RecipeListCell(FavoriteService favoriteService) {
+    public RecipeListCell(FavoriteService favoriteService, ConfigService configService) {
         this.favoriteService = favoriteService;
+        this.configService = configService;
 
         titleLabel.getStyleClass().add("recipe-title");
         layout.getStyleClass().add("recipe-cell");
@@ -56,10 +62,11 @@ public class RecipeListCell extends ListCell<Recipe> {
      * or has not been saved yet.
      */
     private void errorAlert() {
+        ResourceBundle props = getTranslationsBundle();
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Invalid Recipe");
+        alert.setTitle(props.getString("alert.somethingWentWrong"));
         alert.setHeaderText(null);
-        alert.setContentText("This recipe does not exist or has not been saved yet.");
+        alert.setContentText(props.getString("alert.reloadFailed"));
         alert.showAndWait();
     }
 
@@ -90,6 +97,17 @@ public class RecipeListCell extends ListCell<Recipe> {
         starButton.setDisable(item.getRecipeId() == null);
 
         setGraphic(layout);
+    }
+
+    private ResourceBundle getTranslationsBundle() {
+        try {
+            String languageCode = configService.getLanguage();
+            return java.util.ResourceBundle.getBundle("client.scenes.Translations", new java.util.Locale(languageCode));
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Failed to load language bundle for code: " + configService.getLanguage());
+            return java.util.ResourceBundle.getBundle("client.scenes.Translations", java.util.Locale.ENGLISH);
+        }
     }
 
 }

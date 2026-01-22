@@ -23,11 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import javafx.collections.ListChangeListener;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
-import javafx.scene.control.*;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.CheckComboBox;
 
@@ -46,12 +44,23 @@ import commons.RecipeIngredient;
 import commons.RecipeIngredientKey;
 import commons.Unit;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -62,7 +71,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import java.util.*;
 
 public class MainCtrl {
 
@@ -209,7 +217,6 @@ public class MainCtrl {
 
     @FXML
     private Label servingsLabel;
-
     @FXML
     private ComboBox<String> sortComboBox;
 
@@ -285,6 +292,7 @@ public class MainCtrl {
         ResourceBundle props = getTranslationsBundle();
         // Set initial flag based on saved config
         String currentLang = configService.getLanguage();
+        initializeTextProperties();
         switch (currentLang) {
             case "en" ->
                 setEnglishLanguage();
@@ -298,14 +306,12 @@ public class MainCtrl {
                 setEnglishLanguage();
         }
 
-        languageCheckBox.getItems().addAll("English", "Dutch", "Romanian", "Spanish");
-
         languageCheckBox.getCheckModel().getCheckedItems().addListener(this::filterLanguages);
 
         sidebarList.setItems(recipesObservableList);
 
         sidebarList.setCellFactory(lv
-                -> new RecipeListCell(favoriteService)
+                -> new RecipeListCell(favoriteService, configService)
         );
 
         sidebarList.getSelectionModel()
@@ -1082,6 +1088,7 @@ public class MainCtrl {
         secondaryStage.setScene(nutritionScene);
         secondaryStage.initOwner(primaryStage);
         secondaryStage.setResizable(false);
+        nutritionalValueCtrl.loadLanguages();
         secondaryStage.showAndWait();
     }
 
@@ -1365,13 +1372,11 @@ public class MainCtrl {
             languageSetter.setText(languageCode.toUpperCase());
         }
 
-        // Update all bound text properties
         initializeTextProperties();
 
-        // Optional: update recipe language label
         Recipe selected = getSelectedRecipe();
         if (selected != null) {
-            updateRecipeLanguageLabel(languageCode);
+            updateRecipeLanguageLabel(selected.getLanguage());  // Use the recipe's language, not the UI language
         }
     }
 
@@ -1403,6 +1408,7 @@ public class MainCtrl {
         updateSelectedRecipeLabels(props);
     }
 
+
     /* Sets to langauge */
     private void updateStaticUILabels(ResourceBundle props) {
         FoodPalLabel.setText(props.getString("label.title"));
@@ -1424,6 +1430,46 @@ public class MainCtrl {
         noRecipeTitle.setText(props.getString("label.noRecipeTitle"));
         noRecipeSubtitle.setText(props.getString("label.noRecipeSubtitle"));
         sortLabel.setText(props.getString("label.sort"));
+        
+        updateLanguageCheckBoxItems(props);
+        setHealthStatus(selectedRecipe);
+    }
+
+    /**
+     * Updates the language checkbox items while preserving checked state
+     */
+    private void updateLanguageCheckBoxItems(ResourceBundle props) {
+        // Temporarily remove the listener
+        languageCheckBox.getCheckModel().getCheckedItems().removeListener(this::filterLanguages);
+        
+        // Update the items
+        languageCheckBox.setTitle(props.getString("label.filterLabel"));
+        languageCheckBox.getItems().clear();
+        languageCheckBox.getItems().addAll(
+            props.getString("label.english"), 
+            props.getString("label.dutch"),
+            props.getString("label.romanian"), 
+            props.getString("label.spanish")
+        );
+        
+        // Restore checked state
+        for (String langCode : filteredLanguages) {
+            String displayName = switch (langCode) {
+                case "en" -> props.getString("label.english");
+                case "nl" -> props.getString("label.dutch");
+                case "ro" -> props.getString("label.romanian");
+                case "es" -> props.getString("label.spanish");
+                default -> null;
+            };
+            
+            if (displayName != null) {
+                int index = languageCheckBox.getItems().indexOf(displayName);
+                if (index >= 0) {
+                    languageCheckBox.getCheckModel().check(index);
+                }
+            }
+        }
+        languageCheckBox.getCheckModel().getCheckedItems().addListener(this::filterLanguages);
     }
 
     private void updateSelectedRecipeLabels(ResourceBundle props) {
@@ -1582,37 +1628,56 @@ public class MainCtrl {
      */
     @FXML
     private void filterLanguages(ListChangeListener.Change<? extends String> change) {
-        boolean added;
-        String language = "";
-        String changed = change.toString();
-
-
-        added = changed.contains("addition");
-
-        if (changed.contains("English")) {
-            language = "en";
-        } else if (changed.contains("Dutch")) {
-            language = "nl";
-        } else if (changed.contains("Romanian")) {
-            language = "ro";
-        } else if (changed.contains("Spanish")) {
-            language = "es";
+        ResourceBundle props = getTranslationsBundle();
+        
+        // Process the change
+        while (change.next()) {
+            if (change.wasAdded()) {
+                for (String item : change.getAddedSubList()) {
+                    String languageCode = getLanguageCode(item, props);
+                    if (languageCode != null && !filteredLanguages.contains(languageCode)) {
+                        filteredLanguages.add(languageCode);
+                    }
+                }
+            }
+            
+            if (change.wasRemoved()) {
+                for (String item : change.getRemoved()) {
+                    String languageCode = getLanguageCode(item, props);
+                    if (languageCode != null) {
+                        filteredLanguages.remove(languageCode);
+                    }
+                }
+            }
         }
-
-        if (added) {
-            filteredLanguages.add(language);
-        } else {
-            filteredLanguages.remove(language);
-        }
-
+        
         configService.getConfig().setFilteredLanguages(new ArrayList<>(filteredLanguages));
         configService.save();
         applySearch();
     }
 
+    /**
+     *  method to get language code from display name
+     */
+    private String getLanguageCode(String displayName, ResourceBundle props) {
+        if (displayName.equals(props.getString("label.english"))) {
+            return "en";
+        } else if (displayName.equals(props.getString("label.dutch"))) {
+            return "nl";
+        } else if (displayName.equals(props.getString("label.romanian"))) {
+            return "ro";
+        } else if (displayName.equals(props.getString("label.spanish"))) {
+            return "es";
+        }
+        return null;
+    }
+
 
 
     private void setHealthStatus(Recipe recipe) {
+        if (selectedRecipe == null) {
+            return;
+        }
         ResourceBundle props = getTranslationsBundle();
         double kcals = calculateKcal(recipe);
 
