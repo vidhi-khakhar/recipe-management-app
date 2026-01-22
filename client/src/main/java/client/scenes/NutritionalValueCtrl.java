@@ -152,7 +152,7 @@ public class NutritionalValueCtrl {
         this.recipeServerUtils = recipeServerUtils;
         this.configService = configService;
     }
-    
+
     /**
      * This method initializes the NutritionalValueUI controller
      *
@@ -223,8 +223,11 @@ public class NutritionalValueCtrl {
 
     private void updateSelectedIngredient() {
         Ingredient selected = sidebarList.getSelectionModel().getSelectedItem();
-        showIngredientDetails(selected);
-        updateUsageLabel(selected);
+
+        if (selected != null) {
+            showIngredientDetails(selected);
+            updateUsageLabel(selected);
+        }
     }
 
 
@@ -650,7 +653,10 @@ public class NutritionalValueCtrl {
     @FXML
     void seeSelectedIngredient() {
         Ingredient selected = sidebarList.getSelectionModel().getSelectedItem();
-        System.out.println("Selected ingredient: " + selected.getId());
+
+        if (selected != null) {
+            System.out.println("Selected ingredient: " + selected.getId());
+        }
     }
 
     @FXML
