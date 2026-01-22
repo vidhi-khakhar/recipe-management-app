@@ -22,7 +22,7 @@
                   <HBox layoutX="394.0" layoutY="18.0" prefHeight="63.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
                   <HBox prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                      <children>
-                        <Label alignment="CENTER" prefHeight="121.0" prefWidth="640.0" text="%label.nutritionalValuesTitle" HBox.hgrow="ALWAYS">
+                        <Label fx:id="nutritionalValueTitle" alignment="CENTER" prefHeight="121.0" prefWidth="640.0" text="%label.nutritionalValuesTitle" HBox.hgrow="ALWAYS">
                            <font>
                               <Font name="Cascadia Code Regular" size="37.0" />
                            </font>

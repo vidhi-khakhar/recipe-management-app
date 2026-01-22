@@ -67,6 +67,8 @@ public class AddButtonCtrl {
     private void loadLanguages() {
         ResourceBundle props = getTranslationsBundle();
 
+        statusLabel.setText("");
+
         languageChoiceBox.getItems().clear();
 
         languageChoiceBox.getItems().addAll(

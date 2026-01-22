@@ -292,6 +292,7 @@ public class MainCtrl {
         ResourceBundle props = getTranslationsBundle();
         // Set initial flag based on saved config
         String currentLang = configService.getLanguage();
+        initializeTextProperties();
         switch (currentLang) {
             case "en" ->
                 setEnglishLanguage();
@@ -304,8 +305,6 @@ public class MainCtrl {
             default ->
                 setEnglishLanguage();
         }
-
-        languageCheckBox.getItems().addAll("English", "Dutch", "Romanian", "Spanish");
 
         languageCheckBox.getCheckModel().getCheckedItems().addListener(this::filterLanguages);
 
@@ -1409,6 +1408,7 @@ public class MainCtrl {
         updateSelectedRecipeLabels(props);
     }
 
+
     /* Sets to langauge */
     private void updateStaticUILabels(ResourceBundle props) {
         FoodPalLabel.setText(props.getString("label.title"));
@@ -1430,6 +1430,45 @@ public class MainCtrl {
         noRecipeTitle.setText(props.getString("label.noRecipeTitle"));
         noRecipeSubtitle.setText(props.getString("label.noRecipeSubtitle"));
         sortLabel.setText(props.getString("label.sort"));
+        
+        // Update language filter - temporarily remove listener to avoid recursion
+        updateLanguageCheckBoxItems(props);
+    }
+
+    /**
+     * Updates the language checkbox items while preserving checked state
+     */
+    private void updateLanguageCheckBoxItems(ResourceBundle props) {
+        // Temporarily remove the listener
+        languageCheckBox.getCheckModel().getCheckedItems().removeListener(this::filterLanguages);
+        
+        // Update the items
+        languageCheckBox.setTitle(props.getString("label.filterLabel"));
+        languageCheckBox.getItems().clear();
+        languageCheckBox.getItems().addAll(
+            props.getString("label.english"), 
+            props.getString("label.dutch"),
+            props.getString("label.romanian"), 
+            props.getString("label.spanish")
+        );
+        
+        // Restore checked state
+        for (String langCode : filteredLanguages) {
+            String displayName = switch (langCode) {
+                case "en" -> props.getString("label.english");
+                case "nl" -> props.getString("label.dutch");
+                case "ro" -> props.getString("label.romanian");
+                case "es" -> props.getString("label.spanish");
+                default -> null;
+            };
+            
+            if (displayName != null) {
+                int index = languageCheckBox.getItems().indexOf(displayName);
+                if (index >= 0) {
+                    languageCheckBox.getCheckModel().check(index);
+                }
+            }
+        }
     }
 
     private void updateSelectedRecipeLabels(ResourceBundle props) {
@@ -1588,32 +1627,48 @@ public class MainCtrl {
      */
     @FXML
     private void filterLanguages(ListChangeListener.Change<? extends String> change) {
-        boolean added;
-        String language = "";
-        String changed = change.toString();
-
-
-        added = changed.contains("addition");
-
-        if (changed.contains("English")) {
-            language = "en";
-        } else if (changed.contains("Dutch")) {
-            language = "nl";
-        } else if (changed.contains("Romanian")) {
-            language = "ro";
-        } else if (changed.contains("Spanish")) {
-            language = "es";
+        ResourceBundle props = getTranslationsBundle();
+        
+        // Process the change
+        while (change.next()) {
+            if (change.wasAdded()) {
+                for (String item : change.getAddedSubList()) {
+                    String languageCode = getLanguageCode(item, props);
+                    if (languageCode != null && !filteredLanguages.contains(languageCode)) {
+                        filteredLanguages.add(languageCode);
+                    }
+                }
+            }
+            
+            if (change.wasRemoved()) {
+                for (String item : change.getRemoved()) {
+                    String languageCode = getLanguageCode(item, props);
+                    if (languageCode != null) {
+                        filteredLanguages.remove(languageCode);
+                    }
+                }
+            }
         }
-
-        if (added) {
-            filteredLanguages.add(language);
-        } else {
-            filteredLanguages.remove(language);
-        }
-
+        
         configService.getConfig().setFilteredLanguages(new ArrayList<>(filteredLanguages));
         configService.save();
         applySearch();
+    }
+
+    /**
+     *  method to get language code from display name
+     */
+    private String getLanguageCode(String displayName, ResourceBundle props) {
+        if (displayName.equals(props.getString("label.english"))) {
+            return "en";
+        } else if (displayName.equals(props.getString("label.dutch"))) {
+            return "nl";
+        } else if (displayName.equals(props.getString("label.romanian"))) {
+            return "ro";
+        } else if (displayName.equals(props.getString("label.spanish"))) {
+            return "es";
+        }
+        return null;
     }
 
 

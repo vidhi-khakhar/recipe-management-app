@@ -40,6 +40,9 @@ public class NutritionalValueCtrl {
     @FXML
     private Label RecipeUsageValueLabel;
 
+    @FXML 
+    private Label nutritionalValueTitle;
+
     @FXML
     private Button addIngredientButton;
 
@@ -189,6 +192,8 @@ public class NutritionalValueCtrl {
     public void loadLanguages() {
         ResourceBundle props = getTranslationsBundle();
 
+        nutritionalValueTitle.setText(props.getString("label.nutritionalValuesTitle"));
+
         // Window / titles
         noIngredientTitle.setText(props.getString("label.noIngredients"));
         noIngredientSubtitle.setText(props.getString("label.noIngredientsSubtitle"));
@@ -211,6 +216,7 @@ public class NutritionalValueCtrl {
         cancelButton.setText(props.getString("label.cancelButton"));
         editIngredientButton.setText(props.getString("label.editButton"));
         confirmButton.setText(props.getString("label.confirmButton"));
+
     }
 
 
