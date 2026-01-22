@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+<?import org.controlsfx.control.*?>
 <?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
@@ -38,6 +45,7 @@
                                     <children>
                                         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                                             <children>
+                                    <HBox fillHeight="false" minHeight="20.0" prefHeight="50.0" prefWidth="100.0" />
                                                 <Pane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="96.0" prefWidth="94.0" styleClass="spacingPane" HBox.hgrow="NEVER">
                                                     <padding>
                                                         <Insets right="5.0" />
@@ -177,6 +185,17 @@
                                     <children>
                                         <VBox prefHeight="363.0" prefWidth="266.0" VBox.vgrow="ALWAYS">
                                             <children>
+                                    <HBox prefHeight="30.0" prefWidth="200.0">
+                                       <children>
+                                          <ComboBox fx:id="sortComboBox" maxHeight="20.0" prefWidth="130.0" promptText="Sort by" />
+                                          <Button fx:id="sortButton" maxHeight="30.0" minHeight="30.0" mnemonicParsing="false" onAction="#changeSort" prefWidth="50.0" text="↓☰">
+                                             <HBox.margin>
+                                                <Insets left="60.0" />
+                                             </HBox.margin>
+                                          </Button>
+                                       </children>
+                                    </HBox>
+
                                                 <ListView fx:id="sidebarList" prefHeight="341.0" prefWidth="250.0" styleClass="sidebar-list" VBox.vgrow="ALWAYS">
                                                     <VBox.margin>
                                                         <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
