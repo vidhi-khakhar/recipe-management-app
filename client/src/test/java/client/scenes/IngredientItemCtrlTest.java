@@ -5,11 +5,19 @@ import static org.junit.jupiter.api.Assertions.*;
 import client.shopping.RecipeIngredientData;
 import org.junit.jupiter.api.Test;
 
+import client.config.ConfigService;
+
 public class IngredientItemCtrlTest {
+
+    private static class TestConfigService extends ConfigService {
+        public TestConfigService() {
+            super("en");
+        }
+    }
 
     @Test
     public void testDefaultConstructor() {
-        IngredientItemCtrl ctrl = new IngredientItemCtrl();
+        IngredientItemCtrl ctrl = new IngredientItemCtrl(new TestConfigService());
         assertNotNull(ctrl);
     }
 

@@ -16,19 +16,23 @@ public class EditTitleCtrlTest {
     @Mock
     private RecipeServerUtils mockRecipeServerUtils;
 
+    @Mock
+    private client.config.ConfigService mockConfigService;
+
     private EditTitleCtrl editTitleCtrl;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        editTitleCtrl = new EditTitleCtrl(mockMainCtrl, mockRecipeServerUtils);
+        editTitleCtrl = new EditTitleCtrl(mockMainCtrl, mockRecipeServerUtils, mockConfigService);
     }
 
     @Test
     public void testConstructor() {
         EditTitleCtrl ctrl = new EditTitleCtrl(
             mockMainCtrl,
-            mockRecipeServerUtils
+            mockRecipeServerUtils,
+            mockConfigService
         );
         assertNotNull(ctrl);
     }
