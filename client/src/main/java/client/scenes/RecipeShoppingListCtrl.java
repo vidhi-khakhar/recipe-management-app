@@ -2,27 +2,28 @@ package client.scenes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
+
+import com.google.inject.Inject;
 
 import client.MyFXML;
+import client.config.ConfigService;
 import client.shopping.RecipeIngredientData;
 import client.shopping.RecipeShoppingService;
 import commons.Recipe;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Spinner;
-import javafx.scene.layout.VBox;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.util.Pair;
-
-import com.google.inject.Inject;
-
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.layout.VBox;
 
 /**
  * Controller for the Recipe Shopping List window.
@@ -40,40 +41,29 @@ import javafx.scene.control.SpinnerValueFactory;
  *   <li>Adding ingredients to the main shopping list</li>
  * </ul>
  *
- * @author Recipe Shopping Controller
- * @version 1.0
  */
 public class RecipeShoppingListCtrl {
 
-    /**
-     * Button to add a new custom ingredient to the list.
-     */
     @FXML
     private Button addShoppingItemButton;
 
-    /**
-     * Button to add all ingredients to the shopping list.
-     */
     @FXML
     private Button addToShoppingListButton;
 
-    /**
-     * Button to cancel the operation and close the window.
-     */
     @FXML
     private Button cancelButton;
 
-    /**
-     * VBox container for displaying ingredient items.
-     */
     @FXML
-    private VBox shoppingList;
+    private Label editRecipeShoppingList;
 
-    /**
-     * Scroll pane containing the ingredient list for scrolling.
-     */
     @FXML
-    private ScrollPane shoppingScrollPane;
+    private Label recipeTitleLabel;
+
+    @FXML
+    private Label servingsLabel;
+
+    @FXML
+    private Label servingsLabelBody;
 
     /**
      * Spinner for adjusting the number of servings, which scales ingredient amounts.
@@ -82,41 +72,21 @@ public class RecipeShoppingListCtrl {
     @FXML
     private Spinner<Integer> servingsSpinner;
 
-    /**
-     * Label displaying the current recipe title.
-     */
     @FXML
-    private Label recipeTitleLabel;
+    private VBox shoppingList;
 
-    /**
-     * Service for handling recipe shopping list operations.
-     */
+    @FXML
+    private ScrollPane shoppingScrollPane;
+
+
     private final RecipeShoppingService recipeShoppingService;
-
-    /**
-     * FXML loader utility for loading and initializing FXML components.
-     */
     private final MyFXML myFXML;
-
-    /**
-     * The currently loaded recipe for which ingredients are being displayed.
-     */
     private Recipe currentRecipe;
-
-    /**
-     * The original number of servings from the recipe.
-     */
     private int originalServings;
-
-    /**
-     * List of ingredients displayed in the UI.
-     */
     private List<RecipeIngredientData> ingredients;
-
-    /**
-     * List of ingredient controllers for managing individual ingredient UI items.
-     */
     private List<IngredientItemCtrl> ingredientCtrls;
+    private final ConfigService configService;
+
 
     /**
      * Constructor for dependency injection.
@@ -125,11 +95,28 @@ public class RecipeShoppingListCtrl {
      * @param myFXML FXML loader utility
      */
     @Inject
-    public RecipeShoppingListCtrl(RecipeShoppingService recipeShoppingService, MyFXML myFXML) {
+    public RecipeShoppingListCtrl(RecipeShoppingService recipeShoppingService, MyFXML myFXML, 
+        ConfigService configService) {
         this.recipeShoppingService = recipeShoppingService;
         this.myFXML = myFXML;
         this.ingredients = new ArrayList<>();
         this.ingredientCtrls = new ArrayList<>();
+        this.configService = configService;
+    }
+
+
+    /**
+     * Translates this ui
+     */
+    @FXML
+    public void loadLanguages() {
+        ResourceBundle props = getTranslationsBundle();
+        addToShoppingListButton.setText(props.getString("label.addRecipeShoppingButton"));
+        editRecipeShoppingList.setText(props.getString("label.editRecipeShoppingList"));
+        servingsLabel.setText(props.getString("label.servingsLabel"));
+        servingsLabelBody.setText(props.getString("label.servingsLabel.body"));
+        addShoppingItemButton.setText(props.getString("label.addIngredientButton"));
+        cancelButton.setText(props.getString("label.cancelButton"));
     }
 
     /**
@@ -147,12 +134,14 @@ public class RecipeShoppingListCtrl {
      * @param recipe the recipe to display ingredients for
      */
     public void initializeWithRecipe(Recipe recipe) {
+        ResourceBundle props = getTranslationsBundle();
         this.currentRecipe = recipe;
         this.originalServings = recipe.getServings();
+        String recipeProps = props.getString("label.addRecipeTitle");
 
         // Setup UI (only if FXML fields are initialized)
         if (recipeTitleLabel != null) {
-            recipeTitleLabel.setText("Recipe: " + recipe.getTitle());
+            recipeTitleLabel.setText(recipeProps + " " + recipe.getTitle());
         }
         if (servingsSpinner != null) {
             var spinnerFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(
@@ -203,15 +192,40 @@ public class RecipeShoppingListCtrl {
         shoppingList.getChildren().clear();
         ingredientCtrls.clear();
 
+        // Load the current language bundle
+        ResourceBundle bundle;
+        try {
+            String lang = configService.getLanguage();
+            bundle = ResourceBundle.getBundle("client.scenes.Translations", new java.util.Locale(lang));
+        } catch (Exception e) {
+            bundle = ResourceBundle.getBundle("client.scenes.Translations", java.util.Locale.ENGLISH);
+        }
+
         for (RecipeIngredientData ingredient : ingredients) {
             try {
-                // Load ingredient item component
-                Pair<IngredientItemCtrl, Parent> loader = myFXML.load(IngredientItemCtrl.class,
-                    "client", "scenes", "IngredientItem.fxml");
-                IngredientItemCtrl ctrl = loader.getKey();
-                Parent ingredientNode = loader.getValue();
+                FXMLLoader fxmlLoader = new FXMLLoader(
+                        getClass().getResource("/client/scenes/IngredientItem.fxml"),
+                        bundle
+                );
 
-                // Setup the controller
+                // Set a controller factory to inject ConfigService
+                fxmlLoader.setControllerFactory(clazz -> {
+                    if (clazz == IngredientItemCtrl.class) {
+                        return new IngredientItemCtrl(configService);
+                    } else {
+                        try {
+                            return clazz.getDeclaredConstructor().newInstance();
+                        } catch (Exception ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    }
+                });
+
+                // Load the FXML and get controller
+                Parent ingredientNode = fxmlLoader.load();
+                IngredientItemCtrl ctrl = fxmlLoader.getController();
+
+                // Initialize controller with data and callbacks
                 ctrl.setIngredientData(ingredient.copy());
                 ctrl.setOnRemove(() -> removeIngredient(ingredient));
                 ctrl.setOnUpdate(updatedData -> {
@@ -223,14 +237,18 @@ public class RecipeShoppingListCtrl {
                 });
                 ctrl.setOnChange(this::validateIngredients);
 
-                // Add to UI
+                // Add to UI and controller list
                 shoppingList.getChildren().add(ingredientNode);
                 ingredientCtrls.add(ctrl);
+
             } catch (Exception e) {
                 System.err.println("Failed to create ingredient item: " + e.getMessage());
+                e.printStackTrace();
             }
         }
     }
+
+
 
     /**
      * Scales all formal ingredients to the specified number of servings.
@@ -294,15 +312,16 @@ public class RecipeShoppingListCtrl {
      */
     @FXML
     void addShoppingItem(ActionEvent event) {
+        ResourceBundle props = getTranslationsBundle();
         try {
             // Reset servings spinner to original when adding new ingredient
             servingsSpinner.getValueFactory().setValue(originalServings);
 
             // Create new ingredient with base amount (no scaling)
             RecipeIngredientData newIngredient = new RecipeIngredientData();
-            newIngredient.setName("New Ingredient");
+            newIngredient.setName(props.getString("label.ingredientNamePrompt"));
             newIngredient.setAmount(1.0);
-            newIngredient.setUnit("unit");
+            newIngredient.setUnit(props.getString("label.ingredientUnitPrompt"));
             newIngredient.setFormal(true);
             newIngredient.setCustomAdded(true);
 
@@ -315,7 +334,7 @@ public class RecipeShoppingListCtrl {
                 ingredientCtrls.get(ingredientCtrls.size() - 1).focusNameField();
             }
         } catch (Exception e) {
-            showError("Failed to add ingredient: " + e.getMessage());
+            showError(props.getString("alert.ingredientFail") + e.getMessage());
         }
     }
 
@@ -348,34 +367,31 @@ public class RecipeShoppingListCtrl {
      */
     @FXML
     void addToShoppingList(ActionEvent event) {
+        ResourceBundle props = getTranslationsBundle();
         if (currentRecipe == null) {
-            showError("No recipe selected");
+            showError(props.getString("alert.selectARecipe"));
             return;
         }
 
         // Validate all ingredients
         if (!validateAllIngredients()) {
-            showError("Please fix the highlighted ingredient fields before adding to shopping list");
+            showError(props.getString("alert.ingredientError"));
             return;
         }
 
         try {
-            // Get current values from UI
             List<RecipeIngredientData> currentIngredients = getCurrentIngredientData();
 
-            // Get current servings
             int targetServings = servingsSpinner.getValue();
 
-            // Convert to shopping items and add to list
             recipeShoppingService.addToShoppingList(
                 recipeShoppingService.convertToShoppingItems(
                     currentIngredients, originalServings, targetServings, currentRecipe.getTitle(), true));
 
-            // Close window
             ((Node) event.getSource()).getScene().getWindow().hide();
 
         } catch (Exception e) {
-            showError("Failed to add to shopping list: " + e.getMessage());
+            showError(props.getString("alert.shoppingListError") + e.getMessage());
         }
     }
 
@@ -447,12 +463,14 @@ public class RecipeShoppingListCtrl {
      * @param message the error message to display
      */
     private void showError(String message) {
-        Alert alert = new Alert(AlertType.ERROR);
-        alert.setTitle("Error");
+        ResourceBundle props = getTranslationsBundle();
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(props.getString("alert.error"));
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
     }
+
 
     /**
      * Shows a success message dialog.
@@ -460,120 +478,53 @@ public class RecipeShoppingListCtrl {
      * @param message the success message to display
      */
     private void showSuccess(String message) {
+        ResourceBundle props = getTranslationsBundle();
         Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle("Success");
+        alert.setTitle(props.getString("alert.Success"));
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
     }
 
-    // Test accessor methods
 
-    /**
-     * Gets the current recipe for testing purposes.
-     *
-     * @return the current recipe
-     */
+
+    private ResourceBundle getTranslationsBundle() {
+        try {
+            String languageCode = configService.getLanguage();
+            return java.util.ResourceBundle.getBundle("client.scenes.Translations", new java.util.Locale(languageCode));
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Failed to load language bundle for code: " + configService.getLanguage());
+            return java.util.ResourceBundle.getBundle("client.scenes.Translations", java.util.Locale.ENGLISH);
+        }
+    }
+
+    
     Recipe getCurrentRecipeForTest() {
         return currentRecipe;
     }
 
-    /**
-     * Sets the current recipe for testing purposes.
-     *
-     * @param recipe the recipe to set
-     */
+    
     void setCurrentRecipeForTest(Recipe recipe) {
         this.currentRecipe = recipe;
     }
 
-    /**
-     * Gets the original servings for testing purposes.
-     *
-     * @return the original number of servings
-     */
     int getOriginalServingsForTest() {
         return originalServings;
     }
 
-    /**
-     * Sets the original servings for testing purposes.
-     *
-     * @param servings the number of servings to set
-     */
+    
     void setOriginalServingsForTest(int servings) {
         this.originalServings = servings;
     }
 
-    /**
-     * Gets the ingredients list for testing purposes.
-     *
-     * @return the list of ingredients
-     */
+    
     List<RecipeIngredientData> getIngredientsForTest() {
         return ingredients;
     }
 
-    /**
-     * Gets the ingredient controllers list for testing purposes.
-     *
-     * @return the list of ingredient controllers
-     */
+   
     List<IngredientItemCtrl> getIngredientCtrlsForTest() {
         return ingredientCtrls;
-    }
-
-    /**
-     * Sets the recipe title label for testing purposes.
-     *
-     * @param label the label to set
-     */
-    void setRecipeTitleLabelForTest(javafx.scene.control.Label label) {
-        this.recipeTitleLabel = label;
-    }
-
-    /**
-     * Sets the servings spinner for testing purposes.
-     *
-     * @param spinner the spinner to set
-     */
-    void setServingsSpinnerForTest(javafx.scene.control.Spinner<Integer> spinner) {
-        this.servingsSpinner = spinner;
-    }
-
-    /**
-     * Sets the shopping list VBox for testing purposes.
-     *
-     * @param vbox the VBox to set
-     */
-    void setShoppingListForTest(javafx.scene.layout.VBox vbox) {
-        this.shoppingList = vbox;
-    }
-
-    /**
-     * Sets the add shopping item button for testing purposes.
-     *
-     * @param button the button to set
-     */
-    void setAddShoppingItemButtonForTest(javafx.scene.control.Button button) {
-        this.addShoppingItemButton = button;
-    }
-
-    /**
-     * Sets the add to shopping list button for testing purposes.
-     *
-     * @param button the button to set
-     */
-    void setAddToShoppingListButtonForTest(javafx.scene.control.Button button) {
-        this.addToShoppingListButton = button;
-    }
-
-    /**
-     * Sets the cancel button for testing purposes.
-     *
-     * @param button the button to set
-     */
-    void setCancelButtonForTest(javafx.scene.control.Button button) {
-        this.cancelButton = button;
     }
 }

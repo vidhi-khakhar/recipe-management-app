@@ -1,270 +1,182 @@
 package client.scenes;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import client.MyFXML;
+import client.config.ConfigService;
 import client.model.ShoppingItem;
 import client.shopping.RecipeIngredientData;
 import client.shopping.RecipeShoppingService;
 import commons.Recipe;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 class RecipeShoppingListCtrlTest {
 
-    private RecipeShoppingListCtrl controller;
-    private TestRecipeShoppingService testService;
+    private RecipeShoppingListCtrl ctrl;
+    private TestRecipeShoppingService service;
 
     @BeforeEach
     void setUp() {
-        testService = new TestRecipeShoppingService();
+        service = new TestRecipeShoppingService();
         MyFXML myFXML = new TestMyFXML();
-        controller = new RecipeShoppingListCtrl(testService, myFXML);
+        ConfigService configService = new TestConfigService();
+        ctrl = new RecipeShoppingListCtrl(service, myFXML, configService);
     }
 
     @Test
-    void constructor_initializesFields() {
-        assertNotNull(controller);
+    void init_notNull() {
+        assertNotNull(ctrl);
     }
 
     @Test
-    void constructor_initializesIngredientLists() {
-        List<RecipeIngredientData> ingredients = controller.getIngredientsForTest();
+    void ingredients_emptyOnInit() {
+        List<RecipeIngredientData> ingredients = ctrl.getIngredientsForTest();
         assertNotNull(ingredients);
         assertTrue(ingredients.isEmpty());
     }
 
     @Test
-    void constructor_initializesIngredientCtrlsList() {
-        List<IngredientItemCtrl> ctrls = controller.getIngredientCtrlsForTest();
+    void ingredientCtrls_emptyOnInit() {
+        List<IngredientItemCtrl> ctrls = ctrl.getIngredientCtrlsForTest();
         assertNotNull(ctrls);
         assertTrue(ctrls.isEmpty());
     }
 
     @Test
-    void setCurrentRecipe_setsRecipe() {
-        Recipe recipe = createTestRecipe("Test Recipe", 4);
-
-        controller.setCurrentRecipeForTest(recipe);
-
-        assertEquals(recipe, controller.getCurrentRecipeForTest());
+    void setRecipe_works() {
+        Recipe recipe = createRecipe("Test", 4);
+        ctrl.setCurrentRecipeForTest(recipe);
+        assertEquals(recipe, ctrl.getCurrentRecipeForTest());
     }
 
     @Test
-    void setOriginalServings_setsServings() {
-        int servings = 6;
-
-        controller.setOriginalServingsForTest(servings);
-
-        assertEquals(servings, controller.getOriginalServingsForTest());
+    void setServings_works() {
+        ctrl.setOriginalServingsForTest(6);
+        assertEquals(6, ctrl.getOriginalServingsForTest());
     }
 
     @Test
-    void addIngredientToList_addsNewIngredient() {
-        RecipeIngredientData ingredient = new RecipeIngredientData("Flour", 200.0, "g");
-        List<RecipeIngredientData> ingredients = controller.getIngredientsForTest();
-
-        controller.getIngredientsForTest().add(ingredient);
-
-        assertEquals(1, ingredients.size());
-        assertEquals("Flour", ingredients.get(0).getName());
+    void addIngredient_works() {
+        RecipeIngredientData ing = new RecipeIngredientData("Flour", 200.0, "g");
+        ctrl.getIngredientsForTest().add(ing);
+        assertEquals(1, ctrl.getIngredientsForTest().size());
+        assertEquals("Flour", ctrl.getIngredientsForTest().get(0).getName());
     }
 
     @Test
-    void removeIngredient_removesFromList() {
-        RecipeIngredientData flour = new RecipeIngredientData("Flour", 200.0, "g");
-        RecipeIngredientData sugar = new RecipeIngredientData("Sugar", 100.0, "g");
-        controller.getIngredientsForTest().add(flour);
-        controller.getIngredientsForTest().add(sugar);
-
-        controller.getIngredientsForTest().remove(flour);
-
-        assertEquals(1, controller.getIngredientsForTest().size());
-        assertEquals("Sugar", controller.getIngredientsForTest().get(0).getName());
+    void removeIngredient_works() {
+        RecipeIngredientData f = new RecipeIngredientData("Flour", 200.0, "g");
+        RecipeIngredientData s = new RecipeIngredientData("Sugar", 100.0, "g");
+        ctrl.getIngredientsForTest().add(f);
+        ctrl.getIngredientsForTest().add(s);
+        ctrl.getIngredientsForTest().remove(f);
+        assertEquals(1, ctrl.getIngredientsForTest().size());
+        assertEquals("Sugar", ctrl.getIngredientsForTest().get(0).getName());
     }
 
     @Test
-    void getIngredientData_returnsIngredientData() {
-        RecipeIngredientData ingredient = new RecipeIngredientData("Flour", 200.0, "g");
-        controller.getIngredientsForTest().add(ingredient);
-
-        List<RecipeIngredientData> result = controller.getIngredientsForTest();
-
-        assertNotNull(result);
-        assertEquals(1, result.size());
-    }
-
-    @Test
-    void setRecipe_updatesCurrentRecipe() {
-        Recipe recipe = new Recipe("Updated Recipe", "en");
-        recipe.setServings(6);
-        controller.setCurrentRecipeForTest(recipe);
-
-        Recipe stored = controller.getCurrentRecipeForTest();
-        assertNotNull(stored);
-        assertEquals("Updated Recipe", stored.getTitle());
-    }
-
-    @Test
-    void setServings_updatesOriginalServings() {
-        controller.setOriginalServingsForTest(6);
-
-        assertEquals(6, controller.getOriginalServingsForTest());
-    }
-
-    @Test
-    void ingredientList_preservesOrder() {
-        RecipeIngredientData flour = new RecipeIngredientData("Flour", 200.0, "g");
-        RecipeIngredientData sugar = new RecipeIngredientData("Sugar", 100.0, "g");
-        RecipeIngredientData salt = new RecipeIngredientData("Salt", 1.0, "tsp");
-
-        controller.getIngredientsForTest().add(flour);
-        controller.getIngredientsForTest().add(sugar);
-        controller.getIngredientsForTest().add(salt);
-
-        assertEquals(3, controller.getIngredientsForTest().size());
-        assertEquals("Flour", controller.getIngredientsForTest().get(0).getName());
-        assertEquals("Sugar", controller.getIngredientsForTest().get(1).getName());
-        assertEquals("Salt", controller.getIngredientsForTest().get(2).getName());
-    }
-
-    @Test
-    void ingredientData_copy_createsNewInstance() {
+    void ingredientData_copyWorks() {
         RecipeIngredientData original = new RecipeIngredientData("Flour", 200.0, "g");
-        controller.getIngredientsForTest().add(original);
-
-        RecipeIngredientData copy = controller.getIngredientsForTest().get(0).copy();
-
+        ctrl.getIngredientsForTest().add(original);
+        RecipeIngredientData copy = ctrl.getIngredientsForTest().get(0).copy();
         assertNotSame(original, copy);
         assertEquals(original.getName(), copy.getName());
         assertEquals(original.getAmount(), copy.getAmount());
     }
 
     @Test
-    void ingredientData_setName_updatesName() {
-        RecipeIngredientData ingredient = new RecipeIngredientData("Flour", 200.0, "g");
-        controller.getIngredientsForTest().add(ingredient);
-
-        ingredient.setName("Updated Flour");
-
-        assertEquals("Updated Flour", ingredient.getName());
+    void ingredient_setName() {
+        RecipeIngredientData ing = new RecipeIngredientData("Flour", 200.0, "g");
+        ing.setName("Sugar");
+        assertEquals("Sugar", ing.getName());
     }
 
     @Test
-    void ingredientData_setAmount_updatesAmount() {
-        RecipeIngredientData ingredient = new RecipeIngredientData("Flour", 200.0, "g");
-        controller.getIngredientsForTest().add(ingredient);
-
-        ingredient.setAmount(300.0);
-
-        assertEquals(300.0, ingredient.getAmount(), 0.01);
+    void ingredient_setAmount() {
+        RecipeIngredientData ing = new RecipeIngredientData("Flour", 200.0, "g");
+        ing.setAmount(300.0);
+        assertEquals(300.0, ing.getAmount(), 0.01);
     }
 
     @Test
-    void ingredientData_isFormal_returnsTrueForFormalIngredient() {
-        RecipeIngredientData formalIngredient = new RecipeIngredientData("Flour", 200.0, "g");
-        controller.getIngredientsForTest().add(formalIngredient);
-
-        assertTrue(controller.getIngredientsForTest().get(0).isFormal());
+    void ingredient_isFormal() {
+        RecipeIngredientData ing = new RecipeIngredientData("Flour", 200.0, "g");
+        assertTrue(ing.isFormal());
     }
 
     @Test
-    void ingredientData_isCustomAdded_initiallyFalse() {
-        RecipeIngredientData ingredient = new RecipeIngredientData("Flour", 200.0, "g");
-        controller.getIngredientsForTest().add(ingredient);
-
-        assertFalse(controller.getIngredientsForTest().get(0).isCustomAdded());
+    void ingredient_customFlag() {
+        RecipeIngredientData ing = new RecipeIngredientData("Flour", 200.0, "g");
+        assertFalse(ing.isCustomAdded());
+        ing.setCustomAdded(true);
+        assertTrue(ing.isCustomAdded());
     }
 
     @Test
-    void ingredientData_setCustomAdded_setsFlag() {
-        RecipeIngredientData ingredient = new RecipeIngredientData("Flour", 200.0, "g");
-        controller.getIngredientsForTest().add(ingredient);
-
-        ingredient.setCustomAdded(true);
-
-        assertTrue(ingredient.isCustomAdded());
+    void ingredientList_orderPreserved() {
+        RecipeIngredientData f = new RecipeIngredientData("Flour", 200.0, "g");
+        RecipeIngredientData s = new RecipeIngredientData("Sugar", 100.0, "g");
+        RecipeIngredientData salt = new RecipeIngredientData("Salt", 1.0, "tsp");
+        ctrl.getIngredientsForTest().add(f);
+        ctrl.getIngredientsForTest().add(s);
+        ctrl.getIngredientsForTest().add(salt);
+        assertEquals("Flour", ctrl.getIngredientsForTest().get(0).getName());
+        assertEquals("Sugar", ctrl.getIngredientsForTest().get(1).getName());
+        assertEquals("Salt", ctrl.getIngredientsForTest().get(2).getName());
     }
 
-    private Recipe createTestRecipe(String title, int servings) {
-        Recipe recipe = new Recipe(title, "en");
-        recipe.setServings(servings);
-        return recipe;
+    private Recipe createRecipe(String title, int servings) {
+        Recipe r = new Recipe(title, "en");
+        r.setServings(servings);
+        return r;
     }
+
 
     private static class TestRecipeShoppingService extends RecipeShoppingService {
         private List<RecipeIngredientData> ingredients;
-        private List<ShoppingItem> convertedItems;
-        private boolean getIngredientsCalled = false;
-        private boolean addToShoppingListCalled = false;
-        private List<RecipeIngredientData> scaledIngredients;
-        private boolean scaleIngredientsCalled = false;
+        private List<ShoppingItem> converted;
+        private List<RecipeIngredientData> scaled;
 
-        public TestRecipeShoppingService() {
-            super(null, null);
-        }
+        public TestRecipeShoppingService() { super(null, null); }
 
         @Override
         public List<RecipeIngredientData> getRecipeIngredients(Recipe recipe) {
-            getIngredientsCalled = true;
             return ingredients != null ? ingredients : new ArrayList<>();
         }
 
         @Override
-        public List<ShoppingItem> convertToShoppingItems(
-                List<RecipeIngredientData> ingredients, int originalServings,
-                int targetServings, String recipeName, boolean alreadyScaled) {
-            return convertedItems != null ? convertedItems : new ArrayList<>();
+        public List<ShoppingItem> convertToShoppingItems(List<RecipeIngredientData> ingredients,
+                                                         int original, int target, String name, boolean scaled) {
+            return converted != null ? converted : new ArrayList<>();
         }
 
         @Override
-        public void addToShoppingList(List<ShoppingItem> shoppingItems) {
-            addToShoppingListCalled = true;
-        }
+        public void addToShoppingList(List<ShoppingItem> items) { }
 
         @Override
-        public List<RecipeIngredientData> scaleIngredients(
-                List<RecipeIngredientData> ingredients, int originalServings, int targetServings) {
-            scaleIngredientsCalled = true;
-            return scaledIngredients != null ? scaledIngredients : new ArrayList<>();
-        }
-
-        void setIngredients(List<RecipeIngredientData> ingredients) {
-            this.ingredients = ingredients;
-        }
-
-        void setConvertedItems(List<ShoppingItem> convertedItems) {
-            this.convertedItems = convertedItems;
-        }
-
-        void setScaledIngredients(List<RecipeIngredientData> scaledIngredients) {
-            this.scaledIngredients = scaledIngredients;
-        }
-
-        boolean wasScaleIngredientsCalled() {
-            return scaleIngredientsCalled;
-        }
-
-        boolean wasGetIngredientsCalled() {
-            return getIngredientsCalled;
-        }
-
-        boolean wasAddToShoppingListCalled() {
-            return addToShoppingListCalled;
+        public List<RecipeIngredientData> scaleIngredients(List<RecipeIngredientData> ingredients,
+                                                            int original, int target) {
+            return scaled != null ? scaled : new ArrayList<>();
         }
     }
 
     private static class TestMyFXML extends MyFXML {
-        public TestMyFXML() {
-            super(null);
-        }
-
+        public TestMyFXML() { super(null); }
         @Override
-        public <T> javafx.util.Pair<T, javafx.scene.Parent> load(Class<T> c, String... parts) {
-            return null;
-        }
+        public <T> javafx.util.Pair<T, javafx.scene.Parent> load(Class<T> c, String... parts) { return null; }
+    }
+
+    private static class TestConfigService extends ConfigService {
+        public TestConfigService() { super("en"); }
+        @Override
+        public String getLanguage() { return "en"; }
     }
 }
