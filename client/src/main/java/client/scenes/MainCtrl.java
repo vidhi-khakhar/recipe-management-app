@@ -1279,7 +1279,7 @@ public class MainCtrl {
     /**
      * Shows an error message dialog.
      *
-     * @param message error message
+     * @param messageKey error message
      */
     private void showError(String messageKey) {
         ResourceBundle props = getTranslationsBundle();
