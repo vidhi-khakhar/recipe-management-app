@@ -25,6 +25,7 @@ public class IngredientServerUtils {
 
     private final ConfigService configService;
     private final Client client;
+    private final String serverUrl;
 
     /**
      * Constructor injection via Guice
@@ -33,6 +34,17 @@ public class IngredientServerUtils {
     public IngredientServerUtils(ConfigService configService) {
         this.configService = configService;
         this.client = ClientBuilder.newClient(new ClientConfig()); // This is the correct way maybe
+        String url = configService.getConfig().getServerUrl();
+        this.serverUrl = url.endsWith("/") ? url : url + "/";
+    }
+
+    /**
+     *Constructor for Tests
+     */
+    public IngredientServerUtils(Client client, String serverUrl) {
+        this.client = client;
+        this.configService = null;
+        this.serverUrl = serverUrl.endsWith("/") ? serverUrl : serverUrl + "/";
     }
 
     /** Convenience method */
