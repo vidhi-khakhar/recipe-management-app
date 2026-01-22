@@ -2,7 +2,6 @@ package client.config;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import client.model.ShoppingList;
 
@@ -10,7 +9,7 @@ public class Config {
 
     private String serverUrl;
     private List<Long> favoriteRecipeIds;
-    private Locale language;
+    private String language;
     private ShoppingList shoppingList;
     private Long shoppingListReminder;
 
@@ -36,11 +35,11 @@ public class Config {
         this.favoriteRecipeIds = favoriteRecipeIds;
     }
 
-    public Locale getLanguage() {
+    public String getLanguage() {
         return language;
     }
 
-    public void setLanguage(Locale language) {
+    public void setLanguage(String language) {
         this.language = language;
     }
 

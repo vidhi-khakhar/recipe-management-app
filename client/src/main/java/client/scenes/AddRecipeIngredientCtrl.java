@@ -1,54 +1,55 @@
 package client.scenes;
 
-import client.utils.IngredientServerUtils;
+import java.util.ResourceBundle;
+
 import com.google.inject.Inject;
-import commons.*;
+
+import client.config.ConfigService;
+import client.utils.IngredientServerUtils;
+import commons.Ingredient;
+import commons.Recipe;
+import commons.RecipeIngredient;
+import commons.Unit;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 public class AddRecipeIngredientCtrl {
+
     private Scene nutritionScene;
     private Scene addRecipeIngredientScene;
 
     private Recipe recipe;
     private RecipeIngredient recipeIngredient;
     private Long ingredientId;
+    private boolean isAdd;
 
     private final IngredientServerUtils ingredientServerUtils;
-
-    @Inject
-    public AddRecipeIngredientCtrl(
-            IngredientServerUtils ingredientServerUtils) {
-        this.ingredientServerUtils = ingredientServerUtils;
-    }
-
-    // UI Elements
-    @FXML
-    private Button saveButton;
+    private final ConfigService configService;
 
     @FXML
-    private Label titleLabel;
-
-    @FXML
-    private Button cancelButton;
-
-    @FXML
-    private ChoiceBox<Unit> unitChoiceBox;
-
-    @FXML
-    private ChoiceBox<String> unitTypeChoiceBox;
-
-    @FXML
-    private ChoiceBox<Ingredient> ingredientChoiceBox;
+    private Label addIngredientLabel;
 
     @FXML
     private TextField amountTextField;
 
     @FXML
+    private Button cancelButton;
+
+    @FXML
+    private Label enterAmount;
+
+    @FXML
     private Label infoLabel;
+
+    @FXML
+    private ChoiceBox<Ingredient> ingredientChoiceBox;
 
     @FXML
     private Button newIngredient;
@@ -56,7 +57,28 @@ public class AddRecipeIngredientCtrl {
     @FXML
     private Label pleaseAddIngredientLabel;
 
-    private boolean isAdd;
+    @FXML
+    private Button saveButton;
+
+    @FXML
+    private Label selectIngredient;
+
+    @FXML
+    private Label selectUnit;
+
+    @FXML
+    private ChoiceBox<Unit> unitChoiceBox;
+
+    @FXML
+    private ChoiceBox<String> unitTypeChoiceBox;
+
+    @Inject
+    public AddRecipeIngredientCtrl(
+            IngredientServerUtils ingredientServerUtils,
+            ConfigService configService) {
+        this.ingredientServerUtils = ingredientServerUtils;
+        this.configService = configService;
+    }
 
     /**
      * Initialize the scenes.
@@ -69,15 +91,14 @@ public class AddRecipeIngredientCtrl {
     }
 
     /**
-     * The ChoiceBoxes have the default value of the first element. Explanation
-     * of unitTypeChoiceBox: selectionModel - in the case of a ChoiceBox it is a
-     * SingleSelectionModel selectedItemProperty - indicates the currently
-     * selected item in the selection model addListener - function that runs
-     * whenever a change is observed
+     * The ChoiceBoxes have the default value of the first element.
      */
     @FXML
     public void onStart(boolean isAdd) {
         this.isAdd = isAdd;
+        ResourceBundle props = getTranslationsBundle();
+        loadLanguages();
+
         infoLabel.setVisible(false);
         pleaseAddIngredientLabel.setVisible(false);
 
@@ -86,21 +107,27 @@ public class AddRecipeIngredientCtrl {
         if (!ingredientServerUtils.getAllIngredients().isEmpty() && isAdd) {
             ingredientChoiceBox.setValue(ingredientChoiceBox.getItems().get(0));
             ingredientChoiceBox.setDisable(false);
-            titleLabel.setText("Add Ingredient");
+            addIngredientLabel.setText(props.getString("label.addIngredientButton"));
         } else if (!ingredientServerUtils.getAllIngredients().isEmpty() && !isAdd) {
             ingredientChoiceBox.setValue(getIngredient(ingredientId));
             ingredientChoiceBox.setDisable(true);
             ingredientChoiceBox.setStyle("-fx-background-color: #E6E6FA");
-            titleLabel.setText("Edit Ingredient");
+            addIngredientLabel.setText(props.getString("label.editButton"));
 
         } else {
-            showError("No ingredients", "Please add an ingredient.");
+            showError(
+                props.getString("alert.noIngredients"),
+                props.getString("alert.noIngredients.body")
+            );
             pleaseAddIngredientLabel.setVisible(true);
         }
 
+        String formalUnit = props.getString("label.formalUnit");
+        String informalUnit = props.getString("label.informalUnit");
+
 
         unitTypeChoiceBox.getItems().clear();
-        unitTypeChoiceBox.getItems().addAll("Formal", "Informal");
+        unitTypeChoiceBox.getItems().addAll(formalUnit, informalUnit);
         unitTypeChoiceBox.setValue(unitTypeChoiceBox.getItems().get(0));
 
         unitChoiceBox.getItems().clear();
@@ -109,29 +136,8 @@ public class AddRecipeIngredientCtrl {
 
         unitTypeChoiceBox.getSelectionModel()
                 .selectedItemProperty()
-                .addListener((observable, oldValue, newValue) -> {
-                    updateUnitChoiceBoxVisibility(newValue);
-                });
-    }
-
-    /**
-     * Updates the visibility of the unit choice box based on the selected unit
-     * type.
-     * @param unitType the selected unit type ("Formal" or "Informal")
-     */
-    public void updateUnitChoiceBoxVisibility(String unitType) {
-
-        if(unitType == null) {
-            return;
-        }
-
-        if (unitType.equals("Formal")) {
-            unitChoiceBox.setVisible(true);
-            infoLabel.setVisible(false);
-        } else if (unitType.equals("Informal")) {
-            unitChoiceBox.setVisible(false);
-            infoLabel.setVisible(true);
-        }
+                .addListener((observable, oldValue, newValue) ->
+                    updateUnitChoiceBoxVisibility(newValue, formalUnit, informalUnit));
     }
 
     /**
@@ -141,20 +147,26 @@ public class AddRecipeIngredientCtrl {
      */
     @FXML
     private void saveButtonClicked() {
+        ResourceBundle props = getTranslationsBundle();
         System.out.println("User saved ingredient to recipe.");
 
-        // Get ingredient
+        // Get selected ingredient
         Ingredient ingredient = ingredientChoiceBox.getSelectionModel().getSelectedItem();
 
+        // Check for duplicates using localized alert
         if (duplicateIngredient(recipe, ingredient) && isAdd) {
-            showError("Duplicate Ingredient", "Ingredient " + ingredient.getName()
-                    + " is already added to recipe " + recipe.getTitle() + ".\n Please select a different ingredient.");
+            showError(
+                props.getString("alert.duplicateIngredient"),
+                props.getString("alert.duplicateIngredient.body")
+            );
             return;
         }
 
         // Get amount & create recipeIngredient
         String type = unitTypeChoiceBox.getValue();
-        if (type.equals("Formal")) {
+        String formalUnit = props.getString("label.formalUnit");
+
+        if (type.equals(formalUnit)) {
             String input = amountTextField.getText();
             if (validateFormalAmount(input)) {
                 double amount = Double.parseDouble(input);
@@ -169,6 +181,27 @@ public class AddRecipeIngredientCtrl {
             closeWindow();
         }
     }
+
+
+    /**
+     * Updates the visibility of the unit choice box based on the selected unit type.
+     * @param unitType the selected unit type
+     * @param formalUnit the localized "Formal" string
+     * @param informalUnit the localized "Informal" string
+     */
+    public void updateUnitChoiceBoxVisibility(String unitType, String formalUnit, String informalUnit) {
+        if (unitType == null) return;
+
+        if (unitType.equals(formalUnit)) {
+            unitChoiceBox.setVisible(true);
+            infoLabel.setVisible(false);
+        } else if (unitType.equals(informalUnit)) {
+            unitChoiceBox.setVisible(false);
+            infoLabel.setVisible(true);
+        }
+    }
+
+
 
     /**
      * Checks if an ingredient is already added to a recipe.
@@ -196,20 +229,27 @@ public class AddRecipeIngredientCtrl {
      * @return true if amount is a positive number
      */
     public boolean validateFormalAmount(String text) {
+        ResourceBundle props = getTranslationsBundle();
         double amount;
 
         try {
             amount = Double.parseDouble(text);
-            if (amount < 0)
-                showError("Must be Positive", "Please enter a positive number!");
-
+            if (amount < 0) {
+                showError(
+                    props.getString("alert.negativeAmount"),
+                    props.getString("alert.negativeAmount.body")
+                );
+            }
             return (amount >= 0);
         } catch (NumberFormatException e) {
-            showError("Wrong Format", "Please input a number!");
+            showError(
+                props.getString("alert.illegalInput"),
+                props.getString("alert.illegalInput.body")
+            );
         }
-
         return false;
     }
+
 
     /**
      * Discards all edits and closes popup.
@@ -246,13 +286,14 @@ public class AddRecipeIngredientCtrl {
      */
     @FXML
     void showNutritionWindow() {
+        ResourceBundle props = getTranslationsBundle();
         if (nutritionScene == null) {
             System.err.println("Nutrition scene not initialized!");
             return;
         }
 
         Stage secondaryStage = new Stage();
-        secondaryStage.setTitle("Nutritional Values");
+        secondaryStage.setTitle(props.getString("label.nutritionalValuesTitle"));
         secondaryStage.setScene(nutritionScene);
         secondaryStage.initOwner(addRecipeIngredientScene.getWindow());
         secondaryStage.showAndWait();
@@ -261,13 +302,15 @@ public class AddRecipeIngredientCtrl {
     }
 
     private void populateIngredientDropdown() {
+        ResourceBundle props = getTranslationsBundle();
         try {
             ingredientChoiceBox.getItems().clear();
             ingredientChoiceBox.getItems().addAll(
                     ingredientServerUtils.getAllIngredients());
         } catch (Exception e) {
-            showError("Problem with Ingredients",
-                    "Something went wrong with retrieving ingredients!");
+            System.out.println(e.getStackTrace());
+            showError(props.getString("alert.problemWithIngredients"),
+                    props.getString("alert.problemWithIngredients.body"));
         }
     }
 
@@ -277,12 +320,57 @@ public class AddRecipeIngredientCtrl {
      * @param content the content of the error
      */
     private void showError(String header, String content) {
+        ResourceBundle props = getTranslationsBundle();
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
+        alert.setTitle(props.getString("alert.error"));
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.showAndWait();
     }
+
+    /**
+     * Translates this ui
+     */
+    @FXML
+    public void loadLanguages() {
+        ResourceBundle props = getTranslationsBundle();
+
+        addIngredientLabel.setText(props.getString("label.addIngredientButton"));
+        selectIngredient.setText(props.getString("label.selectIngredient"));
+        selectUnit.setText(props.getString("label.selectUnit"));
+        enterAmount.setText(props.getString("label.enterAmount"));
+        infoLabel.setText(props.getString("label.informalValueInfo"));
+        pleaseAddIngredientLabel.setText(props.getString("label.addIngredientPlease"));
+        saveButton.setText(props.getString("label.saveButton"));
+        cancelButton.setText(props.getString("label.cancelButton"));
+
+        // Update unitTypeChoiceBox items if you want them translatable too
+        unitTypeChoiceBox.getItems().clear();
+        unitTypeChoiceBox.getItems().addAll(
+                props.getString("label.formalUnit"),    
+                props.getString("label.informalUnit")   
+        );
+        unitTypeChoiceBox.setValue(unitTypeChoiceBox.getItems().get(0));
+    }
+
+
+    /**
+     * Utility method to get the ResourceBundle based on the saved language
+     */
+    private ResourceBundle getTranslationsBundle() {
+        try {
+            String languageCode = configService.getLanguage();
+            return ResourceBundle.getBundle(
+                    "client.scenes.Translations",
+                    new java.util.Locale(languageCode)
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Failed to load language bundle for code: " + configService.getLanguage());
+            return ResourceBundle.getBundle("client.scenes.Translations", java.util.Locale.ENGLISH);
+        }
+    }
+
 
     public void setIngredient(Long id) {
         this.ingredientId = id;
@@ -297,4 +385,5 @@ public class AddRecipeIngredientCtrl {
 
         return null;
     }
+    
 }

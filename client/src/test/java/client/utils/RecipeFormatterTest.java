@@ -1,73 +1,77 @@
 package client.utils;
 
-import client.RecipeFormatter;
-import org.junit.jupiter.api.Test;
+import java.util.ListResourceBundle;
+import java.util.ResourceBundle;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+
+import client.RecipeFormatter;
 
 public class RecipeFormatterTest {
 
+    // A simple ResourceBundle for testing language names
+    private final ResourceBundle testBundle = new ListResourceBundle() {
+        @Override
+        protected Object[][] getContents() {
+            return new Object[][]{
+                    {"label.english", "English"},
+                    {"label.dutch", "Nederlands"},
+                    {"label.spanish", "Español"},
+                    {"label.romanian", "română"}
+            };
+        }
+    };
+
     @Test
     public void englishLanguageTest() {
-        String englishInput1 = "en";
-        String englishInput2 = "EN";
-        String englishInput3 = " en ";
-        assertEquals("English", RecipeFormatter.getFullRecipeLanguage(englishInput1));
-        assertEquals("English", RecipeFormatter.getFullRecipeLanguage(englishInput2));
-        assertEquals("English", RecipeFormatter.getFullRecipeLanguage(englishInput3));
+        String[] inputs = {"en", "EN", " en "};
+        for (String input : inputs) {
+            assertEquals("English", RecipeFormatter.getFullRecipeLanguage(input, testBundle));
+        }
     }
 
     @Test
     public void dutchLanguageTest() {
-        String dutchInput1 = "nl";
-        String dutchInput2 = "NL";
-        String dutchInput3 = " nl ";
-        assertEquals("Nederlands", RecipeFormatter.getFullRecipeLanguage(dutchInput1));
-        assertEquals("Nederlands", RecipeFormatter.getFullRecipeLanguage(dutchInput2));
-        assertEquals("Nederlands", RecipeFormatter.getFullRecipeLanguage(dutchInput3));
+        String[] inputs = {"nl", "NL", " nl "};
+        for (String input : inputs) {
+            assertEquals("Nederlands", RecipeFormatter.getFullRecipeLanguage(input, testBundle));
+        }
     }
 
     @Test
     public void spanishLanguageTest() {
-        String spanishInput1 = "es";
-        String spanishInput2 = "ES";
-        String spanishInput3 = " es ";
-        assertEquals("Españiol", RecipeFormatter.getFullRecipeLanguage(spanishInput1));
-        assertEquals("Españiol", RecipeFormatter.getFullRecipeLanguage(spanishInput2));
-        assertEquals("Españiol", RecipeFormatter.getFullRecipeLanguage(spanishInput3));
+        String[] inputs = {"es", "ES", " es "};
+        for (String input : inputs) {
+            assertEquals("Español", RecipeFormatter.getFullRecipeLanguage(input, testBundle));
+        }
     }
 
     @Test
     public void romanianLanguageTest() {
-        String romanianInput1 = "ro";
-        String romanianInput2 = "RO";
-        String romanianInput3 = " ro ";
-        assertEquals("română", RecipeFormatter.getFullRecipeLanguage(romanianInput1));
-        assertEquals("română", RecipeFormatter.getFullRecipeLanguage(romanianInput2));
-        assertEquals("română", RecipeFormatter.getFullRecipeLanguage(romanianInput3));
+        String[] inputs = {"ro", "RO", " ro "};
+        for (String input : inputs) {
+            assertEquals("română", RecipeFormatter.getFullRecipeLanguage(input, testBundle));
+        }
     }
 
     @Test
     public void emptyLanguageTest() {
-        String emptyInput1 = "";
-        String emptyInput2 = "   ";
-        assertEquals("", RecipeFormatter.getFullRecipeLanguage(emptyInput1));
-        assertEquals("   ", RecipeFormatter.getFullRecipeLanguage(emptyInput2));
+        String[] inputs = {"", "   "};
+        for (String input : inputs) {
+            assertEquals("", RecipeFormatter.getFullRecipeLanguage(input, testBundle));
+        }
     }
 
     @Test
     public void unknownLanguageTest() {
         String unknownInput = "fr";
-        assertEquals("fr", RecipeFormatter.getFullRecipeLanguage(unknownInput));
+        assertEquals("fr", RecipeFormatter.getFullRecipeLanguage(unknownInput, testBundle));
     }
 
     @Test
     public void nullLanguageTest() {
         String input = null;
-
-        try {
-            RecipeFormatter.getFullRecipeLanguage(input);
-        } catch (NullPointerException e) {
-
-        }
+        assertEquals("", RecipeFormatter.getFullRecipeLanguage(input, testBundle));
     }
 }
