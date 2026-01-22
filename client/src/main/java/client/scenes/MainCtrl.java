@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import javafx.collections.ListChangeListener;
 import java.util.ResourceBundle;
 
+import javafx.scene.control.*;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.CheckComboBox;
 
@@ -51,16 +52,6 @@ import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -219,6 +210,12 @@ public class MainCtrl {
     @FXML
     private Label servingsLabel;
 
+    @FXML
+    private ComboBox<String> sortComboBox;
+
+    @FXML
+    private Button sortButton;
+
     /**
      * Initializes the scenes
      *
@@ -263,7 +260,8 @@ public class MainCtrl {
      */
     @Inject
     public MainCtrl(RecipeServerUtils recipeServerUtils, SearchService searchService,
-            FavoriteService favoriteService, RecipeCollection recipeCollection, ConfigService configService) {
+            FavoriteService favoriteService, RecipeCollection recipeCollection,
+                    ConfigService configService, RecipeSortingService recipeSortingService) {
         this.recipeServerUtils = recipeServerUtils;
         this.searchService = searchService;
         this.favoriteService = favoriteService;
@@ -299,6 +297,10 @@ public class MainCtrl {
             default ->
                 setEnglishLanguage();
         }
+
+        languageCheckBox.getItems().addAll("English", "Dutch", "Romanian", "Spanish");
+
+        languageCheckBox.getCheckModel().getCheckedItems().addListener(this::filterLanguages);
 
         sidebarList.setItems(recipesObservableList);
 
@@ -629,48 +631,56 @@ public class MainCtrl {
 
         String query = searchBar.getText();
         boolean searchFavorites = props.getString("label.displayFavouriteRecipesToggleOn")
-            .equals(favoritesOnly.getText());
+                .equals(favoritesOnly.getText());
 
+        // 1. Fetch and Filter
         List<Recipe> fromServer = searchService.search(query, searchFavorites);
 
         List<Recipe> filtered = fromServer.stream()
-                .filter(recipe -> {
-                    if (filteredLanguages.isEmpty()) {
-                        return true;
-                    }
-
-                    return filteredLanguages.contains(recipe.getLanguage().toLowerCase().trim());
-                })
+                .filter(recipe -> filteredLanguages.isEmpty() ||
+                        filteredLanguages.contains(recipe.getLanguage().toLowerCase().trim()))
                 .collect(Collectors.toList());
 
+        // 2. Sort
         String sortType = sortComboBox.getValue();
-
-        if(sortType.equals("A-Z")){
+        if ("A-Z".equals(sortType)) {
             filtered = recipeSortingService.sortByTitleAsc(filtered);
-        }else{
+        } else {
             filtered = recipeSortingService.sortByDateDesc(filtered);
         }
 
-        if(sortButton.getText().equals("↑☰")){
+        if ("↑☰".equals(sortButton.getText())) {
             filtered = filtered.reversed();
         }
 
+        // 3. Update List
         recipesObservableList.setAll(filtered);
 
-        if (filtered.isEmpty() && searchFavorites) {
-            updateRecipeStackPane(EmptyStateReason.NO_FAVORITES);
-        } else if (filtered.isEmpty() && query.trim().equals("")) {
-            updateRecipeStackPane(EmptyStateReason.NO_RECIPES_EXIST);
-        } else if (filtered.isEmpty()) {
-            updateRecipeStackPane(EmptyStateReason.NO_SEARCH_RESULTS);
-        } else {
-            updateRecipeStackPane(null);
+        // 4. Handle UI State (Extracted to reduce CC)
+        updateSearchInterfaceState(filtered, query, searchFavorites, previouslySelected);
+    }
 
-            if (previouslySelected != null && filtered.contains(previouslySelected)) {
-                sidebarList.getSelectionModel().select(previouslySelected);
-            } else if (!filtered.isEmpty()) {
-                sidebarList.getSelectionModel().selectFirst();
+    private void updateSearchInterfaceState(List<Recipe> filtered, String query,
+                                            boolean searchFavorites, Recipe previouslySelected) {
+        // Handle Empty States
+        if (filtered.isEmpty()) {
+            if (searchFavorites) {
+                updateRecipeStackPane(EmptyStateReason.NO_FAVORITES);
+            } else if (query.trim().isEmpty()) {
+                updateRecipeStackPane(EmptyStateReason.NO_RECIPES_EXIST);
+            } else {
+                updateRecipeStackPane(EmptyStateReason.NO_SEARCH_RESULTS);
             }
+            return; // Guard clause prevents unnecessary checking below
+        }
+
+        // Handle Selection State (List is not empty)
+        updateRecipeStackPane(null);
+
+        if (previouslySelected != null && filtered.contains(previouslySelected)) {
+            sidebarList.getSelectionModel().select(previouslySelected);
+        } else {
+            sidebarList.getSelectionModel().selectFirst();
         }
     }
 
