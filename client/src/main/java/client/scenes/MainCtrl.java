@@ -28,6 +28,14 @@ import java.util.ResourceBundle;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.CheckComboBox;
 
+import client.favorite.RecipeSortingService;
+import javafx.scene.control.*;
+import org.apache.commons.io.FileUtils;
+import org.controlsfx.control.CheckComboBox;
+
+import com.google.inject.Inject;
+
+import client.RecipeFormatter;
 import com.google.inject.Inject;
 
 import client.RecipeFormatter;
@@ -47,6 +55,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -88,6 +97,7 @@ public class MainCtrl {
     private final ObservableList<Recipe> recipesObservableList = FXCollections.observableArrayList();
     private Recipe selectedRecipe;
     private final SearchService searchService;
+    private final RecipeSortingService recipeSortingService;
     private final RecipeCollection recipeCollection;
 
     private ConfigService configService;
@@ -207,6 +217,12 @@ public class MainCtrl {
 
     @FXML
     private Label servingsLabel;
+    @FXML
+    private ComboBox<String> sortComboBox;
+
+    @FXML
+    private Button sortButton;
+
 
     /**
      * Initializes the scenes
@@ -224,7 +240,7 @@ public class MainCtrl {
             AddRecipeIngredientCtrl addRecipeIngredientCtrl,
             Scene editTitleScene, Scene shoppingListScene, Scene recipeShoppingListScene,
             NutritionalValueCtrl nutritionalValueCtrl,
-            RecipeShoppingListCtrl recipeShoppingListCtrl, 
+            RecipeShoppingListCtrl recipeShoppingListCtrl,
             AddButtonCtrl addButtonCtrl) {
 
         this.primaryStage = primaryStage;
@@ -251,12 +267,14 @@ public class MainCtrl {
      */
     @Inject
     public MainCtrl(RecipeServerUtils recipeServerUtils, SearchService searchService,
-            FavoriteService favoriteService, RecipeCollection recipeCollection, ConfigService configService) {
+            FavoriteService favoriteService, RecipeCollection recipeCollection,
+                    RecipeSortingService recipeSortingService, ConfigService configService) {
         this.recipeServerUtils = recipeServerUtils;
         this.searchService = searchService;
         this.favoriteService = favoriteService;
         this.recipeCollection = recipeCollection;
         this.configService = configService;
+        this.recipeSortingService = recipeSortingService;
     }
 
     /**
@@ -312,6 +330,16 @@ public class MainCtrl {
         searchBar.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ESCAPE) {
                 searchBar.clear();
+            }
+        });
+
+        ObservableList<String> sortItems =  FXCollections.observableArrayList("A-Z", "Newest");
+        sortComboBox.setItems(sortItems);
+        sortComboBox.getSelectionModel().select(0);
+
+        sortComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue != null) {
+                applySearch();
             }
         });
 
@@ -448,7 +476,7 @@ public class MainCtrl {
      */
     private void onRecipeSelected(Recipe recipe) {
         try {
-            recipeServerUtils.getRecipe(recipe.getRecipeId()); 
+            recipeServerUtils.getRecipe(recipe.getRecipeId());
 
             initScalingValues(recipe);
 
@@ -609,6 +637,19 @@ public class MainCtrl {
             .equals(favoritesOnly.getText());
 
         List<Recipe> filtered = searchService.search(query, searchFavorites);
+
+        String sortType = sortComboBox.getValue();
+
+        if(sortType.equals("A-Z")){
+            filtered = recipeSortingService.sortByTitleAsc(filtered);
+        }else{
+            filtered = recipeSortingService.sortByDateDesc(filtered);
+        }
+
+        if(sortButton.getText().equals("↑☰")){
+            filtered = filtered.reversed();
+        }
+
         recipesObservableList.setAll(filtered);
 
         if (filtered.isEmpty() && searchFavorites) {
@@ -627,6 +668,17 @@ public class MainCtrl {
             }
         }
     }
+
+    @FXML
+    private void changeSort(){
+        if(sortButton.getText().equals("↑☰")){
+            sortButton.setText("↓☰");
+        }else{
+            sortButton.setText("↑☰");
+        }
+        applySearch();
+    }
+
 
     @FXML
     private void searchFavorites() {
@@ -691,7 +743,7 @@ public class MainCtrl {
             return;
         }
 
-        java.util.ResourceBundle props = getTranslationsBundle(); 
+        java.util.ResourceBundle props = getTranslationsBundle();
 
         Stage secondaryStage = new Stage();
         addRecipeIngredientCtrl.onStart(isAdd);
@@ -1013,7 +1065,7 @@ public class MainCtrl {
         nutritionalValueCtrl.initialize();
         secondaryStage.setTitle(props.getString("label.nutritionalValuesWindow"));
         secondaryStage.setScene(nutritionScene);
-        secondaryStage.initOwner(primaryStage); 
+        secondaryStage.initOwner(primaryStage);
         secondaryStage.setResizable(false);
         secondaryStage.showAndWait();
     }
@@ -1054,7 +1106,7 @@ public class MainCtrl {
             System.err.println("Recipe shopping list scene or controller not initialized!");
             return;
         }
-    
+
         requireSelectedRecipe();
         Stage secondaryStage = new Stage();
         secondaryStage.setTitle(props.getString("label.shoppingListTitle") + selectedRecipe.getTitle());
@@ -1236,7 +1288,7 @@ public class MainCtrl {
     /**
      * Shows an error message dialog.
      *
-     * @param message error message
+     * @param messageKey error message
      */
     private void showError(String messageKey) {
         ResourceBundle props = getTranslationsBundle();
@@ -1258,10 +1310,10 @@ public class MainCtrl {
      *
      * @param recipeLanguage
      */
-    public void updateRecipeLanguageLabel(String recipeLanguage) { 
+    public void updateRecipeLanguageLabel(String recipeLanguage) {
         ResourceBundle props = getTranslationsBundle();
-        String fullLanguage = RecipeFormatter.getFullRecipeLanguage(recipeLanguage, props); 
-        recipeLanguageLabel.setText(fullLanguage); 
+        String fullLanguage = RecipeFormatter.getFullRecipeLanguage(recipeLanguage, props);
+        recipeLanguageLabel.setText(fullLanguage);
     }
 
 
@@ -1325,7 +1377,7 @@ public class MainCtrl {
         languageSetter.setText(""); // this line is neccesary bc otherwise you still get ... next to the flag.
 
     }
-    
+
     /** Binds all the UI text properties to the current ResourceBundle
      * Call  this whenever the language changes
      */
@@ -1499,7 +1551,7 @@ public class MainCtrl {
             }
         }
     }
-    
+
     /**
      * Ensures a recipe is selected; shows an error if not.
      * @return true if a recipe is selected, false otherwise

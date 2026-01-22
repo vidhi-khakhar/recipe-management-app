@@ -17,6 +17,7 @@ package client.scenes;
 
 import client.config.ConfigService;
 import client.favorite.FavoriteService;
+import client.favorite.RecipeSortingService;
 import client.utils.RecipeServerUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,11 +36,12 @@ public class MainCtrlTest {
     private ConfigService configService;
     private SearchService searchService;
     private RecipeCollection recipeCollection;
+    private RecipeSortingService recipeSortingService;
     private MainCtrl sut;
 
     @BeforeEach
     public void setup() {
-        sut = new MainCtrl(recipeServerUtils, searchService, favoriteService, recipeCollection, configService);
+        sut = new MainCtrl(recipeServerUtils, searchService, favoriteService, recipeCollection, recipeSortingService, configService);
     }
 
     @Test
