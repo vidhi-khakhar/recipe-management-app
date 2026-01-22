@@ -32,10 +32,10 @@ public class AddButtonCtrl {
     private TextField recipeInput;
     @FXML
     private Label statusLabel;
+
     @FXML
     private TextField servingsInput;
-    @FXML
-    private Button setServingsButton;
+  
     @FXML
     private ChoiceBox<String> languageChoiceBox;
 
@@ -82,7 +82,6 @@ public class AddButtonCtrl {
         recipeInput.setPromptText(props.getString("label.addRecipeName"));
         servingsInput.setPromptText(props.getString("label.addRecipeServings"));
         recipeAddButton.setText(props.getString("label.addRecipeButton"));
-        setServingsButton.setText(props.getString("label.addServingsButton"));
     }
 
 
