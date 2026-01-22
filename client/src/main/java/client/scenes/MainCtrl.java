@@ -1089,6 +1089,7 @@ public class MainCtrl {
         secondaryStage.setScene(nutritionScene);
         secondaryStage.initOwner(primaryStage);
         secondaryStage.setResizable(false);
+        nutritionalValueCtrl.loadLanguages();
         secondaryStage.showAndWait();
     }
 

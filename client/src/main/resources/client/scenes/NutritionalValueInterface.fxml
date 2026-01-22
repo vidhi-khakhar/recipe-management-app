@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="400.0" prefWidth="620.0" stylesheets="@NutritionalValue.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.NutritionalValueCtrl">
+<AnchorPane prefHeight="500.0" prefWidth="750.0" stylesheets="@NutritionalValue.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.NutritionalValueCtrl">
    <children>
       <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
@@ -45,6 +45,18 @@
                <children>
                   <VBox prefHeight="363.0" prefWidth="266.0" VBox.vgrow="ALWAYS">
                      <children>
+                        <HBox alignment="TOP_CENTER" prefHeight="50.0" prefWidth="200.0">
+                           <children>
+                              <Button fx:id="healthButton" alignment="CENTER" contentDisplay="CENTER" minHeight="-Infinity" mnemonicParsing="false" onAction="#showHealthChart" prefHeight="32.0" prefWidth="228.0" styleClass="minusbutton" stylesheets="@NutritionalValue.css" text="%label.healthInfo">
+                                 <HBox.margin>
+                                    <Insets left="8.0" right="8.0" top="3.0" />
+                                 </HBox.margin>
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Button>
+                           </children>
+                        </HBox>
                         <ListView fx:id="sidebarList" onMouseClicked="#seeSelectedIngredient" prefHeight="341.0" prefWidth="250.0" styleClass="sidebar-list" VBox.vgrow="ALWAYS">
                            <VBox.margin>
                               <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
@@ -57,7 +69,7 @@
                   </VBox>
                   <HBox alignment="CENTER" prefHeight="50.0" prefWidth="266.0" VBox.vgrow="NEVER">
                      <children>
-                        <Button fx:id="addIngredientButton" mnemonicParsing="false" onAction="#addIngredient" prefHeight="40.0" prefWidth="80.0" styleClass="h3" text="%label.addIngredient" HBox.hgrow="ALWAYS">
+                        <Button fx:id="addIngredientButton" mnemonicParsing="false" onAction="#addIngredient" prefHeight="42.0" prefWidth="86.0" styleClass="h3" text="+" HBox.hgrow="ALWAYS">
                            <font>
                               <Font size="17.0" />
                            </font>
@@ -65,9 +77,9 @@
                               <Insets right="5.0" />
                            </HBox.margin>
                         </Button>
-                        <Button fx:id="removeIngredientButton" alignment="CENTER" contentDisplay="CENTER" minWidth="65.0" mnemonicParsing="false" onAction="#removeIngredient" prefHeight="23.0" prefWidth="43.0" text="-" HBox.hgrow="ALWAYS">
+                        <Button fx:id="removeIngredientButton" alignment="CENTER" contentDisplay="CENTER" minWidth="65.0" mnemonicParsing="false" onAction="#removeIngredient" prefHeight="42.0" prefWidth="80.0" style="-fx-font-weight: bold;" text="-" HBox.hgrow="ALWAYS">
                            <font>
-                              <Font size="17.0" />
+                              <Font size="18.0" />
                            </font>
                            <HBox.margin>
                               <Insets left="5.0" right="5.0" />
@@ -76,14 +88,6 @@
                               <String fx:value="h3" />
                               <String fx:value="minusbutton" />
                            </styleClass>
-                        </Button>
-                        <Button fx:id="healthButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#showHealthChart" prefHeight="40.0" prefWidth="87.0" styleClass="minusbutton" stylesheets="@NutritionalValue.css" text="Health">
-                           <HBox.margin>
-                              <Insets left="5.0" />
-                           </HBox.margin>
-                           <font>
-                              <Font size="17.0" />
-                           </font>
                         </Button>
                      </children>
                      <VBox.margin>
@@ -103,18 +107,18 @@
                      <children>
                         <StackPane prefHeight="337.0" prefWidth="316.0" VBox.vgrow="ALWAYS">
                            <children>
-                              <AnchorPane fx:id="addIngredientPane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                              <AnchorPane fx:id="addIngredientPane" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <children>
                                     <VBox spacing="10" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <children>
                                           <HBox layoutX="10.0" layoutY="10.0" prefHeight="58.0" prefWidth="340.0">
                                              <children>
-                                                <VBox prefHeight="38.0" prefWidth="340.0">
+                                                <VBox prefHeight="58.0" prefWidth="471.0" HBox.hgrow="ALWAYS">
                                                    <children>
-                                                      <HBox prefHeight="19.0" prefWidth="340.0" VBox.vgrow="NEVER">
+                                                      <HBox alignment="TOP_CENTER" prefHeight="19.0" prefWidth="340.0" VBox.vgrow="NEVER">
                                                          <children>
                                                             <HBox prefHeight="18.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
-                                                            <Label alignment="CENTER" prefHeight="20.0" prefWidth="254.0" style="-fx-font-weight: bold;" text="%label.enterIngredientDetails" textAlignment="JUSTIFY" wrapText="true">
+                                                            <Label fx:id="enterIngredientDetailsLabel" alignment="CENTER" prefHeight="19.0" prefWidth="410.0" style="-fx-font-weight: bold;" text="%label.enterIngredientDetails" textAlignment="JUSTIFY" wrapText="true">
                                                                <HBox.margin>
                                                                   <Insets />
                                                                </HBox.margin>
@@ -122,11 +126,11 @@
                                                             <HBox prefHeight="18.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
                                                          </children>
                                                       </HBox>
-                                                      <HBox prefHeight="22.0" prefWidth="340.0">
+                                                      <HBox alignment="TOP_CENTER" prefHeight="22.0" prefWidth="340.0">
                                                          <children>
                                                             <HBox prefHeight="18.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
-                                                            <Label alignment="CENTER" prefHeight="21.0" prefWidth="126.0" text="%label.allFieldsRequired" wrapText="true" />
-                                                            <HBox prefHeight="18.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                                                            <Label fx:id="allFieldsRequired" alignment="CENTER" prefHeight="22.0" prefWidth="325.0" text="%label.allFieldsRequired" wrapText="true" HBox.hgrow="ALWAYS" />
+                                                            <HBox prefHeight="22.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
                                                          </children>
                                                       </HBox>
                                                    </children>
@@ -138,11 +142,11 @@
                                           </HBox>
                                           <HBox prefHeight="39.0" prefWidth="340.0">
                                              <children>
-                                                <Label prefWidth="70.0" text="%label.ingredientNameLabel" wrapText="true">
+                                                <Label fx:id="ingredientNameLabel" prefHeight="37.0" prefWidth="162.0" text="%label.ingredientNameLabel" wrapText="true">
                                                    <HBox.margin>
-                                                      <Insets left="10.0" top="2.0" />
+                                                      <Insets bottom="12.0" left="10.0" top="2.0" />
                                                    </HBox.margin></Label>
-                                                <TextField fx:id="newIngName" prefHeight="26.0" prefWidth="238.0">
+                                                <TextField fx:id="newIngName" prefHeight="26.0" prefWidth="238.0" HBox.hgrow="ALWAYS">
                                                    <HBox.margin>
                                                       <Insets right="25.0" />
                                                    </HBox.margin>
@@ -154,13 +158,13 @@
                                           </HBox>
                                           <HBox layoutX="10.0" layoutY="10.0" prefHeight="50.0" prefWidth="340.0">
                                              <children>
-                                                <Label prefWidth="110.0" text="%label.proteinLabel" wrapText="true">
+                                                <Label fx:id="ingredientProtein" prefWidth="110.0" text="%label.proteinLabel" wrapText="true">
                                                    <HBox.margin>
                                                       <Insets left="10.0" />
                                                    </HBox.margin>
                                                 </Label>
-                                                <HBox prefHeight="26.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
-                                                <TextField fx:id="newIngProteins" prefHeight="26.0" prefWidth="150.0">
+                                                <HBox prefHeight="50.0" prefWidth="74.0" HBox.hgrow="ALWAYS" />
+                                                <TextField fx:id="newIngProteins" prefHeight="26.0" prefWidth="200.0">
                                                    <HBox.margin>
                                                       <Insets left="10.0" right="25.0" />
                                                    </HBox.margin>
@@ -173,13 +177,13 @@
                                           </HBox>
                                           <HBox layoutX="10.0" layoutY="10.0" prefHeight="36.0" prefWidth="340.0">
                                              <children>
-                                                <Label prefWidth="110.0" text="%label.fatLabel" wrapText="true">
+                                                <Label fx:id="ingredientFat" prefWidth="110.0" text="%label.fatLabel" wrapText="true">
                                                    <HBox.margin>
                                                       <Insets left="10.0" />
                                                    </HBox.margin>
                                                 </Label>
                                                 <HBox prefHeight="26.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
-                                                <TextField fx:id="newIngFats" prefHeight="26.0" prefWidth="149.0">
+                                                <TextField fx:id="newIngFats" prefHeight="26.0" prefWidth="200.0">
                                                    <HBox.margin>
                                                       <Insets right="25.0" />
                                                    </HBox.margin>
@@ -191,13 +195,13 @@
                                           </HBox>
                                           <HBox layoutX="10.0" layoutY="10.0" prefHeight="32.0" prefWidth="340.0">
                                              <children>
-                                                <Label prefHeight="29.0" prefWidth="148.0" text="%label.carbohydratesLabel" wrapText="true">
+                                                <Label fx:id="ingredientCarb" prefHeight="29.0" prefWidth="148.0" text="%label.carbohydratesLabel" wrapText="true">
                                                    <HBox.margin>
                                                       <Insets left="10.0" />
                                                    </HBox.margin>
                                                 </Label>
                                                 <HBox prefHeight="26.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
-                                                <TextField fx:id="newIngCarbs" prefHeight="26.0" prefWidth="156.0">
+                                                <TextField fx:id="newIngCarbs" prefHeight="26.0" prefWidth="200.0">
                                                    <HBox.margin>
                                                       <Insets left="10.0" right="25.0" />
                                                    </HBox.margin>
@@ -209,19 +213,16 @@
                                           </HBox>
                                           <HBox prefHeight="66.0" prefWidth="340.0" VBox.vgrow="ALWAYS">
                                              <children>
-                                                <HBox prefHeight="54.0" prefWidth="0.0" HBox.hgrow="ALWAYS">
+                                                <HBox alignment="CENTER" prefHeight="54.0" prefWidth="0.0" HBox.hgrow="ALWAYS">
                                                    <children>
-                                                      <Button fx:id="cancelAddIngredientButton" mnemonicParsing="false" onAction="#cancelEdit" prefHeight="34.0" prefWidth="136.0" text="%label.cancelButton">
+                                                      <Button fx:id="cancelButton2" mnemonicParsing="false" onAction="#cancelEdit" prefHeight="34.0" prefWidth="173.0" text="%label.cancelButton">
                                                          <HBox.margin>
                                                             <Insets left="10.0" right="5.0" top="10.0" />
                                                          </HBox.margin>
                                                       </Button>
-                                                   </children></HBox>
-                                                <HBox prefHeight="62.0" prefWidth="48.0" HBox.hgrow="ALWAYS">
-                                                   <children>
-                                                      <Button fx:id="addIngredientButton2" mnemonicParsing="false" onAction="#addIngredient" prefHeight="34.0" prefWidth="136.0" text="%label.addIngredientButton">
+                                                      <Button fx:id="addIngredientButton2" mnemonicParsing="false" onAction="#addIngredient" prefHeight="34.0" prefWidth="186.0" text="%label.addIngredientButton" HBox.hgrow="ALWAYS">
                                                          <HBox.margin>
-                                                            <Insets left="5.0" right="7.0" top="10.0" />
+                                                            <Insets left="5.0" right="10.0" top="10.0" />
                                                          </HBox.margin>
                                                       </Button>
                                                    </children></HBox>
@@ -254,14 +255,12 @@
                                                             <HBox prefHeight="21.0" prefWidth="82.0" HBox.hgrow="ALWAYS" />
                                                          </children>
                                                       </HBox>
-                                                      <HBox prefHeight="100.0" prefWidth="200.0">
+                                                      <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
                                                          <children>
-                                                            <HBox prefHeight="79.0" prefWidth="10.0" HBox.hgrow="ALWAYS" />
-                                                            <Label fx:id="noIngredientSubtitle" alignment="CENTER" contentDisplay="CENTER" text="%label.noIngredientsSubtitle" textAlignment="CENTER" HBox.hgrow="ALWAYS">
+                                                            <Label fx:id="noIngredientSubtitle" alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="449.0" text="%label.noIngredientsSubtitle" textAlignment="CENTER" HBox.hgrow="ALWAYS">
                                                                <HBox.margin>
-                                                                  <Insets right="5.0" />
+                                                                  <Insets left="5.0" right="5.0" />
                                                                </HBox.margin></Label>
-                                                            <HBox layoutX="10.0" layoutY="10.0" prefHeight="79.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
                                                          </children>
                                                       </HBox>
                                                    </children>
@@ -273,27 +272,27 @@
                                     </VBox>
                                  </children>
                               </AnchorPane>
-                              <AnchorPane fx:id="ingredientDetailsPane" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                              <AnchorPane fx:id="ingredientDetailsPane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <children>
                                     <VBox spacing="10" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <children>
                                           <HBox prefHeight="54.0" prefWidth="318.0">
                                              <children>
-                                                <TextField fx:id="ingredientName" onKeyReleased="#updateIngredientName" prefHeight="26.0" prefWidth="330.0" promptText="Ingredient Name">
+                                                <TextField fx:id="ingredientName" onKeyReleased="#updateIngredientName" prefHeight="26.0" prefWidth="330.0" promptText="Ingredient Name" HBox.hgrow="ALWAYS">
                                                    <HBox.margin>
-                                                      <Insets bottom="2.0" left="2.0" right="25.0" top="15.0" />
+                                                      <Insets bottom="2.0" left="25.0" right="25.0" top="15.0" />
                                                    </HBox.margin>
                                                 </TextField>
                                              </children>
                                           </HBox>
                                           <HBox layoutX="10.0" layoutY="10.0" prefHeight="54.0" prefWidth="318.0">
                                              <children>
-                                                <Label prefWidth="150.0" text="%label.proteinLabel">
+                                                <Label fx:id="proteinLabel" prefWidth="150.0" text="%label.proteinLabel">
                                                    <HBox.margin>
-                                                      <Insets bottom="2.0" left="2.0" right="5.0" top="8.0" />
+                                                      <Insets bottom="2.0" left="25.0" right="5.0" top="8.0" />
                                                    </HBox.margin>
                                                 </Label>
-                                                <TextField fx:id="proteinValue" prefHeight="26.0" prefWidth="163.0">
+                                                <TextField fx:id="proteinValue" prefHeight="26.0" prefWidth="163.0" HBox.hgrow="ALWAYS">
                                                    <HBox.margin>
                                                       <Insets right="25.0" top="5.0" />
                                                    </HBox.margin>
@@ -302,12 +301,12 @@
                                           </HBox>
                                           <HBox layoutX="10.0" layoutY="64.0" prefHeight="54.0" prefWidth="318.0">
                                              <children>
-                                                <Label prefWidth="150.0" text="%label.fatLabel">
+                                                <Label fx:id="fatLabel" prefWidth="150.0" text="%label.fatLabel">
                                                    <HBox.margin>
-                                                      <Insets bottom="2.0" left="2.0" right="5.0" top="8.0" />
+                                                      <Insets bottom="2.0" left="25.0" right="5.0" top="8.0" />
                                                    </HBox.margin>
                                                 </Label>
-                                                <TextField fx:id="fatValue" prefHeight="26.0" prefWidth="164.0">
+                                                <TextField fx:id="fatValue" prefHeight="26.0" prefWidth="164.0" HBox.hgrow="ALWAYS">
                                                    <HBox.margin>
                                                       <Insets right="25.0" top="5.0" />
                                                    </HBox.margin>
@@ -316,12 +315,12 @@
                                           </HBox>
                                           <HBox layoutX="10.0" layoutY="119.0" prefHeight="54.0" prefWidth="318.0">
                                              <children>
-                                                <Label prefWidth="150.0" text="%label.fatLabel">
+                                                <Label fx:id="carbsLabel" prefWidth="150.0" text="%label.carbohydratesLabel">
                                                    <HBox.margin>
-                                                      <Insets bottom="2.0" left="2.0" right="5.0" top="8.0" />
+                                                      <Insets bottom="2.0" left="25.0" right="5.0" top="8.0" />
                                                    </HBox.margin>
                                                 </Label>
-                                                <TextField fx:id="carbValue" prefHeight="26.0" prefWidth="162.0">
+                                                <TextField fx:id="carbValue" prefHeight="26.0" prefWidth="162.0" HBox.hgrow="ALWAYS">
                                                    <HBox.margin>
                                                       <Insets right="25.0" top="5.0" />
                                                    </HBox.margin>
@@ -330,9 +329,9 @@
                                           </HBox>
                                           <HBox layoutX="10.0" layoutY="64.0" prefHeight="54.0" prefWidth="318.0">
                                              <children>
-                                                <Label prefHeight="18.0" prefWidth="124.0" text="%label.caloriesLabel">
+                                                <Label fx:id="caloriesLabel" prefHeight="18.0" prefWidth="124.0" text="%label.caloriesLabel">
                                                    <HBox.margin>
-                                                      <Insets bottom="2.0" left="2.0" right="5.0" top="8.0" />
+                                                      <Insets bottom="2.0" left="25.0" right="5.0" top="8.0" />
                                                    </HBox.margin>
                                                 </Label>
                                                 <HBox prefHeight="28.0" prefWidth="24.0" HBox.hgrow="ALWAYS" />
@@ -346,16 +345,16 @@
                                                 <Insets />
                                              </VBox.margin>
                                           </HBox>
-                                          <HBox layoutX="10.0" layoutY="119.0" prefHeight="54.0" prefWidth="318.0">
+                                          <HBox alignment="CENTER" layoutX="10.0" layoutY="119.0" prefHeight="54.0" prefWidth="318.0">
                                              <children>
-                                                <Label fx:id="RecipeUsageValueLabel" minWidth="140.0" prefHeight="29.0" text="%label.usedInRecipesLabel" textAlignment="CENTER">
+                                                <Label fx:id="RecipeUsageValueLabel" minWidth="140.0" prefHeight="29.0" text="%label.usedInUnknown" textAlignment="CENTER">
                                                    <HBox.margin>
                                                       <Insets bottom="20.0" left="90.0" right="90.0" top="20.0" />
                                                    </HBox.margin>
                                                 </Label>
                                              </children>
                                           </HBox>
-                                          <HBox prefHeight="60.0" prefWidth="200.0">
+                                          <HBox alignment="CENTER" prefHeight="60.0" prefWidth="200.0">
                                              <children>
                                                 <Button fx:id="cancelButton" minWidth="100.0" mnemonicParsing="false" onAction="#cancelEdit" prefWidth="70.0" text="%label.cancelButton">
                                                    <HBox.margin>

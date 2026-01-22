@@ -1,8 +1,15 @@
 package client.scenes;
 
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.ResourceBundle;
+
+import com.google.inject.Inject;
+
+import client.config.ConfigService;
 import client.utils.IngredientServerUtils;
 import client.utils.RecipeServerUtils;
-import com.google.inject.Inject;
 import commons.Ingredient;
 import commons.Recipe;
 import commons.RecipeIngredient;
@@ -13,97 +20,136 @@ import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-
-
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
 
 public class NutritionalValueCtrl {
 
     private final IngredientServerUtils ingredientServerUtils;
     private final RecipeServerUtils recipeServerUtils;
+    private ConfigService configService;
 
-    @Inject
-    public NutritionalValueCtrl(IngredientServerUtils ingredientServerUtils,
-                                RecipeServerUtils recipeServerUtils) {
-        this.ingredientServerUtils = ingredientServerUtils;
-        this.recipeServerUtils = recipeServerUtils;
-    }
-    // Buttons
-    @FXML
-    private Button addIngredientModeButton;
-    @FXML
-    private Button addIngredientButton;
-    @FXML
-    private Button removeIngredientButton;
-
-    // TextFields
-    @FXML
-    private TextField ingredientName;
-    @FXML
-    private TextField carbValue;
-    @FXML
-    private TextField fatValue;
-    @FXML
-    private TextField proteinValue;
-
-    // Labels
-    @FXML
-    private Label kcalValueLabel;
     @FXML
     private Label RecipeUsageValueLabel;
 
-    // Center Pane & StackPane
     @FXML
-    private StackPane stackPane;
-    @FXML
-    private Pane noIngredientPane;
-    @FXML
-    private Pane ingredientDetailsPane;
-    @FXML
-    private Pane addIngredientPane;
+    private Button addIngredientButton;
 
-    // Labels inside noIngredientPane
     @FXML
-    private Label noIngredientTitle;
-    @FXML
-    private Label noIngredientSubtitle;
+    private Button addIngredientButton2;
 
-    // Sidebar
     @FXML
-    private ListView<Ingredient> sidebarList;
+    private AnchorPane addIngredientPane;
 
-    //Text fields inside addIngredientPane
-    @FXML
-    private TextField newIngName;
-    @FXML
-    private TextField newIngProteins;
-    @FXML
-    private TextField newIngFats;
-    @FXML
-    private TextField newIngCarbs;
-
-    //Edit Ingredient buttons
-    @FXML
-    private Button editIngredientButton;
-    @FXML
-    private Button confirmButton;
     @FXML
     private Button cancelButton;
 
     @FXML
+    private Button cancelButton2;
+
+    @FXML
+    private TextField carbValue;
+
+    @FXML
+    private Button confirmButton;
+
+    @FXML
+    private Button editIngredientButton;
+
+    @FXML
+    private TextField fatValue;
+
+    @FXML
     private Button healthButton;
 
+    @FXML
+    private Label ingredientCarb;
+
+    @FXML
+    private AnchorPane ingredientDetailsPane;
+
+    @FXML
+    private Label ingredientFat;
+
+    @FXML
+    private Label proteinLabel;
+
+    @FXML
+    private Label fatLabel;
+
+    @FXML
+    private Label carbsLabel;
+
+    @FXML
+    private Label caloriesLabel;
+
+    @FXML
+    private TextField ingredientName;
+
+    @FXML
+    private Label ingredientProtein;
+
+    @FXML 
+    private Label enterIngredientDetailsLabel;
+
+    @FXML 
+    private Label allFieldsRequired;
+
+    @FXML
+    private Label kcalValueLabel;
+
+    @FXML
+    private Label ingredientNameLabel;
+
+    @FXML
+    private TextField newIngCarbs;
+
+    @FXML
+    private TextField newIngFats;
+
+    @FXML
+    private TextField newIngName;
+
+    @FXML
+    private TextField newIngProteins;
+
+    @FXML
+    private AnchorPane noIngredientPane;
+
+    @FXML
+    private Label noIngredientSubtitle;
+
+    @FXML
+    private Label noIngredientTitle;
+
+    @FXML
+    private TextField proteinValue;
+
+    @FXML
+    private Button removeIngredientButton;
+
+    @FXML
+    private ListView<Ingredient> sidebarList;
+
+    /**
+     * Constructor for the nutritional value controller class, using GUICE injection.
+     */
+    @Inject
+    public NutritionalValueCtrl(IngredientServerUtils ingredientServerUtils,
+                                RecipeServerUtils recipeServerUtils, ConfigService configService) {
+        this.ingredientServerUtils = ingredientServerUtils;
+        this.recipeServerUtils = recipeServerUtils;
+        this.configService = configService;
+    }
+    
     /**
      * This method initializes the NutritionalValueUI controller
      *
@@ -136,6 +182,39 @@ public class NutritionalValueCtrl {
         loadIngredientsFromServer();
     }
 
+    /**
+     * Loads translated texts for all static UI elements.
+     */
+    @FXML
+    public void loadLanguages() {
+        ResourceBundle props = getTranslationsBundle();
+
+        // Window / titles
+        noIngredientTitle.setText(props.getString("label.noIngredients"));
+        noIngredientSubtitle.setText(props.getString("label.noIngredientsSubtitle"));
+        healthButton.setText(props.getString("label.healthOverview"));
+
+        enterIngredientDetailsLabel.setText(props.getString("label.enterIngredientDetails"));
+        allFieldsRequired.setText(props.getString("label.allFieldsRequired"));
+        ingredientNameLabel.setText(props.getString("label.ingredientNameLabel"));
+        ingredientProtein.setText(props.getString("label.proteinLabel"));
+        ingredientFat.setText(props.getString("label.fatLabel"));
+        ingredientCarb.setText(props.getString("label.carbohydratesLabel"));
+        cancelButton2.setText(props.getString("label.cancelButton"));
+        addIngredientButton2.setText(props.getString("label.addIngredientButton"));
+
+        ingredientName.setPromptText(props.getString("label.ingredientNameLabel"));
+        proteinLabel.setText(props.getString("label.proteinLabel"));
+        fatLabel.setText(props.getString("label.fatLabel"));
+        carbsLabel.setText(props.getString("label.carbohydratesLabel"));
+        caloriesLabel.setText(props.getString("label.caloriesLabel"));
+        cancelButton.setText(props.getString("label.cancelButton"));
+        editIngredientButton.setText(props.getString("label.editButton"));
+        confirmButton.setText(props.getString("label.confirmButton"));
+    }
+
+
+
     private void updateSelectedIngredient() {
         Ingredient selected = sidebarList.getSelectionModel().getSelectedItem();
         showIngredientDetails(selected);
@@ -148,6 +227,8 @@ public class NutritionalValueCtrl {
      * the sideBarList.
      */
     private void loadIngredientsFromServer() {
+        ResourceBundle props = getTranslationsBundle();
+
         try {
             var ingredients = ingredientServerUtils.getAllIngredients();
 
@@ -164,8 +245,8 @@ public class NutritionalValueCtrl {
 
             updateStackPaneVisibility();
         } catch (ProcessingException e) {
-            showError("Error loading ingredients",
-                    "could not load ingredients from the server" + e.getMessage());
+            showError(props.getString("alert.problemWithIngredients"),
+                    props.getString("alert.problemWithIngredients.body") + e.getMessage());
             sidebarList.getItems().clear();
             showIngredientDetails(null);
             updateStackPaneVisibility();
@@ -263,13 +344,14 @@ public class NutritionalValueCtrl {
      * @param ingredient the ingredient that is selected
      */
     private void showIngredientDetails(Ingredient ingredient) {
+        ResourceBundle props = getTranslationsBundle();
         if (ingredient == null) {
             ingredientName.clear();
             proteinValue.clear();
             fatValue.clear();
             carbValue.clear();
             kcalValueLabel.setText("0");
-            RecipeUsageValueLabel.setText("Used in 0 recipes");
+            RecipeUsageValueLabel.setText(props.getString("label.usedInUnknown"));
             return;
         }
 
@@ -300,8 +382,9 @@ public class NutritionalValueCtrl {
      * @param content the content of the error
      */
     private void showError(String header, String content) {
+        ResourceBundle props = getTranslationsBundle();
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
+        alert.setTitle(props.getString("alert.error"));
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.showAndWait();
@@ -314,6 +397,8 @@ public class NutritionalValueCtrl {
      */
     @FXML
     void addIngredient() {
+        ResourceBundle props = getTranslationsBundle();
+
         if (!addIngredientPane.isVisible()) {
             addMode();
             return;
@@ -326,11 +411,11 @@ public class NutritionalValueCtrl {
             double fat = Double.parseDouble(newIngFats.getText().trim());
 
             if (name.isEmpty()) {
-                showError("Error", "Name cannot be empty");
+                showError(props.getString("alert.error"), props.getString("label.ingredientNameLabel"));
                 return;
             }
             if (protein < 0 || carb < 0 || fat < 0) {
-                showError("Error", "Protein, Carbohydrates or fats cannot be negative");
+                showError(props.getString("alert.error"), props.getString("alert.illegalInput.body"));
                 return;
             }
 
@@ -354,11 +439,11 @@ public class NutritionalValueCtrl {
             defaultMode();
 
         } catch (NumberFormatException e) {
-            showError("Wrong format", "Please enter valid numbers for protein, carbs and fat.");
+            showError(props.getString("label.invalidInput"), props.getString("label.enterValidNumbers"));
         } catch (IllegalArgumentException e) {
-            showError("Error", e.getMessage());
+            showError(props.getString("label.invalidIngredient"), e.getMessage());
         } catch (ProcessingException e) {
-            showError("Server error while making ingredient", e.getMessage());
+            showError(props.getString("label.serverError"), e.getMessage());
         }
     }
 
@@ -368,16 +453,24 @@ public class NutritionalValueCtrl {
      */
     @FXML
     void removeIngredient() {
+        ResourceBundle props = getTranslationsBundle();
         Ingredient selected = sidebarList.getSelectionModel().getSelectedItem();
+        
         if (selected == null) {
-            showError("No ingredient selected", "Select an ingredient to remove");
+            showError(props.getString("label.noIngredientSelected"), 
+                     props.getString("label.selectIngredientToRemove"));
+            return;
         }
 
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Delete Ingredient");
-        confirm.setHeaderText("Are you sure you want to delete " + selected.getName() + "?");
-        confirm.setContentText("This will remove the ingredient from the database.\n"
-            + "This ingredient is used in " + getUsageCount(selected.getId()) + " recipes.");
+        confirm.setTitle(props.getString("label.deleteIngredientTitle"));
+        confirm.setHeaderText(props.getString("label.deleteIngredientConfirm") + " " + selected.getName() + "?");
+        
+        int usageCount = getUsageCount(selected.getId());
+        confirm.setContentText(props.getString("label.deleteIngredientInfo") + "\n"
+            + props.getString("label.deleteIngredientUsedIn") + " " + usageCount + " " 
+            + props.getString("label.recipes") + ".");
+        
         var result = confirm.showAndWait();
 
         if (result.isEmpty() || result.get() != ButtonType.OK) {
@@ -388,10 +481,11 @@ public class NutritionalValueCtrl {
             ingredientServerUtils.deleteIngredient(selected.getId());
             sidebarList.getItems().remove(selected);
         } catch (NoSuchElementException e) {
-            showError("Ingredient not found on server", "It seems the ingredient was already removed");
+            showError(props.getString("label.ingredientNotFound"), 
+                     props.getString("label.ingredientAlreadyRemoved"));
             sidebarList.getItems().remove(selected);
         } catch (ProcessingException e) {
-            showError("Error deleting Ingredient", "Server error" + e.getMessage());
+            showError(props.getString("label.serverError"), e.getMessage());
         }
     }
 
@@ -400,11 +494,14 @@ public class NutritionalValueCtrl {
      */
     @FXML
     void editIngredient() {
+        ResourceBundle props = getTranslationsBundle();
         Ingredient selected = sidebarList.getSelectionModel().getSelectedItem();
         updateSelectedIngredient();
 
         if (selected == null) {
-            showError("No ingredient selected", "Select an ingredient to edit");
+            showError(props.getString("label.noIngredientSelected"), 
+                     props.getString("label.selectIngredientToEdit"));
+            return;
         }
 
         editMode();
@@ -417,9 +514,12 @@ public class NutritionalValueCtrl {
      */
     @FXML
     void confirmEdit() {
+        ResourceBundle props = getTranslationsBundle();
         Ingredient selected = sidebarList.getSelectionModel().getSelectedItem();
+        
         if (selected == null) {
-            showError("No ingredient selected", "Select an ingredient to edit");
+            showError(props.getString("label.noIngredientSelected"), 
+                     props.getString("label.selectIngredientToEdit"));
             return;
         }
 
@@ -430,10 +530,10 @@ public class NutritionalValueCtrl {
             double fat = Double.parseDouble(fatValue.getText().trim());
 
             if (name.isEmpty()) {
-                throw new IllegalArgumentException("Name cannot be empty");
+                throw new IllegalArgumentException(props.getString("label.ingredientNameLabel"));
             }
             if (protein < 0 || carb < 0 || fat < 0) {
-                throw new IllegalArgumentException("Protein, carbohydrates or fats cannot be negative");
+                throw new IllegalArgumentException(props.getString("alert.illegalInput.body"));
             }
 
             selected.setName(name);
@@ -452,11 +552,12 @@ public class NutritionalValueCtrl {
             defaultMode();
 
         } catch (NumberFormatException e) {
-            showError("Invalid input", "Please enter valid numbers");
+            showError(props.getString("label.invalidInput"), 
+                     props.getString("label.enterValidNumbers"));
         } catch (IllegalArgumentException e) {
-            showError("Invalid ingredient", e.getMessage());
+            showError(props.getString("label.invalidIngredient"), e.getMessage());
         } catch (ProcessingException e) {
-            showError("Error editing ingredient", e.getMessage());
+            showError(props.getString("label.serverError"), e.getMessage());
         }
     }
 
@@ -478,18 +579,23 @@ public class NutritionalValueCtrl {
      * @param ingredient The ingredient to count in recipes
      */
     private void updateUsageLabel(Ingredient ingredient) {
+        ResourceBundle props = getTranslationsBundle();
+        
         if (ingredient == null || ingredient.getId() == null) {
-            RecipeUsageValueLabel.setText("Used in 0 recipes");
+            RecipeUsageValueLabel.setText(props.getString("label.usedIn") + " 0 " 
+                + props.getString("label.recipes"));
             return;
         }
 
         try {
-            long usage = getUsageCount(ingredient.getId());
-            RecipeUsageValueLabel.setText("Used in " + usage + " recipes");
+            int usage = getUsageCount(ingredient.getId());
+            RecipeUsageValueLabel.setText(props.getString("label.usedIn") + " " + usage + " " 
+                + props.getString("label.recipes"));
         } catch (NoSuchElementException e) {
-            RecipeUsageValueLabel.setText("Used in 0 recipes");
+            RecipeUsageValueLabel.setText(props.getString("label.usedIn") + " 0 " 
+                + props.getString("label.recipes"));
         } catch (ProcessingException e) {
-            RecipeUsageValueLabel.setText("Used in ? recipes");
+            RecipeUsageValueLabel.setText(props.getString("label.usedInUnknown"));
         }
     }
 
@@ -542,10 +648,12 @@ public class NutritionalValueCtrl {
 
     @FXML
     void showHealthChart() {
+        ResourceBundle props = getTranslationsBundle();
         Ingredient selectedIngredient = sidebarList.getSelectionModel().getSelectedItem();
 
         if (selectedIngredient == null) {
-            showError("No Selection", "Please select an ingredient first.");
+            showError(props.getString("label.noSelection"), 
+                     props.getString("label.selectIngredientFirst"));
             return;
         }
 
@@ -553,16 +661,18 @@ public class NutritionalValueCtrl {
     }
 
     void showPieChart(Ingredient ingredient) {
+        ResourceBundle props = getTranslationsBundle();
+        
         PieChart.Data protein = new PieChart.Data(
-                "Protein", ingredient.getProteinPer100g());
+                props.getString("label.proteinLabel"), ingredient.getProteinPer100g());
         PieChart.Data fat = new PieChart.Data(
-                "Fat", ingredient.getFatPer100g());
+                props.getString("label.fatLabel"), ingredient.getFatPer100g());
         PieChart.Data carbs = new PieChart.Data(
-                "Carbs", ingredient.getCarbsPer100g());
+                props.getString("label.carbohydratesLabel"), ingredient.getCarbsPer100g());
 
         PieChart pieChart = new PieChart();
         pieChart.getData().addAll(protein, fat, carbs);
-        pieChart.setTitle("Healthiness of " + ingredient.getName());
+        pieChart.setTitle(props.getString("label.healthinessOf") + " " + ingredient.getName());
 
         VBox root = new VBox(pieChart);
 
@@ -570,14 +680,15 @@ public class NutritionalValueCtrl {
         Label kcalInfo = new Label();
 
         double kcals = ingredient.getKcalPer100g();
-        kcalInfo.setText("Ingredient contains " + kcals + " kcals/100g.");
+        kcalInfo.setText(props.getString("label.kcalInfo") + " " + kcals + " " 
+            + props.getString("label.kcalUnit"));
 
         if (kcals < 200) {
-            healthiness.setText("Ingredient is healthy.");
+            healthiness.setText(props.getString("label.ingredientHealthy"));
         } else if (kcals < 500) {
-            healthiness.setText("Ingredient is moderately healthy.");
+            healthiness.setText(props.getString("label.ingredientModerate"));
         } else {
-            healthiness.setText("Ingredient is unhealthy.");
+            healthiness.setText(props.getString("label.ingredientUnhealthy"));
         }
 
         root.setAlignment(Pos.CENTER);
@@ -585,9 +696,22 @@ public class NutritionalValueCtrl {
         root.getChildren().add(healthiness);
 
         Stage popup = new Stage();
-        popup.setTitle("Health Overview");
+        popup.setTitle(props.getString("label.healthOverview"));
         popup.setScene(new Scene(root, 400, 400));
         popup.setResizable(false);
         popup.show();
+    }
+
+
+
+    private ResourceBundle getTranslationsBundle() {
+        try {
+            String languageCode = configService.getLanguage();
+            return java.util.ResourceBundle.getBundle("client.scenes.Translations", new java.util.Locale(languageCode));
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Failed to load language bundle for code: " + configService.getLanguage());
+            return java.util.ResourceBundle.getBundle("client.scenes.Translations", java.util.Locale.ENGLISH);
+        }
     }
 }
