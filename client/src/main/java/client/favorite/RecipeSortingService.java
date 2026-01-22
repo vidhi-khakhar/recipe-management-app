@@ -93,8 +93,8 @@ public class RecipeSortingService {
      *
      * @return the sorted collection by date.
      */
-    public List<Recipe> sortByDateDesc() {
-        List<Recipe> sorted = new ArrayList<>(recipeCollection.getAll().reversed());
+    public List<Recipe> sortByDateDesc(List<Recipe> recipes) {
+        List<Recipe> sorted = recipes.reversed();
         return List.copyOf(sorted);
     }
 

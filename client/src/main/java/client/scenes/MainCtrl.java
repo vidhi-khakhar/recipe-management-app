@@ -267,7 +267,8 @@ public class MainCtrl {
      */
     @Inject
     public MainCtrl(RecipeServerUtils recipeServerUtils, SearchService searchService,
-            FavoriteService favoriteService, RecipeCollection recipeCollection, RecipeSortingService recipeSortingService, ConfigService configService) {
+            FavoriteService favoriteService, RecipeCollection recipeCollection,
+                    RecipeSortingService recipeSortingService, ConfigService configService) {
         this.recipeServerUtils = recipeServerUtils;
         this.searchService = searchService;
         this.favoriteService = favoriteService;

@@ -88,7 +88,7 @@ class RecipeSortingServiceTest {
      */
     @Test
     void sortByDateAscKeepsOriginalOrderTest() {
-        List<Recipe> result = service.sortByDateAsc();
+        List<Recipe> result = service.sortByDateAsc(collection);
 
         // recipeC, recipeA, recipeB
         assertEquals("Carrot Cake", result.get(0).getTitle());
@@ -101,7 +101,7 @@ class RecipeSortingServiceTest {
      * */
     @Test
     void sortByDateDescReversesOriginalOrderTest() {
-        List<Recipe> result = service.sortByDateDesc();
+        List<Recipe> result = service.sortByDateDesc(collection);
 
         assertEquals("Brownies", result.get(0).getTitle());
         assertEquals("Apple Pie", result.get(1).getTitle());
