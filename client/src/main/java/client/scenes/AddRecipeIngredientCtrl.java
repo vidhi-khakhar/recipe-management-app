@@ -243,23 +243,33 @@ public class AddRecipeIngredientCtrl {
      * @return true if amount is a positive number
      */
     public boolean validateFormalAmount(String text) {
+        return validateAmount(text, true);
+    }
+
+    /**
+     * Validates the inputted amount.
+     * @param text the user input for amount
+     * @param showError whether to show error dialogs
+     * @return true if amount is valid
+     */
+    public boolean validateAmount(String text, boolean showError) {
         double amount;
         ResourceBundle props = getTranslationsBundle();
 
         try {
             amount = Double.parseDouble(text);
             if (amount < 0) {
-                showError(
-                    props.getString("alert.negativeAmount"),
-                    props.getString("alert.negativeAmount.body")
-                );
+                if (showError) {
+                    showError(props.getString("alert.negativeAmount"),
+                        props.getString("alert.negativeAmount.body"));
+                }
             }
             return (amount >= 0);
         } catch (NumberFormatException e) {
-            showError(
-                props.getString("alert.illegalInput"),
-                props.getString("alert.illegalInput.body")
-            );
+            if (showError) {
+                showError(props.getString("alert.illegalInput"),
+                    props.getString("alert.illegalInput.body"));
+            }
             return false;
         }
     }

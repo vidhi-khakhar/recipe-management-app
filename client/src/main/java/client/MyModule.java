@@ -23,6 +23,9 @@ import client.search.SearchService;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import org.glassfish.jersey.client.ClientConfig;
 
 import client.scenes.MainCtrl;
 import client.scenes.RecipeShoppingListCtrl;
@@ -51,6 +54,7 @@ public class MyModule implements Module {
         binder.bind(ServerUtils.class).in(Scopes.SINGLETON);
         binder.bind(IngredientServerUtils.class).in(Scopes.SINGLETON);
         binder.bind(RecipeServerUtils.class).in(Scopes.SINGLETON);
+        binder.bind(Client.class).toInstance(ClientBuilder.newClient(new ClientConfig()));
         binder.bind(FavoriteService.class).in(Scopes.SINGLETON);
         binder.bind(RecipeCollection.class).in(Scopes.SINGLETON);
         binder.bind(SearchService.class).in(Scopes.SINGLETON);

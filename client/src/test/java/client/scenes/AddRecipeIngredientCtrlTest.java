@@ -114,14 +114,14 @@ public class AddRecipeIngredientCtrlTest {
 
     @Test
     public void testValidateFormalAmountNegative() {
-        boolean result = addRecipeIngredientCtrl.validateFormalAmount("-5");
+        boolean result = addRecipeIngredientCtrl.validateAmount("-5", false);
 
         assertFalse(result);
     }
 
     @Test
     public void testValidateFormalAmountInvalidText() {
-        boolean result = addRecipeIngredientCtrl.validateFormalAmount("abc");
+        boolean result = addRecipeIngredientCtrl.validateAmount("abc", false);
 
         assertFalse(result);
     }
