@@ -3,6 +3,7 @@ package client.utils;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import org.mockito.junit.jupiter.MockitoSettings;
 
 import client.config.Config;
 import client.config.ConfigService;
@@ -19,57 +20,62 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class IngredientServerUtilsTest {
+    @Mock private WebTarget mockTarget;
+    @Mock private Invocation.Builder mockBuilder;
+    @Mock private Response mockResponse;
+    @Mock private ConfigService mockConfigService;
+    @Mock private Config mockConfig;
 
-    private Client mockClient;
-    private WebTarget mockTarget;
-    private Invocation.Builder mockBuilder;
-    private Response mockResponse;
     private IngredientServerUtils utils;
-    private ConfigService mockConfigService;
-    private Config mockConfig;
 
     @BeforeEach
     public void setUp() {
-        mockTarget = mock(WebTarget.class);
-        mockBuilder = mock(Invocation.Builder.class);
-        mockResponse = mock(Response.class);
-        mockClient = (Client) Proxy.newProxyInstance(
-            Client.class.getClassLoader(),
-            new Class[] { Client.class },
-            (_, method, args) -> {
-                if (
-                    "target".equals(method.getName()) &&
-                    args != null &&
-                    args.length == 1 &&
-                    args[0] instanceof String
-                ) {
-                    return mockTarget;
-                }
-                if ("close".equals(method.getName())) {
-                    return null;
-                }
-                throw new UnsupportedOperationException(
-                    "Method not supported in test proxy: " + method.getName()
-                );
-            }
-        );
-        mockConfigService = mock(ConfigService.class);
-        mockConfig = mock(Config.class);
+        Client mockClient = createMockClient();
+
         when(mockConfigService.getConfig()).thenReturn(mockConfig);
         when(mockConfig.getServerUrl()).thenReturn("http://testserver/");
+
         utils = new IngredientServerUtils(mockConfigService, mockClient);
     }
 
-    private void stubTarget(String path) {
+    private Client createMockClient() {
+        return (Client) Proxy.newProxyInstance(
+                Client.class.getClassLoader(),
+                new Class[] { Client.class },
+                (_, method, args) -> {
+                    if ("target".equals(method.getName()) &&
+                            args != null &&
+                            args.length == 1 &&
+                            args[0] instanceof String) {
+                        return mockTarget;
+                    }
+                    if ("close".equals(method.getName())) {
+                        return null;
+                    }
+                    throw new UnsupportedOperationException(
+                            "Method not supported: " + method.getName()
+                    );
+                }
+        );
+    }
+
+    private void stubTarget() {
         when(mockTarget.request(APPLICATION_JSON)).thenReturn(mockBuilder);
     }
 
     @Test
     public void testCreateIngredientSuccess() {
         Ingredient ingredient = new Ingredient("Sugar", 0, 0, 100);
-        stubTarget("api/v1/ingredients");
+        stubTarget();
         when(mockBuilder.post(Entity.json(ingredient))).thenReturn(
             mockResponse
         );
@@ -83,7 +89,7 @@ public class IngredientServerUtilsTest {
     @Test
     public void testCreateIngredientFailure() {
         Ingredient ingredient = new Ingredient("Salt", 0, 0, 100);
-        stubTarget("api/v1/ingredients");
+        stubTarget();
         when(mockBuilder.post(Entity.json(ingredient))).thenReturn(
             mockResponse
         );
@@ -96,7 +102,7 @@ public class IngredientServerUtilsTest {
 
     @Test
     public void testGetAllIngredientsSuccess() {
-        stubTarget("api/v1/ingredients");
+        stubTarget();
         when(mockBuilder.get()).thenReturn(mockResponse);
         when(mockResponse.getStatus()).thenReturn(200);
         java.util.List<Ingredient> list = new java.util.ArrayList<>();
@@ -111,7 +117,7 @@ public class IngredientServerUtilsTest {
 
     @Test
     public void testGetAllIngredientsFailure() {
-        stubTarget("api/v1/ingredients");
+        stubTarget();
         when(mockBuilder.get()).thenReturn(mockResponse);
         when(mockResponse.getStatus()).thenReturn(500);
 
@@ -124,7 +130,7 @@ public class IngredientServerUtilsTest {
     public void testGetIngredientSuccess() {
         Long id = 1L;
         Ingredient ingredient = new Ingredient("Sugar", 0, 0, 100);
-        stubTarget("api/v1/ingredients/" + id);
+        stubTarget();
         when(mockBuilder.get()).thenReturn(mockResponse);
         when(mockResponse.getStatus()).thenReturn(200);
         when(mockResponse.readEntity(Ingredient.class)).thenReturn(ingredient);
@@ -136,7 +142,7 @@ public class IngredientServerUtilsTest {
     @Test
     public void testGetIngredientNotFound() {
         Long id = 99L;
-        stubTarget("api/v1/ingredients/" + id);
+        stubTarget();
         when(mockBuilder.get()).thenReturn(mockResponse);
         when(mockResponse.getStatus()).thenReturn(404);
 
@@ -149,7 +155,7 @@ public class IngredientServerUtilsTest {
     public void testReplaceIngredientSuccess() {
         Long id = 1L;
         Ingredient ingredient = new Ingredient("Salt", 0, 0, 100);
-        stubTarget("api/v1/ingredients/" + id);
+        stubTarget();
         when(mockBuilder.put(Entity.json(ingredient))).thenReturn(mockResponse);
         when(mockResponse.getStatus()).thenReturn(200);
 
@@ -160,7 +166,7 @@ public class IngredientServerUtilsTest {
     public void testReplaceIngredientNotFound() {
         Long id = 99L;
         Ingredient ingredient = new Ingredient("Sugar", 0, 0, 100);
-        stubTarget("api/v1/ingredients/" + id);
+        stubTarget();
         when(mockBuilder.put(Entity.json(ingredient))).thenReturn(mockResponse);
         when(mockResponse.getStatus()).thenReturn(404);
 
@@ -172,7 +178,7 @@ public class IngredientServerUtilsTest {
     @Test
     public void testDeleteIngredientSuccess() {
         Long id = 1L;
-        stubTarget("api/v1/ingredients/" + id);
+        stubTarget();
         when(mockBuilder.delete()).thenReturn(mockResponse);
         when(mockResponse.getStatus()).thenReturn(200);
 
@@ -182,7 +188,7 @@ public class IngredientServerUtilsTest {
     @Test
     public void testDeleteIngredientNotFound() {
         Long id = 99L;
-        stubTarget("api/v1/ingredients/" + id);
+        stubTarget();
         when(mockBuilder.delete()).thenReturn(mockResponse);
         when(mockResponse.getStatus()).thenReturn(404);
 
@@ -194,7 +200,7 @@ public class IngredientServerUtilsTest {
     @Test
     public void testGetIngredientUsageCountSuccess() {
         Long id = 1L;
-        stubTarget("api/v1/ingredients/" + id + "/usage");
+        stubTarget();
         when(mockBuilder.get()).thenReturn(mockResponse);
         when(mockResponse.getStatus()).thenReturn(200);
         when(mockResponse.readEntity(Long.class)).thenReturn(5L);
@@ -206,7 +212,7 @@ public class IngredientServerUtilsTest {
     @Test
     public void testGetIngredientUsageCountNotFound() {
         Long id = 99L;
-        stubTarget("api/v1/ingredients/" + id + "/usage");
+        stubTarget();
         when(mockBuilder.get()).thenReturn(mockResponse);
         when(mockResponse.getStatus()).thenReturn(404);
 
