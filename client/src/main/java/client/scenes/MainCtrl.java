@@ -1431,8 +1431,8 @@ public class MainCtrl {
         noRecipeSubtitle.setText(props.getString("label.noRecipeSubtitle"));
         sortLabel.setText(props.getString("label.sort"));
         
-        // Update language filter - temporarily remove listener to avoid recursion
         updateLanguageCheckBoxItems(props);
+        setHealthStatus(selectedRecipe);
     }
 
     /**
@@ -1469,6 +1469,7 @@ public class MainCtrl {
                 }
             }
         }
+        languageCheckBox.getCheckModel().getCheckedItems().addListener(this::filterLanguages);
     }
 
     private void updateSelectedRecipeLabels(ResourceBundle props) {
@@ -1674,6 +1675,9 @@ public class MainCtrl {
 
 
     private void setHealthStatus(Recipe recipe) {
+        if (selectedRecipe == null) {
+            return;
+        }
         ResourceBundle props = getTranslationsBundle();
         double kcals = calculateKcal(recipe);
 
