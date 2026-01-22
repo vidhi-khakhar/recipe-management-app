@@ -1477,21 +1477,16 @@ public class MainCtrl {
         List<RecipeIngredient> ingredients = recipe.getIngredients().stream()
                 .filter(ri -> ri.isFormal()).toList();
 
-        int factor = 1;
-        if (scaler.getValue() != null) {
-            factor = scaler.getValue();
-        }
-
         double kcals = 0;
         double weight = 0;
         for (RecipeIngredient ingredient : ingredients) {
-            kcals += ingredient.getIngredient().getKcalPer100g() * baseAmounts.get(ingredient)
-                    * factor / 100;
-            weight += ingredient.getAmount();
+            kcals += ingredient.getIngredient().getKcalPer100g() * baseAmounts.get(ingredient) / 100;
+            weight += baseAmounts.get(ingredient);
         }
 
         if (ingredients.isEmpty())
             return 0;
+
         return kcals / weight * 100;
     }
 
