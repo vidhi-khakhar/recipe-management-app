@@ -1,23 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="650.0" stylesheets="@NutritionalValue.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.RecipeShoppingListCtrl">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="650.0" stylesheets="@NutritionalValue.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.RecipeShoppingListCtrl">
    <children>
       <BorderPane AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
          <top>
             <VBox prefHeight="120.0" prefWidth="650.0" BorderPane.alignment="CENTER">
                <children>
-                  <HBox prefHeight="80.0" prefWidth="650.0" styleClass="headerlabel" VBox.vgrow="ALWAYS">
+                  <HBox prefHeight="80.0" prefWidth="666.0" styleClass="headerlabel" VBox.vgrow="ALWAYS">
                      <children>
                         <HBox prefHeight="80.0" prefWidth="65.0" HBox.hgrow="ALWAYS" />
                         <VBox alignment="CENTER" prefHeight="80.0" prefWidth="520.0" HBox.hgrow="ALWAYS">
                            <children>
-                               <Label fx:id="recipeTitleLabel" alignment="CENTER" prefHeight="50.0" prefWidth="520.0" text="Recipe: [Recipe Name]" HBox.hgrow="ALWAYS">
+                               <Label fx:id="recipeTitleLabel" alignment="CENTER" prefHeight="50.0" prefWidth="520.0" text="%label.addRecipeTitle" HBox.hgrow="ALWAYS">
                                   <font>
                                      <Font name="Cascadia Code Regular" size="24.0" />
                                   </font>
@@ -31,17 +38,23 @@
                                </Label>
                               <HBox alignment="CENTER" prefHeight="30.0" prefWidth="520.0">
                                  <children>
-                                    <Label prefHeight="25.0" prefWidth="100.0" text="Servings:">
+                                    <Label fx:id="servingsLabel" prefHeight="26.0" prefWidth="106.0" text="%label.servingsLabel" textFill="WHITE">
                                        <font>
                                           <Font name="Cascadia Code Regular" size="16.0" />
                                        </font>
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
                                     </Label>
                                     <Spinner fx:id="servingsSpinner" prefHeight="25.0" prefWidth="80.0">
                                     </Spinner>
-                                    <Label prefHeight="25.0" prefWidth="340.0" text="  servings">
+                                    <Label fx:id="servingsLabelBody" prefHeight="25.0" prefWidth="340.0" text="%label.servingsLabel.body" textFill="WHITE">
                                        <font>
                                           <Font name="Cascadia Code Regular" size="16.0" />
                                        </font>
+                                       <HBox.margin>
+                                          <Insets left="5.0" />
+                                       </HBox.margin>
                                     </Label>
                                  </children>
                               </HBox>
@@ -58,12 +71,12 @@
             <HBox prefHeight="50.0" prefWidth="650.0" BorderPane.alignment="CENTER">
                <children>
                   <HBox prefHeight="50.0" prefWidth="175.0" HBox.hgrow="ALWAYS" />
-                  <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#cancel" prefHeight="35.0" prefWidth="120.0" text="Cancel">
+                  <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#cancel" prefHeight="35.0" prefWidth="155.0" text="%label.cancelButton">
                      <HBox.margin>
                         <Insets bottom="5.0" left="5.0" right="10.0" top="5.0" />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="addToShoppingListButton" mnemonicParsing="false" onAction="#addToShoppingList" prefHeight="35.0" prefWidth="180.0" styleClass="primarybutton" text="Add to Shopping List 🛒">
+                  <Button fx:id="addToShoppingListButton" mnemonicParsing="false" onAction="#addToShoppingList" prefHeight="35.0" prefWidth="234.0" styleClass="primarybutton" text="%label.addRecipeShoppingButton">
                      <HBox.margin>
                         <Insets bottom="5.0" left="5.0" right="10.0" top="5.0" />
                      </HBox.margin>
@@ -76,12 +89,12 @@
                <children>
                   <HBox prefHeight="40.0" prefWidth="634.0">
                      <children>
-                        <Label prefHeight="34.0" prefWidth="400.0" style="-fx-font-weight: bold;" text="Edit ingredients before adding to shopping list:">
+                        <Label fx:id="editRecipeShoppingList" prefHeight="30.0" prefWidth="622.0" style="-fx-font-weight: bold;" text="%label.editRecipeShoppingList" HBox.hgrow="ALWAYS">
                            <HBox.margin>
                               <Insets left="5.0" top="5.0" />
                            </HBox.margin>
                            <font>
-                              <Font name="Cascadia Code Regular" size="16.0" />
+                              <Font size="13.0" />
                            </font>
                         </Label>
                      </children>
@@ -100,7 +113,7 @@
                         <HBox prefHeight="40.0" prefWidth="634.0">
                            <children>
                               <HBox prefHeight="40.0" prefWidth="520.0" HBox.hgrow="ALWAYS" />
-                              <Button fx:id="addShoppingItemButton" mnemonicParsing="false" onAction="#addShoppingItem" prefHeight="35.0" prefWidth="180.0" styleClass="roundbutton" text="Add Ingredient">
+                              <Button fx:id="addShoppingItemButton" mnemonicParsing="false" onAction="#addShoppingItem" prefHeight="34.0" prefWidth="215.0" styleClass="roundbutton" text="%label.addIngredientButton">
                                  <HBox.margin>
                                     <Insets bottom="5.0" left="5.0" right="10.0" top="5.0" />
                                  </HBox.margin>

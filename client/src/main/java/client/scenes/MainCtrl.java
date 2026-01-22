@@ -1063,7 +1063,9 @@ public class MainCtrl {
         secondaryStage.setScene(recipeShoppingListScene);
         secondaryStage.initOwner(primaryStage);
 
+        recipeShoppingListCtrl.loadLanguages();
         recipeShoppingListCtrl.initializeWithRecipe(selectedRecipe);
+
 
         secondaryStage.show();
     }
