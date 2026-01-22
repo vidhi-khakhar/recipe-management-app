@@ -1,0 +1,10 @@
+{
+  "serverUrl" : "http://localhost:8080",
+  "favoriteRecipeIds" : [ ],
+  "language" : "en",
+  "shoppingList" : {
+    "shoppingItems" : [ ]
+  },
+  "shoppingListReminder" : null,
+  "filteredLanguages" : [ ]
+}

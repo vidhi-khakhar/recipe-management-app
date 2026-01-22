@@ -25,6 +25,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import org.apache.commons.io.FileUtils;
 import javafx.collections.ListChangeListener;
+import java.util.ResourceBundle;
 
 public class ShoppingListCtrl {
 
@@ -37,6 +38,10 @@ public class ShoppingListCtrl {
     @FXML private VBox emptyShoppingList;
     @FXML private VBox notEmptyShoppingList;
     @FXML private Button resetShoppingListButton;
+    @FXML private Label shoppingListTitleLabel;
+    @FXML private Label ingredientsLabel;
+    @FXML private Label noIngredientTitle;
+    @FXML private Label noIngredientSubtitle;
 
     private ShoppingList shoppingListModel;
     private final ConfigService configService;
@@ -55,6 +60,9 @@ public class ShoppingListCtrl {
 
         loadShoppingListModel();
         setupChangeListener();
+
+        updateUILabels();
+
         refreshUI();
         scheduleExistingReminderIfAny();
     }
@@ -79,8 +87,63 @@ public class ShoppingListCtrl {
     /** Refresh the shopping list UI from the model */
     public void refreshFromConfig() {
         loadShoppingListModel();
+
+        updateUILabels();
+
         if (shoppingList != null) {
             refreshUI();
+        }
+    }
+
+    /**
+     * method that updates the labels from UI
+     */
+    private void updateUILabels() {
+        ResourceBundle props = getTranslationsBundle();
+
+        remindMeButton.setText(props.getString("button.reminder"));
+        resetShoppingListButton.setText(props.getString("button.resetshoppinglist"));
+        downloadShoppingListButton.setText(props.getString("button.download"));
+
+        if (shoppingListTitleLabel != null) {
+            shoppingListTitleLabel.setText(props.getString("label.shoppinglisttitle"));
+        }
+
+        if (ingredientsLabel != null) {
+            ingredientsLabel.setText(props.getString("label.ingredientsoverview"));
+        }
+
+        if (noIngredientTitle != null) {
+            noIngredientTitle.setText(props.getString("label.emptyShoppingList"));
+        }
+
+        if (noIngredientSubtitle != null) {
+            noIngredientSubtitle.setText(props.getString("label.emptyShoppingListSubtitle"));
+        }
+
+
+
+
+        if ("No reminder set.".equals(reminderStatusLabel.getText()) || reminderStatusLabel.getText().isEmpty()) {
+            reminderStatusLabel.setText(props.getString("label.reminder"));
+        }
+
+    }
+
+    /**
+     * Method that gets the translations from the resourcebundle
+     * @return
+     */
+    private ResourceBundle getTranslationsBundle() {
+        try {
+            String languageCode = configService.getLanguage();
+            return ResourceBundle.getBundle(
+                    "client.scenes.Translations",
+                    new java.util.Locale(languageCode)
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResourceBundle.getBundle("client.scenes.Translations", java.util.Locale.ENGLISH);
         }
     }
 
