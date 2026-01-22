@@ -643,10 +643,10 @@ public class MainCtrl {
         if(sortType.equals("A-Z")){
             filtered = recipeSortingService.sortByTitleAsc(filtered);
         }else{
-            filtered = recipeSortingService.sortByDateAsc(filtered);
+            filtered = recipeSortingService.sortByDateDesc(filtered);
         }
 
-        if(sortButton.getText().equals("↓☰")){
+        if(sortButton.getText().equals("↑☰")){
             filtered = filtered.reversed();
         }
 
