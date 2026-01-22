@@ -214,6 +214,7 @@ public class MainCtrl {
 
     @FXML
     private Label servingsLabel;
+    
     @FXML
     private ComboBox<String> sortComboBox;
 
@@ -1349,13 +1350,11 @@ public class MainCtrl {
             languageSetter.setText(languageCode.toUpperCase());
         }
 
-        // Update all bound text properties
         initializeTextProperties();
 
-        // Optional: update recipe language label
         Recipe selected = getSelectedRecipe();
         if (selected != null) {
-            updateRecipeLanguageLabel(languageCode);
+            updateRecipeLanguageLabel(selected.getLanguage());  // Use the recipe's language, not the UI language
         }
     }
 

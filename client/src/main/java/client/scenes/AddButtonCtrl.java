@@ -32,10 +32,10 @@ public class AddButtonCtrl {
     private TextField recipeInput;
     @FXML
     private Label statusLabel;
-
     @FXML
     private TextField servingsInput;
-  
+    @FXML
+    private Button setServingsButton;
     @FXML
     private ChoiceBox<String> languageChoiceBox;
 
@@ -118,13 +118,13 @@ public class AddButtonCtrl {
         recipe.setServings(servings);
         servingsInput.clear();
 
-        // Set language based on choice box
-        String selectedLanguage = languageChoiceBox.getValue().toLowerCase().trim();
-        switch (selectedLanguage) {
-            case "english" -> recipe.setLanguage("En");
-            case "dutch" -> recipe.setLanguage("NL");
-            case "romanian" -> recipe.setLanguage("Ro");
-            case "spanish" -> recipe.setLanguage("Es");
+        // Set language based on choice box selection index instead of string matching
+        int selectedIndex = languageChoiceBox.getSelectionModel().getSelectedIndex();
+        switch (selectedIndex) {
+            case 0 -> recipe.setLanguage("En");  // English
+            case 1 -> recipe.setLanguage("NL");  // Dutch
+            case 2 -> recipe.setLanguage("Ro");  // Romanian
+            case 3 -> recipe.setLanguage("Es");  // Spanish
         }
 
         // Try to create recipe and update UI
