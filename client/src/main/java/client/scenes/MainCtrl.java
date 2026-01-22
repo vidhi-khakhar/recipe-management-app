@@ -312,7 +312,7 @@ public class MainCtrl {
         sidebarList.setItems(recipesObservableList);
 
         sidebarList.setCellFactory(lv
-                -> new RecipeListCell(favoriteService)
+                -> new RecipeListCell(favoriteService, configService)
         );
 
         sidebarList.getSelectionModel()
