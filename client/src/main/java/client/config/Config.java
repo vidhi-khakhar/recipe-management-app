@@ -1,5 +1,6 @@
 package client.config;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import client.model.ShoppingList;
@@ -40,6 +41,23 @@ public class Config {
 
     public void setLanguage(String language) {
         this.language = language;
+    }
+
+    private List<String> filteredLanguages;
+
+    /**
+     * This method checks if there is something in the filterlangages
+     * @return if not it returns an empty one, otherwise if just returns the normal one
+     */
+    public List<String> getFilteredLanguages() {
+        if (filteredLanguages == null) {
+            filteredLanguages = new ArrayList<>();
+        }
+        return filteredLanguages;
+    }
+
+    public void setFilteredLanguages(List<String> filteredLanguages) {
+        this.filteredLanguages = filteredLanguages;
     }
 
     /**

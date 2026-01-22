@@ -1,5 +1,8 @@
 package client.scenes;
 
+import java.util.ResourceBundle;
+
+import client.config.ConfigService;
 import client.utils.RecipeServerUtils;
 import commons.Recipe;
 import jakarta.inject.Inject;
@@ -17,6 +20,7 @@ import javafx.scene.control.TextField;
 public class EditTitleCtrl {
     private final MainCtrl mainCtrl;
     private final RecipeServerUtils recipeServerUtils;
+    private final ConfigService configService;
 
     @FXML 
     private Label editRecipeWindowTitle;
@@ -32,24 +36,47 @@ public class EditTitleCtrl {
 
     @FXML
     private Button editTitleAddButton;
-
-    @FXML
-    private Button setServingsButton;
-
     
     @FXML
     private Label statusLabel;
 
+    /**
+     * Constructor of the edit title controller class.
+     */
     @Inject
-    public EditTitleCtrl(MainCtrl mainCtrl, RecipeServerUtils recipeServerUtils) {
+    public EditTitleCtrl(MainCtrl mainCtrl, RecipeServerUtils recipeServerUtils, ConfigService configService) {
         this.mainCtrl = mainCtrl;
         this.recipeServerUtils = recipeServerUtils;
+        this.configService = configService;
     }
 
     @FXML
     public void initialize() {
-        languageChoiceBox.getItems().addAll("English", "Dutch", "Romanian", "Spanish");
+        loadLanguages();
+    }
+
+    
+    /**
+     * Translates this ui
+     */
+    @FXML
+    public void loadLanguages() {
+        ResourceBundle props = getTranslationsBundle();
+
+        languageChoiceBox.getItems().clear();
+
+        languageChoiceBox.getItems().addAll(
+            props.getString("label.english"),
+            props.getString("label.dutch"),
+            props.getString("label.romanian"),
+            props.getString("label.spanish")
+        );
+
         languageChoiceBox.getSelectionModel().selectFirst();
+        editRecipeWindowTitle.setText(props.getString("label.editRecipeDetails"));
+        editRecipeTitle.setPromptText(props.getString("label.addRecipeName"));
+        servingsInput.setPromptText(props.getString("label.addRecipeServings"));
+        editTitleAddButton.setText(props.getString("label.editButton"));
     }
 
     /**
@@ -57,9 +84,10 @@ public class EditTitleCtrl {
      */
     @FXML
     private void editTitle() {
+        ResourceBundle props = getTranslationsBundle();
         String query = editRecipeTitle.getText().trim();
         if (query.isEmpty()) {
-            statusLabel.setText("Please enter a name.");
+            statusLabel.setText(props.getString("label.emptyRecipeName"));
             statusLabel.setStyle("-fx-text-fill: red;");
         } else {
             statusLabel.setText("");
@@ -71,14 +99,11 @@ public class EditTitleCtrl {
                     recipe.setTitle(query);
 
                     String selectedLanguage = languageChoiceBox.getValue().toLowerCase().trim();
-                    if (selectedLanguage.equals("english")) {
-                        recipe.setLanguage("En");
-                    } else if (selectedLanguage.equals("dutch")) {
-                        recipe.setLanguage("NL");
-                    } else if (selectedLanguage.equals("romanian")) {
-                        recipe.setLanguage("Ro");
-                    } else if (selectedLanguage.equals("spanish")) {
-                        recipe.setLanguage("Es");
+                    switch (selectedLanguage) {
+                        case "english" -> recipe.setLanguage("En");
+                        case "dutch" -> recipe.setLanguage("NL");
+                        case "romanian" -> recipe.setLanguage("Ro");
+                        case "spanish" -> recipe.setLanguage("Es");
                     }
 
                     int servings = validateServings(servingsInput.getText());
@@ -92,8 +117,7 @@ public class EditTitleCtrl {
                     recipeServerUtils.replaceRecipe(recipe.getRecipeId(), recipe);
 
                     editRecipeTitle.clear();
-                    statusLabel.setText("Title has been edited!");
-
+                    statusLabel.setText(props.getString("label.titleHasBeenAdded"));
 
                     mainCtrl.refreshSidebarList();
                     mainCtrl.updateTitleLabel(query);
@@ -102,9 +126,9 @@ public class EditTitleCtrl {
                     statusLabel.setStyle("-fx-text-fill: green;");
 
                 } catch (Exception e) {
-                    statusLabel.setText("Error editing title of recipe.");
+                    statusLabel.setText(props.getString("label.titleError"));
                     statusLabel.setStyle("-fx-text-fill: red;");
-                    mainCtrl.recoverFromError("Error editing title of recipe!");
+                    mainCtrl.recoverFromError(props.getString("label.titleError"));
                 }
             }
         }
@@ -117,14 +141,16 @@ public class EditTitleCtrl {
      * Ensures first letter is capitalized
      * @param title the given recipe name by the user
      */
-    private boolean recipeValidation(String title) {
-        if (title.length() > 20) {
-            statusLabel.setText("The name is longer than 20 characters.");
+    private boolean recipeValidation(String query) {
+        ResourceBundle props = getTranslationsBundle();
+
+        if (query.length() > 20) {
+            statusLabel.setText(props.getString("label.tooLongName"));
             statusLabel.setStyle("-fx-text-fill: red;");
             return false;
         }
-        if (title.matches(".*[\\*\"'\\`@].*")) {
-            statusLabel.setText("The name contains illegal characters.");
+        if (query.matches(".*[\\*\"'\\@].*")) {
+            statusLabel.setText(props.getString("label.illegalName"));
             statusLabel.setStyle("-fx-text-fill: red;");
             return false;
         }
@@ -138,18 +164,19 @@ public class EditTitleCtrl {
      */
     @FXML
     private int validateServings(String text) {
+        ResourceBundle props = getTranslationsBundle();
+
         try {
             int servings = Integer.parseInt(text);
-
             if (servings < 1) {
-                showError("More Than 0", "Servings must be an integer more than 0.");
+                showError(props.getString("label.negativeServings"),
+                        props.getString("label.negativeServings.body"));
                 return -1;
             }
-
             return servings;
-
         } catch (NumberFormatException e) {
-            showError("Must Be Number", "Servings must be a number.");
+            showError(props.getString("label.illegalServing"),
+                    props.getString("label.illegalServing.body"));
             return -1;
         }
     }
@@ -160,13 +187,24 @@ public class EditTitleCtrl {
      * @param content the content of the error
      */
     private void showError(String header, String content) {
+        ResourceBundle props = getTranslationsBundle();
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
+        alert.setTitle(props.getString("alert.error"));
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.showAndWait();
     }
 
-
+    
+    private ResourceBundle getTranslationsBundle() {
+        try {
+            String languageCode = configService.getLanguage();
+            return java.util.ResourceBundle.getBundle("client.scenes.Translations", new java.util.Locale(languageCode));
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Failed to load language bundle for code: " + configService.getLanguage());
+            return java.util.ResourceBundle.getBundle("client.scenes.Translations", java.util.Locale.ENGLISH);
+        }
+    }
 
 }

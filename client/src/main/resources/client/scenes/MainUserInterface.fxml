@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.paint.*?>
-<?import javafx.scene.text.*?>
-<?import org.controlsfx.control.*?>
 <?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.MenuButton?>
@@ -187,10 +181,18 @@
                                             <children>
                                     <HBox prefHeight="30.0" prefWidth="200.0">
                                        <children>
-                                          <ComboBox fx:id="sortComboBox" maxHeight="20.0" prefWidth="130.0" promptText="Sort by" />
-                                          <Button fx:id="sortButton" maxHeight="30.0" minHeight="30.0" mnemonicParsing="false" onAction="#changeSort" prefWidth="50.0" text="↓☰">
+                                          <Label fx:id="sortLabel" prefHeight="18.0" prefWidth="66.0" text="%label.sort" textFill="WHITE">
                                              <HBox.margin>
-                                                <Insets left="60.0" />
+                                                <Insets left="10.0" top="7.0" />
+                                             </HBox.margin>
+                                          </Label>
+                                          <ComboBox fx:id="sortComboBox" maxHeight="20.0" prefWidth="130.0" promptText="Sort by">
+                                             <HBox.margin>
+                                                <Insets top="2.0" />
+                                             </HBox.margin></ComboBox>
+                                          <Button fx:id="sortButton" maxHeight="30.0" minHeight="30.0" mnemonicParsing="false" onAction="#changeSort" prefHeight="30.0" prefWidth="50.0" text="↓☰">
+                                             <HBox.margin>
+                                                <Insets left="5.0" right="8.0" />
                                              </HBox.margin>
                                           </Button>
                                        </children>
@@ -482,8 +484,8 @@
                                                                                 <HBox alignment="BOTTOM_RIGHT" prefHeight="36.0" prefWidth="540.0">
                                                                                     <children>
                                                                                         <Button fx:id="infoHealthyButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onInfoHealthButtonClicked" prefHeight="34.0" prefWidth="74.0" styleClass="roundbutton" text="ⓘ" />
-                                                                                        <Region prefHeight="36.0" prefWidth="435.0" HBox.hgrow="ALWAYS" />
-                                                                                        <Button fx:id="downloadButton" alignment="TOP_CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#downloadButtonClicked" prefHeight="34.0" prefWidth="99.0" text="Download" />
+                                                                                        <Region prefHeight="34.0" prefWidth="380.0" HBox.hgrow="ALWAYS" />
+                                                                                        <Button fx:id="downloadButton" alignment="TOP_CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#downloadButtonClicked" prefHeight="34.0" prefWidth="161.0" text="Download" HBox.hgrow="ALWAYS" />
                                                                                     </children>
                                                                                     <VBox.margin>
                                                                                         <Insets />

@@ -87,9 +87,13 @@ public class ConfigService {
             loaded.setShoppingList(new ShoppingList());
         }
 
+        if (loaded.getFilteredLanguages() == null) {
+            loaded.setFilteredLanguages(new ArrayList<>());
+        }
         // Safety: language must always exist
         if (loaded.getLanguage() == null || loaded.getLanguage().isBlank()) {
             loaded.setLanguage("en");
+
         }
 
         return loaded;
@@ -132,6 +136,7 @@ public class ConfigService {
         config.setFavoriteRecipeIds(new ArrayList<>());
         config.setLanguage("en"); // default language
         config.setShoppingList(new ShoppingList());
+        config.setFilteredLanguages(new ArrayList<>());
 
         this.config = config;
         save();
