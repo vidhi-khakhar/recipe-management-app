@@ -443,7 +443,8 @@ public class NutritionalValueCtrl {
 
             ingredientServerUtils.replaceIngredient(selected.getId(), selected);
 
-            sidebarList.refresh();
+            sidebarList.getItems().clear();
+            sidebarList.getItems().addAll(ingredientServerUtils.getAllIngredients());
 
             sidebarList.getSelectionModel().select(selected);
 

@@ -721,7 +721,7 @@ public class MainCtrl {
         }
 
         ingredientList.getChildren().clear();
-        List<RecipeIngredient> ingredients = recipe.getIngredients();
+        List<RecipeIngredient> ingredients = recipeServerUtils.getRecipeIngredients(recipe.getRecipeId());
 
         for (RecipeIngredient ingredient : ingredients) {
             addRecipeIngredientToUI(ingredient);
@@ -1066,6 +1066,10 @@ public class MainCtrl {
         secondaryStage.initOwner(primaryStage);
         secondaryStage.setResizable(false);
         secondaryStage.showAndWait();
+
+        if (getSelectedRecipe() != null) {
+            showIngredients(getSelectedRecipe());
+        }
     }
 
     /**

@@ -248,7 +248,7 @@
             <center>
                 <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                     <children>
-                        <VBox onMouseMoved="#initializeTextProperties" prefHeight="490.0" prefWidth="638.0" HBox.hgrow="ALWAYS">
+                        <VBox prefHeight="490.0" prefWidth="638.0" HBox.hgrow="ALWAYS">
                             <children>
                                 <StackPane prefHeight="510.0" prefWidth="634.0" VBox.vgrow="ALWAYS">
                                     <children>
