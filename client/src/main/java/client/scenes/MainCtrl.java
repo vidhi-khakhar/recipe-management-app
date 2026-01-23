@@ -726,6 +726,7 @@ public class MainCtrl {
             Recipe selected = sidebarList.getSelectionModel().getSelectedItem();
             if (selected != null) {
                 showIngredients(selected);
+                showInstructions(selectedRecipe);
             }
 
         } catch (Exception e) {
@@ -744,7 +745,7 @@ public class MainCtrl {
         }
 
         ingredientList.getChildren().clear();
-        List<RecipeIngredient> ingredients = recipe.getIngredients();
+        List<RecipeIngredient> ingredients = recipeServerUtils.getRecipeIngredients(recipe.getRecipeId());
 
         for (RecipeIngredient ingredient : ingredients) {
             addRecipeIngredientToUI(ingredient);
@@ -946,7 +947,7 @@ public class MainCtrl {
     private void showInstructions(Recipe recipe) {
         preparationList.getChildren().clear();
 
-        List<String> steps = recipe.getInstructions();
+        List<String> steps = recipeServerUtils.getRecipe(recipe.getRecipeId()).getInstructions();
 
         for (int i = 0; i < steps.size(); i++) {
             HBox row = createExecutionStepRow(i, steps.get(i), false);
@@ -1090,6 +1091,10 @@ public class MainCtrl {
         secondaryStage.setResizable(false);
         nutritionalValueCtrl.loadLanguages();
         secondaryStage.showAndWait();
+
+        if (getSelectedRecipe() != null) {
+            showIngredients(getSelectedRecipe());
+        }
     }
 
     /**
@@ -1406,6 +1411,26 @@ public class MainCtrl {
         ResourceBundle props = getTranslationsBundle();
         updateStaticUILabels(props);
         updateSelectedRecipeLabels(props);
+        updateIngredientButtonLabels(props);
+    }
+
+
+    private void updateIngredientButtonLabels(ResourceBundle props) {
+        String editLabel = props.getString("label.editRecipeButton");
+        String removeLabel = props.getString("label.removeIngredientButton");
+
+        for (javafx.scene.Node node : ingredientList.getChildren()) {
+            if (node instanceof HBox hbox) {
+
+                if (hbox.getChildren().size() >= 4) {
+                    Button editButton = (Button) hbox.getChildren().get(2);
+                    Button removeButton = (Button) hbox.getChildren().get(3);
+
+                    editButton.setText(editLabel);
+                    removeButton.setText(removeLabel);
+                }
+            }
+        }
     }
 
 
@@ -1580,8 +1605,27 @@ public class MainCtrl {
         servingsValueLabel.setText(String.valueOf(baseServings * factor));
         normalizeUnits(recipe);
         showNutritionalValues(recipe);
-        showIngredients(recipe);
+
+        showScaledIngredients(recipe);
     }
+
+    private void showScaledIngredients(Recipe recipe) {
+        if (recipe == null) {
+            return;
+        }
+
+        ingredientList.getChildren().clear();
+        List<RecipeIngredient> ingredients = recipe.getIngredients();
+
+        for (RecipeIngredient ingredient : ingredients) {
+            addRecipeIngredientToUI(ingredient);
+        }
+
+        showNutritionalValues(recipe);
+        setHealthStatus(recipe);
+    }
+
+
 
 
     private void normalizeUnits(Recipe recipe) {

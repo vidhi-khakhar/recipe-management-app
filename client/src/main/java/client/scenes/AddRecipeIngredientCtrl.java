@@ -106,6 +106,7 @@ public class AddRecipeIngredientCtrl {
         pleaseAddIngredientLabel.setVisible(false);
 
         populateIngredientDropdown();
+        setAddNewIngredientButtonVisibility();
 
         if (!ingredientServerUtils.getAllIngredients().isEmpty() && isAdd) {
             ingredientChoiceBox.setValue(ingredientChoiceBox.getItems().get(0));
@@ -145,6 +146,11 @@ public class AddRecipeIngredientCtrl {
                     updateUnitChoiceBoxVisibility(newValue, formalUnit, informalUnit));
     }
 
+    private void setAddNewIngredientButtonVisibility() {
+        newIngredient.setVisible(isAdd);
+    }
+
+
     /**
      * Updates the visibility of the unit choice box based on the selected unit type.
      * @param unitType the selected unit type
@@ -175,6 +181,13 @@ public class AddRecipeIngredientCtrl {
 
         // Get selected ingredient
         Ingredient ingredient = ingredientChoiceBox.getSelectionModel().getSelectedItem();
+
+        if (ingredient == null) {
+            showError(
+                props.getString("alert.noIngredientSelected"),
+                props.getString("alert.pleaseSelectIngredient"));
+            return;
+        }
 
         // Check for duplicates using localized alert
         if (duplicateIngredient(recipe, ingredient) && isAdd) {
