@@ -9,7 +9,7 @@ class UnitTest {
     @Test
     void testUnitEnumValues() {
         Unit[] values = Unit.values();
-        assertEquals(8, values.length);
+        assertEquals(7, values.length);
         assertNotNull(Unit.valueOf("G"));
         assertNotNull(Unit.valueOf("KG"));
         assertNotNull(Unit.valueOf("ML"));
@@ -17,7 +17,6 @@ class UnitTest {
         assertNotNull(Unit.valueOf("TSP"));
         assertNotNull(Unit.valueOf("TBSP"));
         assertNotNull(Unit.valueOf("PCS"));
-        assertNotNull(Unit.valueOf("PINCH"));
     }
 
     @Test
@@ -29,7 +28,6 @@ class UnitTest {
         assertEquals("TSP", Unit.TSP.name());
         assertEquals("TBSP", Unit.TBSP.name());
         assertEquals("PCS", Unit.PCS.name());
-        assertEquals("PINCH", Unit.PINCH.name());
     }
 
     @Test
@@ -41,7 +39,6 @@ class UnitTest {
         assertEquals(4, Unit.TSP.ordinal());
         assertEquals(5, Unit.TBSP.ordinal());
         assertEquals(6, Unit.PCS.ordinal());
-        assertEquals(7, Unit.PINCH.ordinal());
     }
 
     @Test
