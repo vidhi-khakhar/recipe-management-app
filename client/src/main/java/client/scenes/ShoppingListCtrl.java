@@ -1,10 +1,14 @@
 package client.scenes;
 
+import org.apache.commons.io.FileUtils;
+
 import com.google.inject.Inject;
+
 import client.ShoppingListFormatter;
 import client.config.ConfigService;
 import client.model.ShoppingItem;
 import client.model.ShoppingList;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -158,15 +162,25 @@ public class ShoppingListCtrl {
         if (shoppingListModel.getShoppingItems().isEmpty()) {
             emptyShoppingList.setVisible(true);
             notEmptyShoppingList.setVisible(false);
-            return;
-        }
-
-        emptyShoppingList.setVisible(false);
-        notEmptyShoppingList.setVisible(true);
-
-        for (ShoppingItem item : shoppingListModel.getShoppingItems()) {
-            boolean startEditable = item.getName() == null || item.getName().isBlank();
-            shoppingList.getChildren().add(createShoppingItemRow(item, startEditable));
+        } else {
+            emptyShoppingList.setVisible(false);
+            notEmptyShoppingList.setVisible(true);
+            
+            // Sort items: unbought items alphabetically first, then bought items alphabetically
+            shoppingListModel.getShoppingItems().stream()
+                    .sorted((item1, item2) -> {
+                        // First, sort by bought status (unbought items first)
+                        if (item1.isBought() != item2.isBought()) {
+                            return item1.isBought() ? 1 : -1;
+                        }
+                        String name1 = item1.getName() != null ? item1.getName() : "";
+                        String name2 = item2.getName() != null ? item2.getName() : "";
+                        return name1.compareToIgnoreCase(name2);
+                    })
+                    .forEach(item -> {
+                        boolean startEditable = item.getName() == null || item.getName().isBlank();
+                        shoppingList.getChildren().add(createShoppingItemRow(item, startEditable));
+                    });
         }
     }
 
@@ -288,6 +302,7 @@ public class ShoppingListCtrl {
             item.setUnit(unitField.getText().trim());
 
             saveShoppingList();
+            refreshUI();
             updateCombinedField(item, combinedField);
 
             editSaveButton.setText("✏");

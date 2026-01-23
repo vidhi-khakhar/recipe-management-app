@@ -67,6 +67,8 @@ public class AddButtonCtrl {
     private void loadLanguages() {
         ResourceBundle props = getTranslationsBundle();
 
+        statusLabel.setText("");
+
         languageChoiceBox.getItems().clear();
 
         languageChoiceBox.getItems().addAll(
@@ -82,7 +84,6 @@ public class AddButtonCtrl {
         recipeInput.setPromptText(props.getString("label.addRecipeName"));
         servingsInput.setPromptText(props.getString("label.addRecipeServings"));
         recipeAddButton.setText(props.getString("label.addRecipeButton"));
-        setServingsButton.setText(props.getString("label.addServingsButton"));
     }
 
 
@@ -119,13 +120,13 @@ public class AddButtonCtrl {
         recipe.setServings(servings);
         servingsInput.clear();
 
-        // Set language based on choice box
-        String selectedLanguage = languageChoiceBox.getValue().toLowerCase().trim();
-        switch (selectedLanguage) {
-            case "english" -> recipe.setLanguage("En");
-            case "dutch" -> recipe.setLanguage("NL");
-            case "romanian" -> recipe.setLanguage("Ro");
-            case "spanish" -> recipe.setLanguage("Es");
+        // Set language based on choice box selection index instead of string matching
+        int selectedIndex = languageChoiceBox.getSelectionModel().getSelectedIndex();
+        switch (selectedIndex) {
+            case 0 -> recipe.setLanguage("En");  // English
+            case 1 -> recipe.setLanguage("NL");  // Dutch
+            case 2 -> recipe.setLanguage("Ro");  // Romanian
+            case 3 -> recipe.setLanguage("Es");  // Spanish
         }
 
         // Try to create recipe and update UI
