@@ -22,7 +22,7 @@
                   <HBox layoutX="394.0" layoutY="18.0" prefHeight="63.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
                   <HBox prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                      <children>
-                        <Label alignment="CENTER" prefHeight="121.0" prefWidth="640.0" text="Shopping List" HBox.hgrow="ALWAYS">
+                        <Label fx:id="shoppingListTitleLabel" alignment="CENTER" prefHeight="121.0" prefWidth="640.0" text="%label.shoppinglisttitle" HBox.hgrow="ALWAYS">
                            <font>
                               <Font name="Cascadia Code Regular" size="37.0" />
                            </font>
@@ -48,7 +48,7 @@
                         <Pane prefHeight="38.0" prefWidth="36.0" HBox.hgrow="ALWAYS" />
                         <HBox prefHeight="38.0" prefWidth="177.0" HBox.hgrow="NEVER">
                            <children>
-                              <Button fx:id="resetShoppingListButton" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#resetShoppingList" prefHeight="31.0" prefWidth="177.0" text="Reset Shopping List" HBox.hgrow="NEVER">
+                              <Button fx:id="resetShoppingListButton" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#resetShoppingList" prefHeight="31.0" prefWidth="177.0" text="%button.resetshoppinglist" HBox.hgrow="NEVER">
                                  <HBox.margin>
                                     <Insets left="5.0" right="5.0" />
                                  </HBox.margin>
@@ -57,7 +57,7 @@
                         </HBox>
                         <HBox maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="38.0" prefWidth="176.0" HBox.hgrow="NEVER">
                            <children>
-                              <Button fx:id="downloadShoppingListButton" mnemonicParsing="false" onAction="#downloadShoppingList" prefHeight="30.0" prefWidth="177.0" text="Download" HBox.hgrow="NEVER">
+                              <Button fx:id="downloadShoppingListButton" mnemonicParsing="false" onAction="#downloadShoppingList" prefHeight="30.0" prefWidth="177.0" text="%button.download" HBox.hgrow="NEVER">
                                  <HBox.margin>
                                     <Insets left="5.0" right="5.0" />
                                  </HBox.margin>
@@ -81,7 +81,7 @@
                <children>
                   <HBox prefHeight="38.0" prefWidth="534.0" VBox.vgrow="NEVER">
                      <children>
-                        <Label prefHeight="34.0" prefWidth="250.0" style="-fx-font-weight: bold;" text="Ingredients to Purchase 🛒:">
+                        <Label fx:id="ingredientsLabel" prefHeight="34.0" prefWidth="250.0" style="-fx-font-weight: bold;" text="%label.ingredientsoverview">
                            <HBox.margin>
                               <Insets left="5.0" top="5.0" />
                            </HBox.margin>
@@ -153,12 +153,12 @@
                            <HBox.margin>
                               <Insets top="7.0" />
                            </HBox.margin></Button>
-                        <Button fx:id="remindMeButton" mnemonicParsing="false" onAction="#handleRemindMe" prefHeight="34.0" prefWidth="125.0" styleClass="roundbutton" text="Remind me! 🔔">
+                        <Button fx:id="remindMeButton" mnemonicParsing="false" onAction="#handleRemindMe" prefHeight="34.0" prefWidth="125.0" styleClass="roundbutton" text="%button.reminder">
                            <HBox.margin>
                               <Insets left="5.0" right="5.0" top="7.0" />
                            </HBox.margin>
                         </Button>
-                        <Label fx:id="reminderStatusLabel" text="No reminder set.">
+                        <Label fx:id="reminderStatusLabel" text="%label.reminder">
                            <HBox.margin>
                               <Insets left="5.0" right="5.0" top="15.0" />
                            </HBox.margin>
