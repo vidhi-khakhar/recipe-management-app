@@ -4,5 +4,7 @@
   "language" : "en",
   "shoppingList" : {
     "shoppingItems" : [ ]
-  }
+  },
+  "shoppingListReminder" : null,
+  "filteredLanguages" : [ ]
 }
