@@ -726,6 +726,7 @@ public class MainCtrl {
             Recipe selected = sidebarList.getSelectionModel().getSelectedItem();
             if (selected != null) {
                 showIngredients(selected);
+                showInstructions(selectedRecipe);
             }
 
         } catch (Exception e) {
@@ -946,7 +947,7 @@ public class MainCtrl {
     private void showInstructions(Recipe recipe) {
         preparationList.getChildren().clear();
 
-        List<String> steps = recipe.getInstructions();
+        List<String> steps = recipeServerUtils.getRecipe(recipe.getRecipeId()).getInstructions();
 
         for (int i = 0; i < steps.size(); i++) {
             HBox row = createExecutionStepRow(i, steps.get(i), false);
