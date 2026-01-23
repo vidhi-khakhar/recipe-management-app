@@ -1,5 +1,5 @@
 {
-  "serverUrl" : "http://localhost:8080",
+  "serverUrl" : "http://localhost:8000",
   "favoriteRecipeIds" : [ 1 ],
   "language" : "en",
   "shoppingList" : {

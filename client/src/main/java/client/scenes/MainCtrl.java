@@ -1410,6 +1410,26 @@ public class MainCtrl {
         ResourceBundle props = getTranslationsBundle();
         updateStaticUILabels(props);
         updateSelectedRecipeLabels(props);
+        updateIngredientButtonLabels(props);
+    }
+
+
+    private void updateIngredientButtonLabels(ResourceBundle props) {
+        String editLabel = props.getString("label.editRecipeButton");
+        String removeLabel = props.getString("label.removeIngredientButton");
+
+        for (javafx.scene.Node node : ingredientList.getChildren()) {
+            if (node instanceof HBox hbox) {
+
+                if (hbox.getChildren().size() >= 4) {
+                    Button editButton = (Button) hbox.getChildren().get(2);
+                    Button removeButton = (Button) hbox.getChildren().get(3);
+
+                    editButton.setText(editLabel);
+                    removeButton.setText(removeLabel);
+                }
+            }
+        }
     }
 
 
@@ -1584,8 +1604,27 @@ public class MainCtrl {
         servingsValueLabel.setText(String.valueOf(baseServings * factor));
         normalizeUnits(recipe);
         showNutritionalValues(recipe);
-        showIngredients(recipe);
+
+        showScaledIngredients(recipe);
     }
+
+    private void showScaledIngredients(Recipe recipe) {
+        if (recipe == null) {
+            return;
+        }
+
+        ingredientList.getChildren().clear();
+        List<RecipeIngredient> ingredients = recipe.getIngredients();
+
+        for (RecipeIngredient ingredient : ingredients) {
+            addRecipeIngredientToUI(ingredient);
+        }
+
+        showNutritionalValues(recipe);
+        setHealthStatus(recipe);
+    }
+
+
 
 
     private void normalizeUnits(Recipe recipe) {
