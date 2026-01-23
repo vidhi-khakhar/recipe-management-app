@@ -551,9 +551,10 @@ public class ShoppingListCtrl {
                 Thread.sleep(delayMillis);
             } catch (InterruptedException ignored) {}
 
-            StringBuilder message = new StringBuilder(
-                    "Reminder to purchase shopping list!\n\nItems to buy:\n"
-            );
+            ResourceBundle props = getTranslationsBundle();
+
+            String headerText = props.getString("alert.reminderHeader");
+            StringBuilder message = new StringBuilder(headerText);
 
             shoppingListModel.getShoppingItems().stream()
                     .filter(item -> !item.isBought())
@@ -566,18 +567,18 @@ public class ShoppingListCtrl {
                                     .append("\n")
             );
 
-            if (message.toString().endsWith("Items to buy:\n")) {
-                message.append("All items have been bought! Hooray! :D");
+            if (message.length() == headerText.length()) {
+                message.append(props.getString("alert.allBought"));
             }
 
             javafx.application.Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Shopping Reminder");
+                alert.setTitle(props.getString("alert.shoppingReminderTitle"));
                 alert.setHeaderText(null);
                 alert.setContentText(message.toString());
                 alert.showAndWait();
 
-                reminderStatusLabel.setText("No reminder set.");
+                reminderStatusLabel.setText(props.getString("label.reminder"));
                 configService.getConfig().setShoppingListReminder(null);
                 configService.save();
             });
