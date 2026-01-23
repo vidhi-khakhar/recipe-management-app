@@ -126,10 +126,7 @@ public class ShoppingListCtrl {
             noIngredientSubtitle.setText(props.getString("label.emptyShoppingListSubtitle"));
         }
 
-
-
-
-        if ("No reminder set.".equals(reminderStatusLabel.getText()) || reminderStatusLabel.getText().isEmpty()) {
+        if (reminderStatusLabel != null) {
             reminderStatusLabel.setText(props.getString("label.reminder"));
         }
 
