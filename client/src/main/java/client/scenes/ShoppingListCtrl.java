@@ -30,6 +30,7 @@ import javafx.stage.Window;
 import org.apache.commons.io.FileUtils;
 import javafx.collections.ListChangeListener;
 import java.util.ResourceBundle;
+import java.text.MessageFormat;
 
 public class ShoppingListCtrl {
 
@@ -412,12 +413,13 @@ public class ShoppingListCtrl {
      */
     @FXML
     private void handleRemindMe() {
+        ResourceBundle props = getTranslationsBundle();
         Dialog<Void> dialog = new Dialog<>();
-        dialog.setTitle("Set Reminder");
-        dialog.setHeaderText("Choose reminder date and time");
+        dialog.setTitle(props.getString("label.reminderDialogTitle"));
+        dialog.setHeaderText(props.getString("label.reminderDialogHeader"));
 
         ButtonType setButton =
-                new ButtonType("Set Reminder", ButtonBar.ButtonData.OK_DONE);
+                new ButtonType(props.getString("button.setReminder"), ButtonBar.ButtonData.OK_DONE);
 
         dialog.getDialogPane().getButtonTypes().addAll(setButton, ButtonType.CANCEL);
 
@@ -442,11 +444,13 @@ public class ShoppingListCtrl {
                     java.time.Instant.ofEpochMilli(existingMillis)
                             .atZone(java.time.ZoneId.systemDefault())
                             .toLocalDateTime();
-            Label warningLabel = new Label(
-                    "⚠ Warning: A reminder is already set for "
-                            + existing.toLocalDate() + " at " + existing.toLocalTime()
-                            + ".\nSetting a new reminder will replace it."
+            String warningText = MessageFormat.format(
+                    props.getString("label.warningReminderSet"),
+                    existing.toLocalDate(),
+                    existing.toLocalTime()
             );
+
+            Label warningLabel = new Label(warningText);
             warningLabel.setStyle("-fx-text-fill: darkred; -fx-font-weight: bold;");
             content.getChildren().add(warningLabel);
 
@@ -466,7 +470,7 @@ public class ShoppingListCtrl {
                     int minute = Integer.parseInt(minuteField.getText());
 
                     if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
-                        showError("Invalid time entered.");
+                        showError(props.getString("alert.invalidTime"));
                         return null;
                     }
 
@@ -482,7 +486,7 @@ public class ShoppingListCtrl {
                                     .toMillis();
 
                     if (delayMillis <= 0) {
-                        showError("Reminder must be set in the future.");
+                        showError(props.getString("alert.futureReminder"));
                         return null;
                     }
 
@@ -490,15 +494,17 @@ public class ShoppingListCtrl {
                         reminderTime.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli());
                     configService.save();
 
-                    reminderStatusLabel.setText(
-                            "Reminder set for " + reminderTime.toLocalDate()
-                                    + " at " + reminderTime.toLocalTime()
+                    String successText = MessageFormat.format(
+                            props.getString("label.reminderSetSuccess"),
+                            reminderTime.toLocalDate(),
+                            reminderTime.toLocalTime()
                     );
+                    reminderStatusLabel.setText(successText);
 
                     scheduleReminder(delayMillis);
 
                 } catch (NumberFormatException e) {
-                    showError("Please enter valid numbers.");
+                    showError(props.getString("alert.invalidNumbers"));
                 }
             }
             return null;
