@@ -85,7 +85,10 @@ public class AddRecipeIngredientCtrl {
      * @param nutritionScene the nutrition scenes to add a global ingredient
      * @param addRecipeIngredientScene the current add recipe-ingredient scene
      */
-    public void initScenes(Scene nutritionScene, Scene addRecipeIngredientScene) {
+    public void initScenes(
+        Scene nutritionScene,
+        Scene addRecipeIngredientScene
+    ) {
         this.nutritionScene = nutritionScene;
         this.addRecipeIngredientScene = addRecipeIngredientScene;
     }
@@ -132,7 +135,9 @@ public class AddRecipeIngredientCtrl {
         unitTypeChoiceBox.setValue(unitTypeChoiceBox.getItems().get(0));
 
         unitChoiceBox.getItems().clear();
-        unitChoiceBox.setItems(FXCollections.observableArrayList(Unit.values()));
+        unitChoiceBox.setItems(
+            FXCollections.observableArrayList(Unit.values())
+        );
         unitChoiceBox.setValue(unitChoiceBox.getItems().get(0));
 
         unitTypeChoiceBox.getSelectionModel()
@@ -145,6 +150,24 @@ public class AddRecipeIngredientCtrl {
         newIngredient.setVisible(isAdd);
     }
 
+
+    /**
+     * Updates the visibility of the unit choice box based on the selected unit type.
+     * @param unitType the selected unit type
+     * @param formalUnit the localized "Formal" string
+     * @param informalUnit the localized "Informal" string
+     */
+    public void updateUnitChoiceBoxVisibility(String unitType, String formalUnit, String informalUnit) {
+        if (unitType == null) return;
+
+        if (unitType.equals(formalUnit)) {
+            unitChoiceBox.setVisible(true);
+            infoLabel.setVisible(false);
+        } else if (unitType.equals(informalUnit)) {
+            unitChoiceBox.setVisible(false);
+            infoLabel.setVisible(true);
+        }
+    }
 
     /**
      * Create RecipeIngredient entity based on user input. Close the popup and
@@ -183,34 +206,22 @@ public class AddRecipeIngredientCtrl {
             String input = amountTextField.getText();
             if (validateFormalAmount(input)) {
                 double amount = Double.parseDouble(input);
-                recipeIngredient = RecipeIngredient.formal(recipe,
-                        ingredient, amount, unitChoiceBox.getValue());
+                recipeIngredient = RecipeIngredient.formal(
+                    recipe,
+                    ingredient,
+                    amount,
+                    unitChoiceBox.getValue()
+                );
                 closeWindow();
             }
         } else {
             String informal = amountTextField.getText();
-            recipeIngredient = RecipeIngredient.informal(recipe,
-                    ingredient, informal);
+            recipeIngredient = RecipeIngredient.informal(
+                recipe,
+                ingredient,
+                informal
+            );
             closeWindow();
-        }
-    }
-
-
-    /**
-     * Updates the visibility of the unit choice box based on the selected unit type.
-     * @param unitType the selected unit type
-     * @param formalUnit the localized "Formal" string
-     * @param informalUnit the localized "Informal" string
-     */
-    public void updateUnitChoiceBoxVisibility(String unitType, String formalUnit, String informalUnit) {
-        if (unitType == null) return;
-
-        if (unitType.equals(formalUnit)) {
-            unitChoiceBox.setVisible(true);
-            infoLabel.setVisible(false);
-        } else if (unitType.equals(informalUnit)) {
-            unitChoiceBox.setVisible(false);
-            infoLabel.setVisible(true);
         }
     }
 
@@ -223,6 +234,9 @@ public class AddRecipeIngredientCtrl {
      * @return true if it is already contained, false if not
      */
     public boolean duplicateIngredient(Recipe recipe, Ingredient ingredient) {
+        if (recipe == null || recipe.getIngredients() == null) {
+            return false;
+        }
         for (RecipeIngredient ri : recipe.getIngredients()) {
             if (ri.getIngredient().equals(ingredient)) {
                 return true;
@@ -242,25 +256,35 @@ public class AddRecipeIngredientCtrl {
      * @return true if amount is a positive number
      */
     public boolean validateFormalAmount(String text) {
-        ResourceBundle props = getTranslationsBundle();
+        return validateAmount(text, true);
+    }
+
+    /**
+     * Validates the inputted amount.
+     * @param text the user input for amount
+     * @param showError whether to show error dialogs
+     * @return true if amount is valid
+     */
+    public boolean validateAmount(String text, boolean showError) {
         double amount;
+        ResourceBundle props = getTranslationsBundle();
 
         try {
             amount = Double.parseDouble(text);
             if (amount < 0) {
-                showError(
-                    props.getString("alert.negativeAmount"),
-                    props.getString("alert.negativeAmount.body")
-                );
+                if (showError) {
+                    showError(props.getString("alert.negativeAmount"),
+                        props.getString("alert.negativeAmount.body"));
+                }
             }
             return (amount >= 0);
         } catch (NumberFormatException e) {
-            showError(
-                props.getString("alert.illegalInput"),
-                props.getString("alert.illegalInput.body")
-            );
+            if (showError) {
+                showError(props.getString("alert.illegalInput"),
+                    props.getString("alert.illegalInput.body"));
+            }
+            return false;
         }
-        return false;
     }
 
 
@@ -318,8 +342,9 @@ public class AddRecipeIngredientCtrl {
         ResourceBundle props = getTranslationsBundle();
         try {
             ingredientChoiceBox.getItems().clear();
-            ingredientChoiceBox.getItems().addAll(
-                    ingredientServerUtils.getAllIngredients());
+            ingredientChoiceBox
+                .getItems()
+                .addAll(ingredientServerUtils.getAllIngredients());
         } catch (Exception e) {
             System.out.println(e.getStackTrace());
             showError(props.getString("alert.problemWithIngredients"),
