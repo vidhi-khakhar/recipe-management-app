@@ -7,11 +7,16 @@ import org.junit.jupiter.api.Test;
 
 import client.config.ConfigService;
 
+import java.io.File;
+import java.util.UUID;
+
 public class IngredientItemCtrlTest {
 
     private static class TestConfigService extends ConfigService {
         public TestConfigService() {
-            super("en");
+            super(
+                    System.getProperty("java.io.tmpdir") + "/" + UUID.randomUUID().toString() + ".json"
+            );
         }
     }
 
